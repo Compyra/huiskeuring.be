@@ -424,6 +424,42 @@ const propertyInfoCard = document.querySelector('.property-info-card');
 const propertyInfoGrid = document.getElementById('propertyInfoGrid');
 const propertyAddressPreview = document.getElementById('propertyAddressPreview');
 
+// Scroll to Top Elements
+const logoContainer = document.getElementById('logoContainer');
+const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+// Scroll to Top Function
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Scroll to Top with Animation
+function scrollToTopWithAnimation() {
+    // Add clicking animation class
+    scrollToTopBtn.classList.add('clicking');
+    
+    // Start scrolling
+    scrollToTop();
+    
+    // Remove animation class after animation completes
+    setTimeout(() => {
+        scrollToTopBtn.classList.remove('clicking');
+    }, 600);
+}
+
+// Handle Scroll Event
+function handleScroll() {
+    // Show/hide scroll-to-top button based on scroll position
+    if (window.scrollY > 300) {
+        scrollToTopBtn.classList.add('visible');
+    } else {
+        scrollToTopBtn.classList.remove('visible');
+    }
+}
+
 // Toggle Property Info Function
 function togglePropertyInfo() {
     propertyInfoCard.classList.toggle('collapsed');
@@ -1155,6 +1191,21 @@ function setupEventListeners() {
     if (togglePropertyBtn) {
         togglePropertyBtn.addEventListener('click', togglePropertyInfo);
     }
+    
+    // Scroll to Top
+    if (scrollToTopBtn) {
+        scrollToTopBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            scrollToTopWithAnimation();
+        });
+    }
+    
+    if (logoContainer) {
+        logoContainer.addEventListener('click', scrollToTop);
+    }
+    
+    // Handle scroll events
+    window.addEventListener('scroll', handleScroll);
     
     // Deadline Modal
     closeDeadlineModal.addEventListener('click', () => {
