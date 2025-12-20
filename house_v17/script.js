@@ -369,9 +369,7 @@ let state = {
         inspectionDate: '',
         appointmentTime: '',
         propertyNotes: ''
-    },
-    firstCheckboxDate: null,
-    lastCheckboxChangeDate: null
+    }
 };
 
 // DOM Elements
@@ -599,9 +597,7 @@ function loadState() {
                 inspectionDate: '',
                 appointmentTime: '',
                 propertyNotes: ''
-            },
-            firstCheckboxDate: parsedState.firstCheckboxDate || null,
-            lastCheckboxChangeDate: parsedState.lastCheckboxChangeDate || null
+            }
         };
     }
     
@@ -950,33 +946,10 @@ function shouldShowCategory(category, filter) {
     );
 }
 
-// Update Checkbox Tracking Dates
-function updateCheckboxDates() {
-    const now = new Date().toISOString();
-    
-    // Check if this is the first checkbox action
-    if (!state.firstCheckboxDate) {
-        // Check if any checkbox/issue/request is checked
-        const hasAnyChecked = Object.values(state.checklist).some(v => v) ||
-                             Object.values(state.renovationNeeded).some(v => v) ||
-                             Object.values(state.documentRequests).some(v => v);
-        
-        if (hasAnyChecked) {
-            state.firstCheckboxDate = now;
-        }
-    }
-    
-    // Always update last change date
-    state.lastCheckboxChangeDate = now;
-}
-
 // Handle checkbox change
 function handleCheckboxChange(e) {
     const key = e.target.dataset.key;
     state.checklist[key] = e.target.checked;
-    
-    // Update tracking dates
-    updateCheckboxDates();
     
     // Update text styling
     const textElement = document.getElementById(`text-${key}`);
@@ -995,9 +968,6 @@ function handleRenovationChange(e) {
     const key = e.target.dataset.key;
     state.renovationNeeded[key] = e.target.checked;
     
-    // Update tracking dates
-    updateCheckboxDates();
-    
     // Update text styling
     const textElement = document.getElementById(`text-${key}`);
     if (e.target.checked) {
@@ -1014,9 +984,6 @@ function handleRenovationChange(e) {
 function handleDocumentRequest(e) {
     const key = e.target.dataset.key;
     state.documentRequests[key] = !state.documentRequests[key];
-    
-    // Update tracking dates
-    updateCheckboxDates();
     
     const haveCheckbox = document.getElementById(`item-${key}`);
     
@@ -1421,8 +1388,6 @@ function generateReport() {
         <div class="report-section">
             <h3><i class="fas fa-info-circle"></i> Inspection Summary</h3>
             <p><strong>Report Generated:</strong> ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-            ${state.firstCheckboxDate ? `<p><strong>First Checkbox Date:</strong> ${new Date(state.firstCheckboxDate).toLocaleDateString()} at ${new Date(state.firstCheckboxDate).toLocaleTimeString()}</p>` : ''}
-            ${state.lastCheckboxChangeDate ? `<p><strong>Last Checkbox Change:</strong> ${new Date(state.lastCheckboxChangeDate).toLocaleDateString()} at ${new Date(state.lastCheckboxChangeDate).toLocaleTimeString()}</p>` : ''}
             <p><strong>Progress:</strong> ${checkedCount.textContent} of ${totalCount.textContent} items checked (${percentComplete.textContent})</p>
         </div>
     `;
@@ -1594,9 +1559,7 @@ function resetChecklist() {
                 inspectionDate: today,
                 appointmentTime: '',
                 propertyNotes: ''
-            },
-            firstCheckboxDate: null,
-            lastCheckboxChangeDate: null
+            }
         };
         globalNotesTextarea.value = '';
         propertyAddressInput.value = '';
