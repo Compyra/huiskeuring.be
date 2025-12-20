@@ -274,81 +274,11 @@ body.menu-open {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.property-info-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.property-info-header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.property-address-preview {
-    font-size: 0.95rem;
-    color: var(--text-color);
-    opacity: 0.7;
-    font-weight: 500;
-    max-width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: none;
-}
-
-.property-info-card.collapsed .property-address-preview {
-    display: block;
-}
-
-.toggle-property-btn {
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-color);
-    font-size: 1rem;
-}
-
-.toggle-property-btn:hover {
-    border-color: var(--current-accent);
-    background: var(--bg-color);
-}
-
-.toggle-property-btn i {
-    transition: transform 0.3s ease;
-}
-
-.property-info-card.collapsed .toggle-property-btn i {
-    transform: rotate(180deg);
-}
-
 .property-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
-    max-height: 1000px;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    opacity: 1;
-}
-
-.property-info-card.collapsed .property-info-grid {
-    max-height: 0;
-    opacity: 0;
-    margin-top: 0;
-}
-
-.property-info-card.collapsed .property-info-header {
-    margin-bottom: 0;
+    margin-top: 1.5rem;
 }
 
 .form-group {
@@ -1300,22 +1230,6 @@ body.menu-open {
         grid-template-columns: 1fr;
     }
     
-    .property-info-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .property-info-header-right {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .property-address-preview {
-        max-width: calc(100% - 60px);
-        font-size: 0.85rem;
-    }
-    
     .logo-text {
         font-size: 1.4rem;
     }
@@ -1370,16 +1284,6 @@ body.menu-open {
     
     .property-info-card {
         padding: 1.5rem;
-    }
-    
-    .toggle-property-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-    }
-    
-    .property-address-preview {
-        font-size: 0.8rem;
     }
     
     .header {

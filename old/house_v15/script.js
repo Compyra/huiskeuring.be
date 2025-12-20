@@ -418,43 +418,6 @@ const additionalInfoSection = document.getElementById('additionalInfoSection');
 // Toggle All Button
 const toggleAllBtn = document.getElementById('toggleAllBtn');
 
-// Property Info Toggle Elements
-const togglePropertyBtn = document.getElementById('togglePropertyBtn');
-const propertyInfoCard = document.querySelector('.property-info-card');
-const propertyInfoGrid = document.getElementById('propertyInfoGrid');
-const propertyAddressPreview = document.getElementById('propertyAddressPreview');
-
-// Toggle Property Info Function
-function togglePropertyInfo() {
-    propertyInfoCard.classList.toggle('collapsed');
-    
-    // Save state
-    const isCollapsed = propertyInfoCard.classList.contains('collapsed');
-    localStorage.setItem('propertyInfoCollapsed', isCollapsed);
-    
-    // Update address preview
-    updatePropertyAddressPreview();
-}
-
-// Update Property Address Preview
-function updatePropertyAddressPreview() {
-    const address = propertyAddressInput.value.trim();
-    if (address && propertyInfoCard.classList.contains('collapsed')) {
-        propertyAddressPreview.textContent = address;
-    } else {
-        propertyAddressPreview.textContent = '';
-    }
-}
-
-// Load Property Info Collapsed State
-function loadPropertyInfoState() {
-    const isCollapsed = localStorage.getItem('propertyInfoCollapsed') === 'true';
-    if (isCollapsed) {
-        propertyInfoCard.classList.add('collapsed');
-        updatePropertyAddressPreview();
-    }
-}
-
 // Toggle All Categories Function
 function toggleAllCategories() {
     const categoryHeaders = document.querySelectorAll('.category-header');
@@ -513,7 +476,6 @@ function init() {
     setupEventListeners();
     updateProgress();
     loadTheme();
-    loadPropertyInfoState();
     checkFirstVisit();
 }
 
@@ -1087,7 +1049,6 @@ function setupEventListeners() {
     propertyAddressInput.addEventListener('input', (e) => {
         state.propertyInfo.address = e.target.value;
         saveState();
-        updatePropertyAddressPreview();
     });
     
     contactPersonInput.addEventListener('input', (e) => {
@@ -1150,11 +1111,6 @@ function setupEventListeners() {
     
     // Toggle All Categories
     toggleAllBtn.addEventListener('click', toggleAllCategories);
-    
-    // Toggle Property Info
-    if (togglePropertyBtn) {
-        togglePropertyBtn.addEventListener('click', togglePropertyInfo);
-    }
     
     // Deadline Modal
     closeDeadlineModal.addEventListener('click', () => {
