@@ -122,8 +122,9 @@ body.menu-open {
 }
 
 .scroll-to-top-btn {
-    background: transparent;
+    background: var(--current-accent);
     border: none;
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     display: flex;
@@ -131,20 +132,14 @@ body.menu-open {
     justify-content: center;
     cursor: pointer;
     transition: var(--transition);
-    color: var(--current-accent);
-    font-size: 2rem;
+    color: var(--dark-bg);
+    font-size: 1.1rem;
     margin-left: 10px;
     opacity: 0;
     visibility: hidden;
     transform: scale(0.8);
-    filter: drop-shadow(0 2px 4px rgba(0, 255, 0, 0.4));
+    box-shadow: 0 2px 8px rgba(0, 255, 0, 0.3);
     font-weight: 900;
-    position: relative;
-}
-
-.scroll-to-top-btn i {
-    font-size: 2rem;
-    line-height: 1;
 }
 
 .scroll-to-top-btn.visible {
@@ -154,9 +149,9 @@ body.menu-open {
 }
 
 .scroll-to-top-btn:hover {
-    color: #00ff00;
-    transform: scale(1.2);
-    filter: drop-shadow(0 4px 8px rgba(0, 255, 0, 0.6));
+    background-color: #00cc00;
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.5);
 }
 
 .scroll-to-top-btn:active {
@@ -173,7 +168,7 @@ body.menu-open {
         opacity: 1;
     }
     50% {
-        transform: scale(1.3) translateY(-5px);
+        transform: scale(1.2) translateY(-5px);
         opacity: 0.8;
     }
     100% {
@@ -1399,11 +1394,9 @@ body.menu-open {
     }
     
     .scroll-to-top-btn {
-        font-size: 1.8rem;
-    }
-    
-    .scroll-to-top-btn i {
-        font-size: 1.8rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
     
     .help-modal-logo {
@@ -1426,12 +1419,10 @@ body.menu-open {
     }
     
     .scroll-to-top-btn {
-        font-size: 1.6rem;
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
         margin-left: 8px;
-    }
-    
-    .scroll-to-top-btn i {
-        font-size: 1.6rem;
     }
     
     .help-modal-logo {
@@ -1489,12 +1480,10 @@ body.menu-open {
     }
     
     .scroll-to-top-btn {
-        font-size: 1.4rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
         margin-left: 6px;
-    }
-    
-    .scroll-to-top-btn i {
-        font-size: 1.4rem;
     }
     
     .help-modal-logo {
