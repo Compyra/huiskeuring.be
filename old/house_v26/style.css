@@ -891,15 +891,6 @@ body.compact-mode .compact-note-display {
 }
 
 /* Compact mode: reduce padding on cards */
-body.compact-mode .property-info-section {
-    margin-bottom: 0.5rem;
-}
-
-body.compact-mode .container {
-    width: 98%;
-    padding: 0 5px;
-}
-
 body.compact-mode .property-info-card.collapsed {
     padding: 1rem 2rem;
 }

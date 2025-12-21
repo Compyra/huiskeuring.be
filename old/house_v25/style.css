@@ -890,52 +890,6 @@ body.compact-mode .compact-note-display {
     display: flex;
 }
 
-/* Compact mode: reduce padding on cards */
-body.compact-mode .property-info-section {
-    margin-bottom: 0.5rem;
-}
-
-body.compact-mode .container {
-    width: 98%;
-    padding: 0 5px;
-}
-
-body.compact-mode .property-info-card.collapsed {
-    padding: 1rem 2rem;
-}
-
-body.compact-mode .progress-card {
-    padding: 1rem 1.5rem;
-}
-
-body.compact-mode .category-content {
-    padding-bottom: 15px;
-}
-
-/* Compact mode: property type buttons inline with title */
-body.compact-mode .filter-section {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-body.compact-mode .filter-section .section-title {
-    margin-bottom: 0;
-    flex-shrink: 0;
-}
-
-body.compact-mode .filter-section .property-type-buttons {
-    margin-top: 0;
-    flex-grow: 0;
-}
-
-body.compact-mode .filter-section .filter-divider {
-    flex-basis: 100%;
-    margin: 10px 0;
-}
-
 .compact-note-display .note-text {
     font-style: italic;
     color: var(--secondary-color);
