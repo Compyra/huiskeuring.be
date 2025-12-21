@@ -515,89 +515,6 @@ body.menu-open {
     border-top: 2px solid var(--border-color);
 }
 
-.issue-filter-info {
-    margin-bottom: 15px;
-    padding: 12px 16px;
-    background-color: var(--card-bg);
-    border-left: 4px solid var(--warning-color);
-    border-radius: var(--border-radius);
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.issue-filter-info i {
-    color: var(--warning-color);
-}
-
-.issue-filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    min-height: 50px;
-}
-
-.issue-filter-buttons:empty::before {
-    content: 'No issues toggled yet. Check issue boxes to see filters here.';
-    color: var(--text-secondary);
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 20px;
-}
-
-.issue-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border: 2px solid var(--border-color);
-    background-color: var(--card-bg);
-    color: var(--warning-color);
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.issue-filter-btn .issue-count {
-    background-color: var(--warning-color);
-    color: var(--warning-color);
-    border-radius: 12px;
-    padding: 2px 8px;
-    font-size: 0.8em;
-    font-weight: 700;
-    margin-left: 4px;
-}
-
-.issue-filter-btn:hover {
-    border-color: var(--warning-color);
-    background-color: rgba(255, 193, 7, 0.1);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
-}
-
-.issue-filter-btn.active {
-    background-color: var(--warning-color);
-    /* color: var(--dark-bg); */
-    border-color: var(--warning-color);
-    border-width: 3px;
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3), 0 4px 12px rgba(255, 193, 7, 0.4);
-}
-
-.issue-filter-btn.active .issue-count {
-    background-color: var(--card-bg);
-    color: var(--warning-color);
-    font-weight: 700;
-    border: 1px solid var(--warning-color);
-}
-
 .filter-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -618,6 +535,28 @@ body.menu-open {
     transition: var(--transition);
     font-size: 0.95rem;
     font-weight: 500;
+}
+
+.filter-btn.renovation-filter {
+    border-color: #ff9800;
+    color: #ff9800;
+    display: none;
+}
+
+.filter-btn.renovation-filter.visible {
+    display: inline-flex;
+}
+
+.filter-btn.renovation-filter:hover {
+    border-color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.filter-btn.renovation-filter.active {
+    background-color: #ff9800;
+    color: white;
+    border-color: #ff9800;
 }
 
 .filter-btn:hover {

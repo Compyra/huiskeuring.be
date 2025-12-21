@@ -40,12 +40,12 @@ const checklistData = [
         title: 'Documents & Certificates (Belgium)',
         icon: 'fa-file-contract',
         items: [
-            { text: 'Request EPC (Energy Performance Certificate) - mandatory for sale', tags: ['documents'], deadline: 'epc' },
-            { text: 'Check asbestos certificate (verplicht asbest-attest)', tags: ['documents', 'asbestos'], deadline: 'asbestos' },
+            { text: 'Request EPC (Energy Performance Certificate) - mandatory for sale', tags: ['documents', 'renovation'], deadline: 'epc' },
+            { text: 'Check asbestos certificate (verplicht asbest-attest)', tags: ['documents', 'asbestos', 'renovation'], deadline: 'asbestos' },
             { text: 'Verify electrical installation certificate (keuring elektrische installatie) - max 25 years old', tags: ['documents', 'electrical'], deadline: 'electrical' },
             { text: 'Check soil certificate (bodematttest) if applicable', tags: ['documents'] },
             { text: 'Review conformity certificate for heating/boiler (stookkeuring)', tags: ['documents', 'hvac'] },
-            { text: 'Verify building permit for renovations (bouwvergunning)', tags: ['documents'] },
+            { text: 'Verify building permit for renovations (bouwvergunning)', tags: ['documents', 'renovation'] },
             { text: 'Check urban planning certificate (stedenbouwkundig attest)', tags: ['documents'] },
             { text: 'Request connection certificate for sewage (aansluiting riolering)', tags: ['documents', 'plumbing'] },
             { text: 'Review property cadastral information', tags: ['documents'] },
@@ -57,15 +57,15 @@ const checklistData = [
         title: 'Asbestos Detection (Asbest)',
         icon: 'fa-exclamation-triangle',
         items: [
-            { text: 'Check roof for asbestos (golfplaten/eterniet)', tags: ['asbestos', 'exterior'] },
-            { text: 'Inspect ceiling panels for asbestos (especially pre-2001)', tags: ['asbestos', 'structural'] },
-            { text: 'Check old floor tiles (vloertegels) for asbestos', tags: ['asbestos'] },
-            { text: 'Inspect insulation materials around pipes', tags: ['asbestos', 'plumbing'] },
-            { text: 'Check window frames/sills (vensterbanken) for asbestos cement', tags: ['asbestos', 'exterior'] },
-            { text: 'Inspect old electrical panels/boxes for asbestos backing', tags: ['asbestos', 'electrical'] },
+            { text: 'Check roof for asbestos (golfplaten/eterniet)', tags: ['asbestos', 'exterior', 'renovation'] },
+            { text: 'Inspect ceiling panels for asbestos (especially pre-2001)', tags: ['asbestos', 'structural', 'renovation'] },
+            { text: 'Check old floor tiles (vloertegels) for asbestos', tags: ['asbestos', 'renovation'] },
+            { text: 'Inspect insulation materials around pipes', tags: ['asbestos', 'plumbing', 'renovation'] },
+            { text: 'Check window frames/sills (vensterbanken) for asbestos cement', tags: ['asbestos', 'exterior', 'renovation'] },
+            { text: 'Inspect old electrical panels/boxes for asbestos backing', tags: ['asbestos', 'electrical', 'renovation'] },
             { text: 'Check garage/shed roofing materials', tags: ['asbestos', 'exterior'] },
-            { text: 'Verify removal plan if asbestos found - requires certified company', tags: ['asbestos'] },
-            { text: 'Budget for asbestos removal (can be €20-100/m²)', tags: ['asbestos'] }
+            { text: 'Verify removal plan if asbestos found - requires certified company', tags: ['asbestos', 'renovation'] },
+            { text: 'Budget for asbestos removal (can be €20-100/m²)', tags: ['asbestos', 'renovation'] }
         ]
     },
     {
@@ -73,18 +73,18 @@ const checklistData = [
         title: 'Exterior Inspection',
         icon: 'fa-building',
         items: [
-            { text: 'Check flat roof (plat dak) condition - very common in Belgium', tags: ['structural', 'exterior'] },
-            { text: 'Inspect EPDM or bitumen roofing membrane condition', tags: ['exterior'] },
-            { text: 'Check lichtkoepels (roof domes/skylights) - verify minimum 15cm height above insulation', tags: ['exterior'] },
+            { text: 'Check flat roof (plat dak) condition - very common in Belgium', tags: ['structural', 'exterior', 'renovation'] },
+            { text: 'Inspect EPDM or bitumen roofing membrane condition', tags: ['exterior', 'renovation'] },
+            { text: 'Check lichtkoepels (roof domes/skylights) - verify minimum 15cm height above insulation', tags: ['exterior', 'renovation'] },
             { text: 'Verify flat roof drainage (waterafvoer) - no standing water', tags: ['exterior', 'plumbing'] },
-            { text: 'Check if doors to flat roof need height adjustment for external insulation', tags: ['exterior'] },
+            { text: 'Check if doors to flat roof need height adjustment for external insulation', tags: ['exterior', 'renovation'] },
             { text: 'Inspect gevel (facade) for cracks or damage', tags: ['structural', 'exterior'] },
             { text: 'Check voegwerk (mortar joints) condition', tags: ['exterior', 'structural'] },
             { text: 'Inspect goten en regenpijpen (gutters and downspouts)', tags: ['exterior', 'plumbing'] },
             { text: 'Examine buitenmuren for moisture or saltpeter (salpeter)', tags: ['structural', 'exterior'] },
-            { text: 'Check windows and doors (PVC, wood, aluminum) for sealing', tags: ['exterior'] },
-            { text: 'Verify double or triple glazing (dubbel/driedubbel glas)', tags: ['exterior'], info: 'glazing' },
-            { text: 'Inspect for cavity wall insulation (spouwmuurisolatie)', tags: ['exterior'] },
+            { text: 'Check windows and doors (PVC, wood, aluminum) for sealing', tags: ['exterior', 'renovation'] },
+            { text: 'Verify double or triple glazing (dubbel/driedubbel glas)', tags: ['exterior', 'renovation'], info: 'glazing' },
+            { text: 'Inspect for cavity wall insulation (spouwmuurisolatie)', tags: ['exterior', 'renovation'] },
             { text: 'Check foundation for cracks or water damage', tags: ['structural', 'exterior', 'basement'] },
             { text: 'Inspect bricks (baksteen) for frost damage (vorstschade)', tags: ['exterior', 'structural'] },
             { text: 'Check for adequate drainage around foundation', tags: ['exterior', 'plumbing'] },
@@ -102,13 +102,13 @@ const checklistData = [
             { text: 'Verify kitchen electrical circuit is separate 20A minimum', tags: ['kitchen', 'electrical'] },
             { text: 'Check keukenblad (countertop) material and condition', tags: ['kitchen'] },
             { text: 'Inspect under sink for leaks or water damage', tags: ['kitchen', 'plumbing'] },
-            { text: 'Verify adequate ventilation (afzuigkap/dampkap)', tags: ['kitchen', 'hvac'] },
-            { text: 'Check if ventilation exhausts outside (not recirculation)', tags: ['kitchen', 'hvac'] },
+            { text: 'Verify adequate ventilation (afzuigkap/dampkap)', tags: ['kitchen', 'hvac', 'renovation'] },
+            { text: 'Check if ventilation exhausts outside (not recirculation)', tags: ['kitchen', 'hvac', 'renovation'] },
             { text: 'Test all electrical outlets - need splashproof near sink', tags: ['kitchen', 'electrical'] },
             { text: 'Check tegels (tiles) condition - floor and wall', tags: ['kitchen'] },
             { text: 'Inspect cabinet (keukenkasten) condition and hardware', tags: ['kitchen'] },
             { text: 'Verify adequate lighting above work surfaces', tags: ['kitchen', 'electrical'] },
-            { text: 'Check floor for waterproofing under washing machine location', tags: ['kitchen', 'plumbing'] },
+            { text: 'Check floor for waterproofing under washing machine location', tags: ['kitchen', 'plumbing', 'renovation'] },
             { text: 'Inspect aanrecht (sink) and kraan (faucet) operation', tags: ['kitchen', 'plumbing'] }
         ]
     },
@@ -119,17 +119,17 @@ const checklistData = [
         items: [
             { text: 'Test toilet (WC) flush and check for leaks', tags: ['bathroom', 'plumbing'] },
             { text: 'Check douche (shower) water pressure and temperature', tags: ['bathroom', 'plumbing'] },
-            { text: 'Inspect shower drainage - Belgian standard 50mm minimum', tags: ['bathroom', 'plumbing'] },
-            { text: 'Verify waterproofing (waterdichte laag) under tiles', tags: ['bathroom'] },
-            { text: 'Check for mechanical ventilation (type C/D) - required in new builds', tags: ['bathroom', 'hvac'] },
+            { text: 'Inspect shower drainage - Belgian standard 50mm minimum', tags: ['bathroom', 'plumbing', 'renovation'] },
+            { text: 'Verify waterproofing (waterdichte laag) under tiles', tags: ['bathroom', 'renovation'] },
+            { text: 'Check for mechanical ventilation (type C/D) - required in new builds', tags: ['bathroom', 'hvac', 'renovation'] },
             { text: 'Inspect tegels (tiles) and voegen (grout) condition', tags: ['bathroom'] },
             { text: 'Test wastafel (sink) and kraan (faucet)', tags: ['bathroom', 'plumbing'] },
             { text: 'Verify electrical outlets are outside wet zones', tags: ['bathroom', 'electrical'] },
             { text: 'Check for adequate lighting (IP44 rating near shower)', tags: ['bathroom', 'electrical'] },
-            { text: 'Inspect vloer (floor) for proper slope to drain', tags: ['bathroom'] },
+            { text: 'Inspect vloer (floor) for proper slope to drain', tags: ['bathroom', 'renovation'] },
             { text: 'Look for schimmel (mold) or moisture damage', tags: ['bathroom', 'plumbing'] },
             { text: 'Check heated towel rail (handdoekdroger) operation if present', tags: ['bathroom', 'hvac', 'electrical'] },
-            { text: 'Verify afvoer (drain) pipes are accessible for maintenance', tags: ['bathroom', 'plumbing'] }
+            { text: 'Verify afvoer (drain) pipes are accessible for maintenance', tags: ['bathroom', 'plumbing', 'renovation'] }
         ]
     },
     {
@@ -171,18 +171,18 @@ const checklistData = [
         title: 'Basement/Cellar Inspection (Kelder)',
         icon: 'fa-dungeon',
         items: [
-            { text: 'Check for vocht (moisture) or water infiltration', tags: ['basement', 'plumbing', 'structural'] },
+            { text: 'Check for vocht (moisture) or water infiltration', tags: ['basement', 'plumbing', 'structural', 'renovation'] },
             { text: 'Inspect for witte uitslag (saltpeter/efflorescence) on walls', tags: ['basement', 'structural'] },
             { text: 'Check kelderlucht (cellar smell) - indicates moisture issues', tags: ['basement'] },
-            { text: 'Verify if basement is geschikt voor bewoning (suitable for living)', tags: ['basement'] },
-            { text: 'Check ceiling height - minimum 2.3m for habitable room', tags: ['basement'] },
+            { text: 'Verify if basement is geschikt voor bewoning (suitable for living)', tags: ['basement', 'renovation'] },
+            { text: 'Check ceiling height - minimum 2.3m for habitable room', tags: ['basement', 'renovation'] },
             { text: 'Inspect foundation walls for cracks or bowing', tags: ['basement', 'structural'] },
-            { text: 'Check if walls need waterproofing (kelderafdichting)', tags: ['basement'] },
-            { text: 'Verify drainage system (drainage/afvoer)', tags: ['basement', 'plumbing'] },
+            { text: 'Check if walls need waterproofing (kelderafdichting)', tags: ['basement', 'renovation'] },
+            { text: 'Verify drainage system (drainage/afvoer)', tags: ['basement', 'plumbing', 'renovation'] },
             { text: 'Look for schimmel (mold) or mildew', tags: ['basement'] },
-            { text: 'Check insulation if basement is heated', tags: ['basement', 'hvac'] },
-            { text: 'Inspect floor - check if concrete needs sealing', tags: ['basement'] },
-            { text: 'Verify ventilation requirements for habitable space', tags: ['basement', 'hvac'] },
+            { text: 'Check insulation if basement is heated', tags: ['basement', 'hvac', 'renovation'] },
+            { text: 'Inspect floor - check if concrete needs sealing', tags: ['basement', 'renovation'] },
+            { text: 'Verify ventilation requirements for habitable space', tags: ['basement', 'hvac', 'renovation'] },
             { text: 'Check stookplaats (boiler room) accessibility and ventilation', tags: ['basement', 'hvac'] },
             { text: 'Verify electrical installation meets current standards', tags: ['basement', 'electrical'] }
         ]
@@ -192,18 +192,18 @@ const checklistData = [
         title: 'Attic/Roof Space Inspection (Zolder)',
         icon: 'fa-house-damage',
         items: [
-            { text: 'Check dakisolatie (roof insulation) - minimum R-value 6.0 (new builds)', tags: ['attic', 'hvac'] },
-            { text: 'Verify insulation thickness - typically 20-30cm needed', tags: ['attic'] },
-            { text: 'Check if zolder can be converted to living space (dakopbouw potential)', tags: ['attic'] },
-            { text: 'Verify floor joists can support living space load', tags: ['attic', 'structural'] },
+            { text: 'Check dakisolatie (roof insulation) - minimum R-value 6.0 (new builds)', tags: ['attic', 'hvac', 'renovation'] },
+            { text: 'Verify insulation thickness - typically 20-30cm needed', tags: ['attic', 'renovation'] },
+            { text: 'Check if zolder can be converted to living space (dakopbouw potential)', tags: ['attic', 'renovation'] },
+            { text: 'Verify floor joists can support living space load', tags: ['attic', 'structural', 'renovation'] },
             { text: 'Inspect for roof leaks or waterinfiltratie', tags: ['attic', 'structural'] },
-            { text: 'Check ventilation - need air circulation to prevent condensation', tags: ['attic', 'hvac'] },
+            { text: 'Check ventilation - need air circulation to prevent condensation', tags: ['attic', 'hvac', 'renovation'] },
             { text: 'Inspect dakstructuur (roof structure/rafters) for sagging', tags: ['attic', 'structural'] },
             { text: 'Look for signs of houtworm (woodworm) or rot', tags: ['attic', 'structural'] },
-            { text: 'Check electrical wiring - often old and needs replacement', tags: ['attic', 'electrical'] },
+            { text: 'Check electrical wiring - often old and needs replacement', tags: ['attic', 'electrical', 'renovation'] },
             { text: 'Verify chimney condition from inside', tags: ['attic', 'structural'] },
-            { text: 'Check if velux/dakramen (roof windows) can be added', tags: ['attic'] },
-            { text: 'Verify headroom (stahoogte) - min 2.1m for 50% of floor for habitable space', tags: ['attic'] }
+            { text: 'Check if velux/dakramen (roof windows) can be added', tags: ['attic', 'renovation'] },
+            { text: 'Verify headroom (stahoogte) - min 2.1m for 50% of floor for habitable space', tags: ['attic', 'renovation'] }
         ]
     },
     {
@@ -213,15 +213,15 @@ const checklistData = [
         items: [
             { text: 'Check hoofdkraan (main water shut-off valve) location and operation', tags: ['plumbing'] },
             { text: 'Test waterdruk (water pressure) - should be 2-4 bar', tags: ['plumbing', 'kitchen', 'bathroom'] },
-            { text: 'Inspect leidingen (pipes) - lead pipes must be replaced', tags: ['plumbing'] },
+            { text: 'Inspect leidingen (pipes) - lead pipes must be replaced', tags: ['plumbing', 'renovation'] },
             { text: 'Check if copper or PVC piping used', tags: ['plumbing'] },
             { text: 'Verify boiler (water heater) age and capacity - 10-15 year lifespan', tags: ['plumbing', 'basement'] },
-            { text: 'Check if condensatieketel (condensing boiler) installed', tags: ['plumbing', 'hvac'] },
+            { text: 'Check if condensatieketel (condensing boiler) installed', tags: ['plumbing', 'hvac', 'renovation'] },
             { text: 'Test warm water recovery time and temperature', tags: ['plumbing'] },
             { text: 'Inspect riolering (sewer/drainage) connection and certificate', tags: ['plumbing'] },
-            { text: 'Check for gescheiden rioleringsstelsel (separate sewage system)', tags: ['plumbing'] },
+            { text: 'Check for gescheiden rioleringsstelsel (separate sewage system)', tags: ['plumbing', 'renovation'] },
             { text: 'Verify regenwater afvoer (rainwater drainage) separate from sewage', tags: ['plumbing', 'exterior'] },
-            { text: 'Check for proper drainage slopes in all pipes', tags: ['plumbing'] },
+            { text: 'Check for proper drainage slopes in all pipes', tags: ['plumbing', 'renovation'] },
             { text: 'Look for water stains (vochtplekken) on walls and ceilings', tags: ['plumbing', 'structural'] },
             { text: 'Test all kranen (faucets) for leaks and operation', tags: ['plumbing'] },
             { text: 'Check waterkwaliteit (water quality) - especially in older homes', tags: ['plumbing'] },
@@ -235,13 +235,13 @@ const checklistData = [
         items: [
             { text: 'Verify elektrische keuring (electrical inspection) is valid - required every 25 years', tags: ['electrical', 'documents'], deadline: 'electrical' },
             { text: 'Inspect verdeelkast (electrical panel/fuse box)', tags: ['electrical', 'basement'] },
-            { text: 'Check if zekeringkast meets current standards (min 40A, prefer 63A+)', tags: ['electrical'] },
+            { text: 'Check if zekeringkast meets current standards (min 40A, prefer 63A+)', tags: ['electrical', 'renovation'] },
             { text: 'Verify aardlekschakelaar (earth leakage circuit breaker/differentieelschakelaar) 300mA', tags: ['electrical'] },
             { text: 'Check for 30mA aardlek in wet rooms (bathroom, kitchen)', tags: ['electrical', 'bathroom', 'kitchen'] },
             { text: 'Test all stopcontacten (outlets) - need grounding (geaard)', tags: ['electrical'] },
-            { text: 'Verify adequate aantal stopcontacten per room (min. 5 per living room)', tags: ['electrical'] },
-            { text: 'Check if old two-prong outlets need replacing', tags: ['electrical'] },
-            { text: 'Inspect visible bedrading (wiring) - no cloth-covered old wires', tags: ['electrical'] },
+            { text: 'Verify adequate aantal stopcontacten per room (min. 5 per living room)', tags: ['electrical', 'renovation'] },
+            { text: 'Check if old two-prong outlets need replacing', tags: ['electrical', 'renovation'] },
+            { text: 'Inspect visible bedrading (wiring) - no cloth-covered old wires', tags: ['electrical', 'renovation'] },
             { text: 'Test all lichtschakelaars (light switches)', tags: ['electrical'] },
             { text: 'Check deurbel (doorbell) operation', tags: ['electrical'] },
             { text: 'Verify rookmelders (smoke detectors) - mandatory in all bedrooms + hallway', tags: ['electrical'] },
@@ -257,20 +257,20 @@ const checklistData = [
         items: [
             { text: 'Check muren (walls) for scheuren (cracks) or bowing', tags: ['structural'] },
             { text: 'Inspect for scheurvorming around windows/doors - settlement indicator', tags: ['structural'] },
-            { text: 'Verify if walls are dragende muren (load-bearing) - critical for renovations', tags: ['structural'] },
-            { text: 'Check if removal of walls requires structural engineer (stabiliteitsingenieur)', tags: ['structural'] },
+            { text: 'Verify if walls are dragende muren (load-bearing) - critical for renovations', tags: ['structural', 'renovation'] },
+            { text: 'Check if removal of walls requires structural engineer (stabiliteitsingenieur)', tags: ['structural', 'renovation'] },
             { text: 'Inspect vloeren (floors) for levelness and squeaks', tags: ['structural'] },
-            { text: 'Verify floor load capacity for planned use', tags: ['structural'] },
+            { text: 'Verify floor load capacity for planned use', tags: ['structural', 'renovation'] },
             { text: 'Check houten balken (wooden beams) for rot or woodworm', tags: ['structural'] },
             { text: 'Inspect plafonds (ceilings) for cracks or sagging', tags: ['structural'] },
-            { text: 'Check if plafond hoogte (ceiling height) meets standards - min 2.3m living space', tags: ['structural'] },
+            { text: 'Check if plafond hoogte (ceiling height) meets standards - min 2.3m living space', tags: ['structural', 'renovation'] },
             { text: 'Verify deurkozijnen (door frames) for squareness', tags: ['structural'] },
             { text: 'Inspect trap (stairs) and leuningen (railings) for stability', tags: ['structural'] },
-            { text: 'Check staircase dimensions meet Belgian standards (rise max 21cm)', tags: ['structural'] },
+            { text: 'Check staircase dimensions meet Belgian standards (rise max 21cm)', tags: ['structural', 'renovation'] },
             { text: 'Look for signs of verzakking (settlement) - cracks, uneven floors', tags: ['structural', 'basement'] },
             { text: 'Inspect fundering (foundation) type and condition', tags: ['structural', 'basement'] },
             { text: 'Check basement steunbalken (support beams) and palen (posts)', tags: ['structural', 'basement'] },
-            { text: 'Verify if funderingsherstel (foundation repair) needed', tags: ['structural'] }
+            { text: 'Verify if funderingsherstel (foundation repair) needed', tags: ['structural', 'renovation'] }
         ]
     },
     {
@@ -279,15 +279,15 @@ const checklistData = [
         icon: 'fa-fan',
         items: [
             { text: 'Check verwarmingsketel (heating boiler) age and condition - 15-20 year lifespan', tags: ['hvac', 'basement'] },
-            { text: 'Verify if condensatieketel (condensing boiler) - more efficient', tags: ['hvac'] },
-            { text: 'Check mazoutketel (oil boiler) vs gas - conversion costs', tags: ['hvac'] },
-            { text: 'Inspect warmtepomp (heat pump) if present - modern alternative', tags: ['hvac'] },
+            { text: 'Verify if condensatieketel (condensing boiler) - more efficient', tags: ['hvac', 'renovation'] },
+            { text: 'Check mazoutketel (oil boiler) vs gas - conversion costs', tags: ['hvac', 'renovation'] },
+            { text: 'Inspect warmtepomp (heat pump) if present - modern alternative', tags: ['hvac', 'renovation'] },
             { text: 'Test verwarmingssysteem (heating system) operation', tags: ['hvac'] },
             { text: 'Check radiatoren (radiators) condition and sizing', tags: ['hvac'] },
-            { text: 'Verify if vloerverwarming (underfloor heating) installed', tags: ['hvac'] },
+            { text: 'Verify if vloerverwarming (underfloor heating) installed', tags: ['hvac', 'renovation'] },
             { text: 'Inspect stookkeuring (boiler inspection) certificate - required every 2-5 years', tags: ['hvac', 'documents'] },
-            { text: 'Check ventilatie systeem (ventilation) - type C or D required in new builds', tags: ['hvac'] },
-            { text: 'Verify mechanical ventilation (VMC/WTW) present and operational', tags: ['hvac'] },
+            { text: 'Check ventilatie systeem (ventilation) - type C or D required in new builds', tags: ['hvac', 'renovation'] },
+            { text: 'Verify mechanical ventilation (VMC/WTW) present and operational', tags: ['hvac', 'renovation'] },
             { text: 'Inspect ventilatieroosters (ventilation grills) in all rooms', tags: ['hvac'] },
             { text: 'Check airco (air conditioning) if present - not common in Belgium', tags: ['hvac'] },
             { text: 'Verify thermostaat (thermostat) operation and programmability', tags: ['hvac', 'electrical'] },
@@ -301,31 +301,31 @@ const checklistData = [
         title: 'Renovation Potential & Checks (Renovatie)',
         icon: 'fa-tools',
         items: [
-            { text: 'Check if bouwvergunning (building permit) required for planned changes', tags: ['documents'] },
-            { text: 'Verify plat dak isolatie (flat roof insulation) feasibility - external vs internal', tags: ['exterior'] },
-            { text: 'Check if exterior insulation affects door heights - may need deurverhogen', tags: ['exterior'] },
-            { text: 'Verify lichtkoepel verhogen needed (15cm minimum above insulation)', tags: ['exterior'] },
-            { text: 'Check if dorpel (threshold) height changes affect accessibility', tags: [] },
-            { text: 'Assess gevelisolatie (facade insulation) potential - external, internal, or cavity', tags: ['exterior'] },
-            { text: 'Check if cavity wall is suitable for spouwmuurisolatie', tags: ['exterior'] },
-            { text: 'Verify if walls are thick enough for internal insulation without losing space', tags: [] },
-            { text: 'Check vloerisolatie (floor insulation) feasibility - may affect ceiling height', tags: ['basement'] },
-            { text: 'Verify kruipruimte (crawl space) accessibility for insulation', tags: ['basement'] },
-            { text: 'Check if ramen vervangen (window replacement) needed for better EPC', tags: ['exterior'] },
-            { text: 'Assess potential for zolderverbouwing (attic conversion)', tags: ['attic'] },
-            { text: 'Check if dakopbouw (roof extension) is permitted', tags: ['attic', 'documents'] },
-            { text: 'Verify if kelderverbouwing (basement conversion) is feasible', tags: ['basement'] },
-            { text: 'Check if aanbouw (extension) is possible within plot boundaries', tags: ['exterior', 'documents'] },
-            { text: 'Assess badkamerrenovatie (bathroom renovation) complexity', tags: ['bathroom'] },
-            { text: 'Check if keukenrenovatie (kitchen renovation) needs plumbing relocation', tags: ['kitchen'] },
-            { text: 'Verify if loodgieterwerk (plumbing) replacement needed', tags: ['plumbing'] },
-            { text: 'Check if volledige herkabeling (complete rewiring) required', tags: ['electrical'] },
-            { text: 'Assess gevelsteen renovatie (brick facade renovation) needs', tags: ['exterior'] },
-            { text: 'Check if voegwerk herstellen (repointing) is needed - budget €40-80/m²', tags: ['exterior'] },
-            { text: 'Verify if schouwen/chimney can be removed or must be preserved', tags: ['structural'] },
-            { text: 'Check potential for zonnepanelen (solar panels) installation', tags: ['exterior', 'electrical'] },
-            { text: 'Verify south-facing roof suitability for solar panels', tags: ['exterior'] },
-            { text: 'Assess budget for asbestsanering (asbestos removal) if needed', tags: ['asbestos'] }
+            { text: 'Check if bouwvergunning (building permit) required for planned changes', tags: ['renovation', 'documents'] },
+            { text: 'Verify plat dak isolatie (flat roof insulation) feasibility - external vs internal', tags: ['renovation', 'exterior'] },
+            { text: 'Check if exterior insulation affects door heights - may need deurverhogen', tags: ['renovation', 'exterior'] },
+            { text: 'Verify lichtkoepel verhogen needed (15cm minimum above insulation)', tags: ['renovation', 'exterior'] },
+            { text: 'Check if dorpel (threshold) height changes affect accessibility', tags: ['renovation'] },
+            { text: 'Assess gevelisolatie (facade insulation) potential - external, internal, or cavity', tags: ['renovation', 'exterior'] },
+            { text: 'Check if cavity wall is suitable for spouwmuurisolatie', tags: ['renovation', 'exterior'] },
+            { text: 'Verify if walls are thick enough for internal insulation without losing space', tags: ['renovation'] },
+            { text: 'Check vloerisolatie (floor insulation) feasibility - may affect ceiling height', tags: ['renovation', 'basement'] },
+            { text: 'Verify kruipruimte (crawl space) accessibility for insulation', tags: ['renovation', 'basement'] },
+            { text: 'Check if ramen vervangen (window replacement) needed for better EPC', tags: ['renovation', 'exterior'] },
+            { text: 'Assess potential for zolderverbouwing (attic conversion)', tags: ['renovation', 'attic'] },
+            { text: 'Check if dakopbouw (roof extension) is permitted', tags: ['renovation', 'attic', 'documents'] },
+            { text: 'Verify if kelderverbouwing (basement conversion) is feasible', tags: ['renovation', 'basement'] },
+            { text: 'Check if aanbouw (extension) is possible within plot boundaries', tags: ['renovation', 'exterior', 'documents'] },
+            { text: 'Assess badkamerrenovatie (bathroom renovation) complexity', tags: ['renovation', 'bathroom'] },
+            { text: 'Check if keukenrenovatie (kitchen renovation) needs plumbing relocation', tags: ['renovation', 'kitchen'] },
+            { text: 'Verify if loodgieterwerk (plumbing) replacement needed', tags: ['renovation', 'plumbing'] },
+            { text: 'Check if volledige herkabeling (complete rewiring) required', tags: ['renovation', 'electrical'] },
+            { text: 'Assess gevelsteen renovatie (brick facade renovation) needs', tags: ['renovation', 'exterior'] },
+            { text: 'Check if voegwerk herstellen (repointing) is needed - budget €40-80/m²', tags: ['renovation', 'exterior'] },
+            { text: 'Verify if schouwen/chimney can be removed or must be preserved', tags: ['renovation', 'structural'] },
+            { text: 'Check potential for zonnepanelen (solar panels) installation', tags: ['renovation', 'exterior', 'electrical'] },
+            { text: 'Verify south-facing roof suitability for solar panels', tags: ['renovation', 'exterior'] },
+            { text: 'Assess budget for asbestsanering (asbestos removal) if needed', tags: ['renovation', 'asbestos'] }
         ]
     },
     {
@@ -337,7 +337,7 @@ const checklistData = [
             { text: 'Check recent algemene vergadering verslagen (general assembly minutes)', tags: ['apartment', 'documents'] },
             { text: 'Review gemeenschappelijke kosten (common charges) amount and inclusions', tags: ['apartment', 'documents'] },
             { text: 'Verify reservefonds (reserve fund) amount - should be healthy', tags: ['apartment', 'documents'] },
-            { text: 'Check for planned grote werken (major works) in building', tags: ['apartment'] },
+            { text: 'Check for planned grote werken (major works) in building', tags: ['apartment', 'renovation'] },
             { text: 'Verify lift (elevator) age and maintenance schedule', tags: ['apartment'] },
             { text: 'Check if lift keuring (elevator inspection) is up to date', tags: ['apartment', 'documents'] },
             { text: 'Inspect gemeenschappelijke delen (common areas) condition', tags: ['apartment'] },
@@ -614,6 +614,7 @@ function init() {
     loadPropertyInfoState();
     loadCompactModeState();
     loadShowUncheckedState();
+    updateRenovationFiltersVisibility();
     checkFirstVisit();
 }
 
@@ -868,101 +869,24 @@ function renderChecklist() {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'checklist-item';
 
-            // Determine renovation subcategory based on tags and content
-            // Every item should have a renovation category so it appears when issues are selected
+            // Determine renovation subcategory based on tags
             let renovationSubcategory = '';
-            
-            // Priority 1: Check for insulation-related items
-            if ((item.tags.some(t => ['attic', 'basement', 'exterior', 'hvac'].includes(t)) &&
-                (item.text.toLowerCase().includes('isolatie') || 
-                 item.text.toLowerCase().includes('insulation') ||
-                 item.text.toLowerCase().includes('isoleren'))) ||
-                item.text.toLowerCase().includes('spouwmuurisolatie') ||
-                item.text.toLowerCase().includes('vloerisolatie') ||
-                item.text.toLowerCase().includes('dakisolatie')) {
-                renovationSubcategory = 'renovation-insulation';
+            if (item.tags.includes('renovation')) {
+                if (item.tags.some(t => ['attic', 'basement', 'exterior'].includes(t)) &&
+                    (item.text.includes('isolatie') || item.text.includes('insulation'))) {
+                    renovationSubcategory = 'renovation-insulation';
+                } else if (item.text.includes('plat dak') || item.text.includes('lichtkoepel') || item.text.includes('roof')) {
+                    renovationSubcategory = 'renovation-roofing';
+                } else if (item.tags.includes('plumbing') || item.text.includes('plumbing') || item.text.includes('loodgieter')) {
+                    renovationSubcategory = 'renovation-plumbing';
+                } else if (item.tags.includes('electrical') || item.text.includes('electrical') || item.text.includes('bedrading') || item.text.includes('herkabeling')) {
+                    renovationSubcategory = 'renovation-electrical';
+                } else if (item.tags.includes('structural') || item.text.includes('structural') || item.text.includes('muren') || item.text.includes('fundering')) {
+                    renovationSubcategory = 'renovation-structural';
+                } else if (item.text.includes('verbouwing') || item.text.includes('conversion') || item.text.includes('dakopbouw') || item.text.includes('aanbouw')) {
+                    renovationSubcategory = 'renovation-conversion';
+                }
             }
-            // Priority 2: Check for roofing-related items
-            else if (item.text.toLowerCase().includes('plat dak') || 
-                     item.text.toLowerCase().includes('lichtkoepel') || 
-                     item.text.toLowerCase().includes('roof') ||
-                     item.text.toLowerCase().includes('dakstructuur') ||
-                     item.text.toLowerCase().includes('epdm') ||
-                     item.text.toLowerCase().includes('bitumen') ||
-                     item.text.toLowerCase().includes('velux') ||
-                     item.text.toLowerCase().includes('dakramen')) {
-                renovationSubcategory = 'renovation-roofing';
-            }
-            // Priority 3: Check for plumbing-related items
-            else if (item.tags.includes('plumbing') || 
-                     item.text.toLowerCase().includes('plumbing') || 
-                     item.text.toLowerCase().includes('loodgieter') ||
-                     item.text.toLowerCase().includes('sanitair') ||
-                     item.text.toLowerCase().includes('waterdruk') ||
-                     item.text.toLowerCase().includes('leidingen') ||
-                     item.text.toLowerCase().includes('boiler') ||
-                     item.text.toLowerCase().includes('waterafvoer') ||
-                     item.text.toLowerCase().includes('drainage') ||
-                     item.text.toLowerCase().includes('riolering') ||
-                     item.text.toLowerCase().includes('afvoer')) {
-                renovationSubcategory = 'renovation-plumbing';
-            }
-            // Priority 4: Check for electrical-related items
-            else if (item.tags.includes('electrical') || 
-                     item.text.toLowerCase().includes('electrical') || 
-                     item.text.toLowerCase().includes('bedrading') || 
-                     item.text.toLowerCase().includes('herkabeling') ||
-                     item.text.toLowerCase().includes('elektr') ||
-                     item.text.toLowerCase().includes('stopcontact') ||
-                     item.text.toLowerCase().includes('verdeelkast') ||
-                     item.text.toLowerCase().includes('zekeringkast') ||
-                     item.text.toLowerCase().includes('aardlek') ||
-                     item.text.toLowerCase().includes('lichtschakelaar') ||
-                     item.text.toLowerCase().includes('rookmelder')) {
-                renovationSubcategory = 'renovation-electrical';
-            }
-            // Priority 5: Check for structural-related items
-            else if (item.tags.includes('structural') || 
-                     item.text.toLowerCase().includes('structural') || 
-                     item.text.toLowerCase().includes('muren') || 
-                     item.text.toLowerCase().includes('fundering') ||
-                     item.text.toLowerCase().includes('scheuren') ||
-                     item.text.toLowerCase().includes('dragende') ||
-                     item.text.toLowerCase().includes('stabiliteitsingenieur') ||
-                     item.text.toLowerCase().includes('verzakking') ||
-                     item.text.toLowerCase().includes('balken') ||
-                     item.text.toLowerCase().includes('vloeren') ||
-                     item.text.toLowerCase().includes('plafond')) {
-                renovationSubcategory = 'renovation-structural';
-            }
-            // Priority 6: Check for conversion/extension-related items
-            else if (item.text.toLowerCase().includes('verbouwing') || 
-                     item.text.toLowerCase().includes('conversion') || 
-                     item.text.toLowerCase().includes('dakopbouw') || 
-                     item.text.toLowerCase().includes('aanbouw') ||
-                     item.text.toLowerCase().includes('zolderverbouwing') ||
-                     item.text.toLowerCase().includes('kelderverbouwing') ||
-                     item.text.toLowerCase().includes('bouwvergunning')) {
-                renovationSubcategory = 'renovation-conversion';
-            }
-            // Default: Assign based on primary category tag
-            else if (item.tags.includes('kitchen') || item.tags.includes('bathroom')) {
-                renovationSubcategory = 'renovation-plumbing';
-            }
-            else if (item.tags.includes('exterior') || item.tags.includes('asbestos')) {
-                renovationSubcategory = 'renovation-structural';
-            }
-            else if (item.tags.includes('hvac')) {
-                renovationSubcategory = 'renovation-plumbing';
-            }
-            else if (item.tags.includes('documents')) {
-                renovationSubcategory = 'renovation-structural';
-            }
-            else {
-                // Final fallback - assign to structural
-                renovationSubcategory = 'renovation-structural';
-            }
-            
             itemDiv.dataset.renovationCategory = renovationSubcategory;
 
             let checkboxHTML = '';
@@ -1159,6 +1083,7 @@ function handleRenovationChange(e) {
 
     saveState();
     updateProgress();
+    updateRenovationFiltersVisibility();
 }
 
 // Handle document request button
@@ -1534,30 +1459,19 @@ function filterChecklist(category) {
                 item.style.display = 'flex';
             });
         } else if (category.startsWith('renovation-')) {
-            // Filter for renovation subcategories - only show items with issues checked
-            console.log(`Filtering by renovation category: ${category}`);
+            // Filter for renovation subcategories
             let hasVisibleItems = false;
             group.querySelectorAll('.checklist-item').forEach(item => {
                 const itemRenovationCategory = item.dataset.renovationCategory;
-                // Get the item's checkbox to check if it has an issue marked
-                const renovationCheckbox = item.querySelector('.renovation-checkbox');
-                const itemKey = renovationCheckbox ? renovationCheckbox.dataset.key : null;
-                const hasIssue = itemKey ? (state.renovationNeeded[itemKey] === true) : false;
-                
-                // Debug logging - log ALL items to see what's happening
-                console.log(`Item: ${itemKey}, RenovCat: "${itemRenovationCategory}", TargetCat: "${category}", HasIssue: ${hasIssue}, StateValue: ${state.renovationNeeded[itemKey]}, Match: ${itemRenovationCategory === category}`);
-                
                 if (category === 'renovation-all') {
-                    // Show all items that have renovation potential AND have an issue checked
-                    if (itemRenovationCategory && hasIssue === true) {
+                    // Show all items that have renovation potential
+                    if (itemRenovationCategory) {
                         item.style.display = 'flex';
                         hasVisibleItems = true;
                     } else {
                         item.style.display = 'none';
                     }
-                } else if (itemRenovationCategory === category && hasIssue === true) {
-                    // Only show if it matches the category AND has an issue checked
-                    console.log(`SHOWING item ${itemKey}`);
+                } else if (itemRenovationCategory === category) {
                     item.style.display = 'flex';
                     hasVisibleItems = true;
                 } else {
@@ -1622,6 +1536,71 @@ function showDeadlineInfo(deadlineKey) {
 
     deadlineSources.innerHTML = sourcesHTML;
     deadlineModal.classList.add('show');
+}
+
+// Update renovation filter visibility based on issues
+function updateRenovationFiltersVisibility() {
+    const renovationFilters = document.querySelectorAll('.renovation-filter');
+    const hasAnyIssues = Object.values(state.renovationNeeded).some(value => value === true);
+    
+    if (!hasAnyIssues) {
+        // No issues - hide all renovation filters
+        renovationFilters.forEach(filter => {
+            filter.classList.remove('visible');
+            // If a renovation filter is active and no issues exist, reset to 'all'
+            if (filter.classList.contains('active')) {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                const allButton = document.querySelector('[data-category="all"]');
+                if (allButton) {
+                    allButton.classList.add('active');
+                    state.currentFilter = 'all';
+                    filterChecklist('all');
+                }
+            }
+        });
+        return;
+    }
+    
+    // Collect unique renovation categories from items with issues
+    const renovationCategoriesWithIssues = new Set();
+    
+    // Get all checklist items
+    const items = document.querySelectorAll('.checklist-item');
+    items.forEach(item => {
+        // Get the item key from checkboxes
+        const checkbox = item.querySelector('.renovation-checkbox');
+        if (checkbox) {
+            const key = checkbox.dataset.key;
+            // Check if this item has an issue marked
+            if (state.renovationNeeded[key]) {
+                const renovationCategory = item.dataset.renovationCategory;
+                if (renovationCategory) {
+                    renovationCategoriesWithIssues.add(renovationCategory);
+                }
+            }
+        }
+    });
+    
+    // Show/hide specific renovation filter buttons
+    renovationFilters.forEach(filter => {
+        const category = filter.dataset.category;
+        
+        if (category === 'renovation-all') {
+            // Show "All Renovation Issues" only if there are 2 or more different types
+            if (renovationCategoriesWithIssues.size > 1) {
+                filter.classList.add('visible');
+            } else {
+                filter.classList.remove('visible');
+            }
+        } else {
+            // Show specific renovation filter if it has issues
+            if (renovationCategoriesWithIssues.has(category)) {
+                filter.classList.add('visible');
+            } else {
+                filter.classList.remove('visible');
+            }
+        }
+    });
 }
 
 // Update progress
@@ -1872,6 +1851,7 @@ function resetChecklist() {
         saveState();
         renderChecklist();
         updateProgress();
+        updateRenovationFiltersVisibility();
 
         // Reset filter
         filterButtons.forEach(b => b.classList.remove('active'));

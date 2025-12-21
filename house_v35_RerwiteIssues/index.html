@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>huiskeuring.be Checklist</title>
-    <link rel="stylesheet" href="style.css?v3">
+    <link rel="stylesheet" href="style.css?v4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -150,6 +150,14 @@
                     <button class="filter-btn" data-category="hvac">
                         <i class="fas fa-fan"></i> Heating
                     </button>
+                </div>
+                <div class="filter-divider"></div>
+                <h2 class="section-title">Filter by Toggled Issues</h2>
+                <div class="issue-filter-info">
+                    <i class="fas fa-info-circle"></i> Click on issue categories below to show only items where that issue is checked
+                </div>
+                <div class="filter-buttons issue-filter-buttons" id="issueFilterButtons">
+                    <!-- Issue filters will be dynamically generated here -->
                 </div>
             </section>
 
@@ -479,6 +487,6 @@
         </div>
     </div>
 
-    <script src="script.js?v3"></script>
+    <script src="script.js?v7"></script>
 </body>
 </html>

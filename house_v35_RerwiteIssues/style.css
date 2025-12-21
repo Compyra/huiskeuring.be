@@ -556,23 +556,23 @@ body.menu-open {
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--warning-color);
     background-color: var(--card-bg);
     color: var(--warning-color);
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .issue-filter-btn .issue-count {
     background-color: var(--warning-color);
-    color: var(--warning-color);
+    color: var(--dark-bg);
     border-radius: 12px;
     padding: 2px 8px;
     font-size: 0.8em;
-    font-weight: 700;
+    font-weight: 600;
     margin-left: 4px;
 }
 
@@ -580,22 +580,17 @@ body.menu-open {
     border-color: var(--warning-color);
     background-color: rgba(255, 193, 7, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
 }
 
 .issue-filter-btn.active {
     background-color: var(--warning-color);
-    /* color: var(--dark-bg); */
+    color: var(--dark-bg);
     border-color: var(--warning-color);
-    border-width: 3px;
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3), 0 4px 12px rgba(255, 193, 7, 0.4);
 }
 
 .issue-filter-btn.active .issue-count {
-    background-color: var(--card-bg);
+    background-color: var(--dark-bg);
     color: var(--warning-color);
-    font-weight: 700;
-    border: 1px solid var(--warning-color);
 }
 
 .filter-buttons {
