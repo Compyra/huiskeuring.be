@@ -197,15 +197,24 @@ if ($SkipLinks) {
     }
     $bad = 0
     foreach ($u in ($urls | Sort-Object)) {
-        try {
-            $r = Invoke-WebRequest -Uri $u -Method Get -MaximumRedirection 5 -TimeoutSec 25 -UseBasicParsing -ErrorAction Stop
-            if ([int]$r.StatusCode -ne 200) { Fail ([int]$r.StatusCode + '  ' + $u); $bad++ }
-        } catch {
-            $code = 'ERR'
-            if ($_.Exception.Response) { $code = [string][int]$_.Exception.Response.StatusCode }
-            Fail ($code + '  ' + $u)
-            $bad++
+        # Retry before failing: a transient DNS or network blip must not fail a
+        # release check. Only a link that fails three times in a row is dead.
+        $code = $null
+        $lastErr = 'ERR'
+        for ($attempt = 1; $attempt -le 3; $attempt++) {
+            try {
+                $r = Invoke-WebRequest -Uri $u -Method Get -MaximumRedirection 5 -TimeoutSec 25 -UseBasicParsing -ErrorAction Stop
+                $code = [int]$r.StatusCode
+                if ($code -eq 200) { break }
+                $lastErr = [string]$code
+            } catch {
+                $code = $null
+                $lastErr = 'ERR'
+                if ($_.Exception.Response) { $lastErr = [string][int]$_.Exception.Response.StatusCode }
+            }
+            if ($attempt -lt 3) { Start-Sleep -Seconds 3 }
         }
+        if ($code -ne 200) { Fail ($lastErr + '  ' + $u + '  (3 attempts)'); $bad++ }
     }
     if ($bad -eq 0) { Pass ('all ' + $urls.Count + ' external links return HTTP 200') }
 }

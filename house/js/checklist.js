@@ -787,6 +787,29 @@ const checklistData = [
                 text: 'Verify whether a regenwatertank (rainwater tank) is present, connected and functional',
                 tags: ['plumbing', 'exterior'],
                 why: 'A tank that exists but was never connected to toilets and outside taps saves nothing. Check the pump, the filter and the mains backup - and never connect rainwater to the drinking-water network, which is illegal and dangerous.'
+            },
+            {
+                text: 'Ask for the keuringsattest privéwaterafvoer (private drainage inspection certificate)',
+                tags: ['plumbing', 'documents'],
+                deadline: 'water',
+                why: 'In Flanders this inspection is compulsory for a new build or rebuild, for a new connection or an individual treatment plant, and when the street gets a separate sewer and you must disconnect on your own land. The certificate proves rain and waste water are correctly separated and connected. If it is missing or says "not compliant", the correction is yours to pay for, and a certificate older than 5 years no longer exempts you when a forced disconnection comes.'
+            },
+            {
+                text: 'Locate the infiltratievoorziening: infiltratieput, infiltratiekrat or wadi',
+                tags: ['plumbing', 'exterior'],
+                deadline: 'water',
+                why: 'Since October 2023 the Flemish rainwater regulation requires rainwater to infiltrate on your own plot, through an infiltration well, buried crates or a shallow planted hollow. Ask to see where it is and whether it still works - crates silt up and stop draining. If there is none and you plan a terrace, driveway, extension or pool, you will have to install one, and retro-fitting through a finished garden is the expensive way to do it.'
+            },
+            {
+                text: 'Check for a bezinkput / zandvang (settling pit) before the infiltration or sewer',
+                tags: ['plumbing', 'exterior'],
+                why: 'A settling pit catches sand, leaves and grit before they reach the infiltration facility or the sewer. If nobody has emptied it in years it is full, and everything downstream of it - the crates, the soakaway, the connection - is silting up too. Lift the lid: it should be mostly water, not mud.'
+            },
+            {
+                text: 'Ask the commune for the zoneringsplan: sewer, IBA or septic tank at this address',
+                tags: ['plumbing', 'documents'],
+                deadline: 'water',
+                why: 'The municipal zoning plan decides whether the property connects to the public sewer or must treat its own waste water with an individual plant (IBA), and whether a septic tank is required. Buying a house in an area where a sewer will never arrive means an IBA is your responsibility, which is a four-figure installation plus ongoing maintenance.'
             }
         ]
     },
@@ -958,6 +981,24 @@ const checklistData = [
                 text: 'Check whether the property shares walls with neighbours (gemene muur) and their condition',
                 tags: ['structural', 'renovation'],
                 why: 'In Belgian terraced housing the party wall is jointly owned, and works on it involve your neighbour legally and financially. A leaning or cracked party wall, or a neighbouring building that is derelict, becomes your problem too.'
+            },
+            {
+                text: 'Measure the widest crack and look for the diagonal pattern of drought damage',
+                tags: ['structural', 'exterior'],
+                info: 'drought',
+                why: 'After a run of dry summers, clay soils shrinking under foundations have become one of the fastest-growing damage causes in Belgium. The tell-tale pattern is diagonal cracks from the corners of window and door openings, wider at one end. Take a photo with a coin or a ruler next to the crack: above 3 mm it is officially significant, and it is worth a stability survey before you sign.'
+            },
+            {
+                text: 'Check whether the address sits on plastische gronden (swelling clay)',
+                tags: ['structural', 'documents'],
+                info: 'drought',
+                why: 'Databank Ondergrond Vlaanderen publishes a free map showing where the subsoil is sensitive to swelling and shrinking clay. It takes a minute to look up the address and it tells you whether the cracks you are looking at have a plausible cause - and whether the risk is still there for the extension you were planning.'
+            },
+            {
+                text: 'Note large trees close to the facade and ask when they were planted or felled',
+                tags: ['structural', 'exterior'],
+                info: 'drought',
+                why: 'A mature tree can draw tens of litres of water a day out of the soil in summer, shrinking clay right where the foundation sits. Felling a large tree can be just as damaging: the soil slowly takes water back up and swells again. Both show up as cracks years later, so the history matters.'
             }
         ]
     },

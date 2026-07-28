@@ -67,6 +67,18 @@ const LINK_GROUPS = [
                 regions: ['wallonia'],
                 label: { en: 'Géoportail de la Wallonie', nl: 'Géoportail van Wallonië', fr: 'Géoportail de la Wallonie' },
                 note: { en: 'Walloon geoportal with cadastral, planning and flood layers.', nl: 'Waals geoportaal met kadaster-, planning- en overstromingslagen.', fr: 'Géoportail wallon : couches cadastrales, urbanistiques et d\'inondation.' }
+            },
+            {
+                url: 'https://www.dov.vlaanderen.be/page/plastische-gronden',
+                regions: ['flanders'],
+                label: { en: 'Plastic (swelling clay) soils map - DOV', nl: 'Kaart plastische gronden - DOV', fr: 'Carte des sols plastiques (argile gonflante) - DOV' },
+                note: { en: 'Shows where the subsoil is sensitive to swelling and shrinking clay - the cause of drought cracks.', nl: 'Toont waar de ondergrond gevoelig is voor zwellende en krimpende klei - de oorzaak van droogtescheuren.', fr: 'Montre où le sous-sol est sensible au gonflement et au retrait de l\'argile - cause des fissures de sécheresse.' }
+            },
+            {
+                url: 'https://www.dov.vlaanderen.be/page/registratie-droogteschade-aan-de-woning',
+                regions: ['flanders'],
+                label: { en: 'Drought damage register', nl: 'Registratiepunt droogteschade', fr: 'Registre des dégâts de sécheresse' },
+                note: { en: 'Report cracks wider than 3 mm or tilting caused by drought - and see what qualifies as significant.', nl: 'Meld scheuren breder dan 3 mm of scheefstelling door droogte - en zie wat als betekenisvol geldt.', fr: 'Signalez les fissures de plus de 3 mm ou un basculement dus à la sécheresse - et voyez ce qui est significatif.' }
             }
         ]
     },
@@ -113,6 +125,30 @@ const LINK_GROUPS = [
                 regions: ['brussels'],
                 label: { en: 'Bruxelles Environnement', nl: 'Leefmilieu Brussel', fr: 'Bruxelles Environnement' },
                 note: { en: 'Brussels environment, water and soil information.', nl: 'Brusselse informatie over milieu, water en bodem.', fr: 'Informations bruxelloises sur l\'environnement, l\'eau et le sol.' }
+            },
+            {
+                url: 'https://omgeving.vlaanderen.be/nl/verordeningen/de-gewestelijke-hemelwaterverordening-2023',
+                regions: ['flanders'],
+                label: { en: 'Rainwater regulation (GSV Hemelwater 2023)', nl: 'Hemelwaterverordening (GSV 2023)', fr: 'Règlement sur l\'eau de pluie (GSV 2023)' },
+                note: { en: 'What you must install for rainwater since 2 October 2023 - also for permit-exempt works.', nl: 'Wat u sinds 2 oktober 2023 moet plaatsen voor hemelwater - ook bij vergunningsvrije werken.', fr: 'Ce que vous devez installer pour l\'eau de pluie depuis le 2 octobre 2023 - même sans permis.' }
+            },
+            {
+                url: 'https://groenblauwpeil.be/',
+                regions: ['flanders', 'wallonia', 'brussels'],
+                label: { en: 'Groenblauwpeil - rainwater requirement calculator', nl: 'Groenblauwpeil - bereken uw hemelwatereisen', fr: 'Groenblauwpeil - calculez vos exigences pluviales' },
+                note: { en: 'Free tool that calculates the tank and infiltration volume your project needs.', nl: 'Gratis tool die het benodigde put- en infiltratievolume voor uw project berekent.', fr: 'Outil gratuit calculant le volume de citerne et d\'infiltration requis.' }
+            },
+            {
+                url: 'https://www.vlaanderen.be/verplichte-keuring-van-priveriolering-voor-afvoer-van-afval-of-regenwater',
+                regions: ['flanders'],
+                label: { en: 'Compulsory private drainage inspection', nl: 'Verplichte keuring privéwaterafvoer', fr: 'Contrôle obligatoire de l\'évacuation privée' },
+                note: { en: 'When the inspection is required and what the inspector checks.', nl: 'Wanneer de keuring verplicht is en wat de keurder controleert.', fr: 'Quand le contrôle est requis et ce que le contrôleur vérifie.' }
+            },
+            {
+                url: 'https://environnement.brussels/citoyen/reglementation-et-inspection/obligations-et-autorisations/gestion-des-eaux-de-pluie',
+                regions: ['brussels'],
+                label: { en: 'Rainwater management obligations (Brussels)', nl: 'Verplichtingen hemelwaterbeheer (Brussel)', fr: 'Obligations de gestion des eaux de pluie (Bruxelles)' },
+                note: { en: 'Tank sizing (33 l/m² of roof), the "zero discharge" rule and the two official calculators.', nl: 'Dimensionering van de put (33 l/m² dak), de regel "nul lozing" en de twee officiële rekenbladen.', fr: 'Dimensionnement de la citerne (33 l/m² de toiture), la règle du « 0 rejet » et les deux calculateurs officiels.' }
             }
         ]
     },

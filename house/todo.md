@@ -50,6 +50,78 @@
 
 ## 3. Changelog
 
+### 2026-07-28 - Pass 4: rainwater law, drought damage, 2026 rule changes
+
+Research pass against primary Belgian sources. Everything below was read on the
+official page on 2026-07-28, not recalled from memory.
+
+#### The big gap: rainwater and drainage had no legal topic at all
+The checklist told users to look at gutters, tanks and where the rainwater goes,
+but nothing told them what the **law** requires - and this is the single most
+expensive surprise in a Belgian purchase, because retro-fitting infiltration
+through a finished garden costs thousands.
+
+New legal topic **`water`** in `js/legal.js`, covering two stacked obligations:
+
+| Region | Status | What was verified |
+|--------|--------|-------------------|
+| Flanders | **verified** | GSV Hemelwater in force since **2 October 2023**; triggered by new build, extension, renovation that changes drainage, terrace/driveway, pool, artificial grass and other paving. Requires a rainwater tank of minimum volume, maximum reuse where drinking quality is not needed, and infiltration/buffer/delayed discharge. Must stay in use from occupation. **Also applies to permit-exempt works - if they do not comply, the exemption lapses.** Provinces and municipalities may be stricter. Plus the **keuring privéwaterafvoer**: compulsory since 1 July 2011, extended 1 Jan 2021, new technical specifications since **12 January 2026**, required in 4 cases (new build/rebuild; new connection or IBA; separate sewer in the street with disconnection duty, unless a compliant certificate < 5 years old; after an infringement). The **zoneringsplan** decides sewer vs IBA vs septic tank. |
+| Brussels | **verified** (was going to be "unverified" - the official page turned out to be precise) | Imposed through the environmental permit. Triggered by new build, demolition-reconstruction, transformation adding > 20 m² ground area, works changing roof water collection, or landscaping changing impermeable surface by > 20 m². Tank of **at least 33 l per m² of roof** in horizontal projection (~50 l/m² advised for bare roofs), connected to **at least one outside tap and one or more WCs**. Green roof with ≥ 10 cm substrate and ≥ 8 l/m² reserve need not be counted. Target is **"0 rejet"** to the sewer. Drainage time 24 h for a hollow, up to 72 h under permeable paving. Two official calculators. Derogation only for polluted soil or catchment protection zone 3 - explicitly **not** for low permeability, high water table or flood zone. |
+| Wallonia | unverified | No direct equivalent of the GSV found on an official source. Imposed via the permit and municipal rules; the *règlement général d'assainissement* classifies the address as collective, autonomous or transitory sanitation, which decides sewer vs individual treatment. Ask the commune for the regime of the exact address. |
+
+#### Second gap: drought cracks and clay subsidence
+One of the fastest-growing damage causes in Belgium after the recent dry summers,
+and the checklist said nothing about it. New advisory topic **`drought`**:
+diagonal cracks from the corners of openings, wider at one end; trees close to the
+facade; felling a large tree is as damaging as planting one. Databank Ondergrond
+Vlaanderen publishes a free **plastische gronden** map, and the Flemish drought
+damage register only accepts cracks **wider than 3 mm** or visible tilting - a
+useful severity threshold to give the user. Drought is recognised as a natural
+disaster, but insurers still dispute which costs are covered.
+
+#### Rule changes found and corrected
+| Topic | Change |
+|-------|--------|
+| Registration duty (Flanders) | **Conditions tightened on 1 January 2026** and the file did not say so: buyers must all be natural persons (a legal-entity co-buyer taxes the whole purchase at the ordinary rate); only **full ownership** qualifies, split usufruct / bare-ownership purchases are excluded, judged per buyer; the buyer must register at the address within 3 years and stay registered **at least one uninterrupted year**. Also added: the **deed date** decides the 2% rate, not the compromis, and the 1% rate for a thorough energy renovation and for protected monuments. |
+| Renovation obligation | Re-confirmed: 6 years (raised from 5, final approval 12/12/2025, applies to running *and* new transfers); tightening path to C/B/A abolished; residential fine 500-5,000 EUR. Already correct in the file. |
+| Minimum EPC label 2030 | Re-confirmed for rentals: open/semi-detached E (2030) → D (2035) → C (2040); terraced and apartments D (2030) → C (2035). Already correct. |
+| Asbestos certificate | Re-confirmed: pre-2001, < 20 m² exemption unless the total is ≥ 20 m² or part of a larger complex, present at the transfer agreement, **all owners from 2032**, validity 10 years, OVAM retribution 59 EUR since 05/02/2025. Already correct. |
+
+#### Content added
+- **7 new checklist items** (223 → 230), all with `why` in en/nl/fr:
+  keuringsattest privéwaterafvoer, infiltratievoorziening (infiltratieput /
+  infiltratiekrat / wadi), bezinkput / zandvang, zoneringsplan, crack width and
+  the diagonal drought pattern, plastische-gronden map lookup, large trees near
+  the facade.
+- **3 new FAQ entries per language** (9 → 12): infiltration requirements,
+  what a bezinkput is and why to lift the lid, why diagonal cracks matter.
+  These also feed the `FAQPage` structured data.
+- **10 new verified links** (64 → 74): GSV Hemelwater, Groenblauwpeil calculator,
+  keuring privéwaterafvoer, Brussels rainwater obligations, DOV plastische
+  gronden, DOV drought damage register.
+- `LEGAL_META.contentVersion` bumped to `2026.07b` so the freshness banner
+  re-appears for returning users.
+
+#### SEO
+- Description, keywords, `og:description` and the `featureList` updated: 230
+  checks, and the new subjects are now discoverable terms (hemelwaterverordening,
+  infiltratieput, infiltratiekrat, bezinkput, septische put, keuring
+  privéwaterafvoer, droogteschade, plastische gronden, renovatieverplichting).
+- Three new `Question` entries in the JSON-LD `FAQPage`.
+
+#### Verified after the change
+`tools/verify.ps1`: all 9 checks pass, **74/74 external links HTTP 200**,
+230/230 items translated in nl and fr, 230 i18n keys in parity.
+Browser: en/nl/fr, 0 console errors, 0 failed requests, 0 horizontal overflow at
+320/360/414 px, and both new topic panels open and fit inside a 280 px viewport.
+House view 214 items, apartment view 204 - both confirmed in the browser.
+
+The link check now **retries three times** before declaring a link dead: a
+transient DNS failure on `onroerenderfgoed.be` during this pass produced a false
+negative, and a release gate must not fail on a network blip.
+
+---
+
 ### 2026-07-28 - Pass 3: completion, full translation, verification
 
 #### Translation is now complete
@@ -218,7 +290,7 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
   entry with the same address rather than keeping a history.
 - `compare.html` and `report.html` are `noindex`; if the read-only report should ever be
   indexable, it needs its own canonical strategy.
-- The `apartment` category has 16 items, so the visible total is 207 for a house and 197
+- The `apartment` category has 16 items, so the visible total is 214 for a house and 204
   for an apartment (basement and attic are hidden). That is intended, but it means the
   two property types are not directly comparable on "issues found" alone.
 - The checklist item texts keep the Dutch construction term in brackets in the English

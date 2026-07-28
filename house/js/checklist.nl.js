@@ -567,6 +567,22 @@ window.CHECKLIST_I18N.nl = {
         text: 'Nakijken of er een regenwatertank is, of hij aangesloten is en werkt',
         why: 'Een tank die er wel is maar nooit aangesloten werd op toiletten en buitenkranen levert niets op. Controleer de pomp, de filter en de netbijvoeding - en sluit regenwater nooit aan op het drinkwaternet, wat illegaal en gevaarlijk is.'
     },
+    'plumbing-15': {
+        text: 'Het keuringsattest van de privéwaterafvoer opvragen',
+        why: 'In Vlaanderen is die keuring verplicht bij nieuwbouw of herbouw, bij een nieuwe aansluiting of een individuele zuivering, en wanneer de straat gescheiden riolering krijgt en u op eigen terrein moet afkoppelen. Het attest bewijst dat regen- en afvalwater correct gescheiden en aangesloten zijn. Ontbreekt het of staat er "niet conform", dan betaalt u de rechtzetting, en een attest ouder dan 5 jaar vrijwaart u niet meer bij een verplichte afkoppeling.'
+    },
+    'plumbing-16': {
+        text: 'De infiltratievoorziening zoeken: infiltratieput, infiltratiekrat of wadi',
+        why: 'Sinds oktober 2023 verplicht de Vlaamse hemelwaterverordening dat regenwater op uw eigen perceel infiltreert, via een infiltratieput, ingegraven kratten of een ondiepe beplante kom. Vraag waar ze ligt en of ze nog werkt - kratten slibben dicht en draineren dan niet meer. Is er geen, en plant u een terras, oprit, aanbouw of zwembad, dan moet u er een aanleggen, en dat achteraf door een afgewerkte tuin doen is de dure manier.'
+    },
+    'plumbing-17': {
+        text: 'Nakijken of er een bezinkput of zandvang zit vóór de infiltratie of de riolering',
+        why: 'Een bezinkput houdt zand, bladeren en gruis tegen voor ze de infiltratievoorziening of de riolering bereiken. Heeft niemand hem in jaren geledigd, dan zit hij vol en slibt alles erachter - de kratten, de infiltratieput, de aansluiting - eveneens dicht. Licht het deksel op: u hoort vooral water te zien, geen slib.'
+    },
+    'plumbing-18': {
+        text: 'Bij de gemeente het zoneringsplan opvragen: riolering, IBA of septische put op dit adres',
+        why: 'Het gemeentelijke zoneringsplan bepaalt of het pand aansluit op de openbare riolering dan wel zelf moet zuiveren met een individuele behandelingsinstallatie (IBA), en of een septische put nodig is. Koopt u een woning in een gebied waar nooit riolering komt, dan is een IBA uw verantwoordelijkheid: een installatie van duizenden euro\'s plus doorlopend onderhoud.'
+    },
 
     /* ---------------- Elektriciteit ---------------- */
     'electrical-0': {
@@ -694,6 +710,18 @@ window.CHECKLIST_I18N.nl = {
     'structural-15': {
         text: 'Nakijken of er gemene muren met de buren zijn en in welke staat',
         why: 'In Belgische rijbebouwing is de gemene muur gedeelde eigendom, en werken eraan betrekken uw buur juridisch en financieel. Een scheve of gescheurde gemene muur, of een vervallen buurpand, wordt ook uw probleem.'
+    },
+    'structural-16': {
+        text: 'De breedste scheur opmeten en letten op het diagonale patroon van droogteschade',
+        why: 'Na een reeks droge zomers is krimpende kleigrond onder funderingen een van de snelst groeiende schadeoorzaken in België geworden. Het typische patroon zijn diagonale scheuren vanaf de hoeken van raam- en deuropeningen, breder aan één uiteinde. Neem een foto met een muntstuk of een meetlat naast de scheur: boven 3 mm is ze officieel betekenisvol, en dan is een stabiliteitsonderzoek vóór de ondertekening zijn geld waard.'
+    },
+    'structural-17': {
+        text: 'Nagaan of het adres op plastische gronden (zwellende klei) ligt',
+        why: 'Databank Ondergrond Vlaanderen publiceert een gratis kaart die toont waar de ondergrond gevoelig is voor zwellende en krimpende klei. Het adres opzoeken kost een minuut en vertelt u of de scheuren die u ziet een plausibele oorzaak hebben - en of het risico er nog steeds is voor de uitbreiding die u plande.'
+    },
+    'structural-18': {
+        text: 'Grote bomen dicht bij de gevel noteren en vragen wanneer ze geplant of gerooid zijn',
+        why: 'Een volgroeide boom kan in de zomer tientallen liters water per dag uit de bodem trekken, precies waar de fundering ligt, waardoor klei krimpt. Een grote boom rooien kan even schadelijk zijn: de bodem neemt daarna traag weer water op en zwelt. Beide tonen zich jaren later als scheuren, dus de voorgeschiedenis telt.'
     },
 
     /* ---------------- Verwarming & ventilatie ---------------- */

@@ -564,6 +564,22 @@ window.CHECKLIST_I18N.fr = {
         text: 'Vérifier la présence, le raccordement et le fonctionnement d\'une citerne d\'eau de pluie',
         why: 'Une citerne présente mais jamais raccordée aux WC et aux robinets extérieurs n\'apporte rien. Contrôlez la pompe, le filtre et l\'appoint sur le réseau - et ne raccordez jamais l\'eau de pluie au réseau d\'eau potable, ce qui est illégal et dangereux.'
     },
+    'plumbing-15': {
+        text: 'Demander l\'attestation de contrôle de l\'évacuation privée des eaux',
+        why: 'En Flandre, ce contrôle est obligatoire pour une construction ou reconstruction, pour un nouveau raccordement ou une épuration individuelle, et lorsque la rue reçoit un égout séparatif et que vous devez déconnecter sur votre terrain. L\'attestation prouve que l\'eau de pluie et les eaux usées sont correctement séparées et raccordées. Si elle manque ou indique « non conforme », la mise en ordre est à votre charge, et une attestation de plus de 5 ans ne vous dispense plus lors d\'une déconnexion imposée.'
+    },
+    'plumbing-16': {
+        text: 'Localiser le dispositif d\'infiltration : puits, caissons (infiltratiekrat) ou noue',
+        why: 'Depuis octobre 2023, le règlement flamand sur l\'eau de pluie impose que celle-ci s\'infiltre sur votre propre parcelle, via un puits d\'infiltration, des caissons enterrés ou une cuvette plantée peu profonde. Demandez où il se trouve et s\'il fonctionne encore : les caissons se colmatent et cessent de drainer. S\'il n\'y en a pas et que vous prévoyez une terrasse, une allée, une annexe ou une piscine, vous devrez en installer un - et le faire après coup à travers un jardin fini est la solution coûteuse.'
+    },
+    'plumbing-17': {
+        text: 'Vérifier la présence d\'un puits de décantation ou d\'un dessableur avant l\'infiltration ou l\'égout',
+        why: 'Un puits de décantation retient le sable, les feuilles et les graviers avant qu\'ils n\'atteignent le dispositif d\'infiltration ou l\'égout. Si personne ne l\'a vidé depuis des années, il est plein et tout ce qui se trouve en aval - les caissons, le puits d\'infiltration, le raccordement - se colmate également. Soulevez le couvercle : vous devez voir surtout de l\'eau, pas de la boue.'
+    },
+    'plumbing-18': {
+        text: 'Demander à la commune le plan de zonage : égout, épuration individuelle ou fosse septique',
+        why: 'Le plan de zonage communal détermine si le bien se raccorde à l\'égout public ou doit épurer lui-même ses eaux usées avec une installation individuelle, et si une fosse septique est requise. Acheter dans une zone où l\'égout n\'arrivera jamais signifie que l\'épuration individuelle est à votre charge : une installation de plusieurs milliers d\'euros, plus un entretien permanent.'
+    },
 
     /* ---------------- Électricité ---------------- */
     'electrical-0': {
@@ -691,6 +707,18 @@ window.CHECKLIST_I18N.fr = {
     'structural-15': {
         text: 'Vérifier l\'existence et l\'état des murs mitoyens',
         why: 'Dans le bâti belge en rangée, le mur mitoyen est une propriété partagée, et y intervenir engage juridiquement et financièrement votre voisin. Un mur mitoyen penché ou fissuré, ou un immeuble voisin à l\'abandon, devient aussi votre problème.'
+    },
+    'structural-16': {
+        text: 'Mesurer la fissure la plus large et repérer le schéma diagonal des dégâts de sécheresse',
+        why: 'Après une série d\'étés secs, le retrait des sols argileux sous les fondations est devenu l\'une des causes de dégâts qui progressent le plus vite en Belgique. Le schéma typique : des fissures diagonales partant des angles des baies, plus larges à une extrémité. Photographiez la fissure avec une pièce de monnaie ou une règle à côté : au-delà de 3 mm, elle est officiellement significative, et une expertise de stabilité avant signature vaut son prix.'
+    },
+    'structural-17': {
+        text: 'Vérifier si l\'adresse se situe sur des sols plastiques (argile gonflante)',
+        why: 'La Databank Ondergrond Vlaanderen publie une carte gratuite montrant où le sous-sol est sensible au gonflement et au retrait de l\'argile. Rechercher l\'adresse prend une minute et vous indique si les fissures que vous observez ont une cause plausible - et si le risque subsiste pour l\'extension que vous envisagiez.'
+    },
+    'structural-18': {
+        text: 'Noter les grands arbres proches de la façade et demander quand ils ont été plantés ou abattus',
+        why: 'Un arbre adulte peut prélever des dizaines de litres d\'eau par jour dans le sol en été, précisément là où repose la fondation, ce qui fait retirer l\'argile. Abattre un grand arbre peut être tout aussi dommageable : le sol reprend lentement de l\'eau et gonfle à nouveau. Les deux se manifestent des années plus tard par des fissures : l\'historique compte donc.'
     },
 
     /* ---------------- Chauffage & ventilation ---------------- */
