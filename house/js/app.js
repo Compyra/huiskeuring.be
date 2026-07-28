@@ -1,1994 +1,1595 @@
-// House Inspection Checklist Application - Belgium Edition
+/* =====================================================================
+ * huiskeuring.be - MAIN APPLICATION
+ * =====================================================================
+ * Loaded on index.html only. Depends on (in this order):
+ *   i18n.js, legal.js, links.js, checklist.js, checklist.nl.js,
+ *   checklist.fr.js, core.js
+ * ===================================================================== */
 
-// Checklist data structure with deadline info
-const deadlineInfo = {
-    'epc': {
-        title: 'EPC (Energieprestatiecertificaat)',
-        deadline: 'Binnen 6 jaar na de notariële akte voor E- of F-label woningen',
-        description: 'Renovatieplicht: Als nieuwe eigenaar van een E- of F-label woning moet je binnen 6 jaar na de akte renoveren naar minimaal label D. Termijn: De 6-jarige termijn begint te lopen vanaf de datum van de notariële akte.',
-        source: 'https://www.vlaanderen.be/energieprestatiecertificaten-epcs',
-        sourceWal: 'https://energie.wallonie.be/fr/certificat-peb.html',
-        sourceBrussels: 'https://leefmilieu.brussels/pro/regelgeving-en-inspectie/wetteksten/regelgeving-betreffende-de-energieprestatie-van-gebouwen-epb'
-    },
-    'electrical': {
-        title: 'Elektrische Keuring',
-        deadline: 'Binnen 18 maanden na aankoop indien ouder dan 25 jaar of niet conform',
-        description: 'De elektrische installatie moet gekeurd worden bij verkoop als deze ouder is dan 25 jaar. Indien niet conform, moet de installatie binnen 18 maanden in orde gebracht worden.',
-        source: 'https://economie.fgov.be/nl/themas/energie/elektriciteit/elektriciteit-controles-en',
-        additionalInfo: 'Bij niet-conformiteit kan de verkoper verplicht worden de installatie aan te passen voor verkoop, of er komt een korting op de prijs.'
-    },
-    'asbestos': {
-        title: 'Asbestcertificaat',
-        deadline: 'Verwijdering verplicht bij renovatie',
-        description: 'Asbestcertificaat is verplicht bij verkoop. Bij aanwezigheid van asbest moet dit verwijderd worden indien u renovatiewerken plant.',
-        source: 'OVAM: https://www.ovam.be/asbest',
-        additionalInfo: 'Verwijdering moet door een erkende asbestverwijderaar gebeuren.'
-    },
-    'glazing': {
-        title: 'Dubbel/Driedubbel Beglazing',
-        deadline: 'Vervangen indien ouder dan 20-25 jaar',
-        description: 'Controleer de isolatiewaarde van het glas. Moderne hoogrendementsbeglazingen hebben een U-waarde van 1.0-1.1 W/m²K of lager. Dubbele beglazing van vóór 2000 heeft vaak een U-waarde van 2.8-3.0 W/m²K, wat energieverlies betekent.',
-        source: 'https://www.vlaanderen.be/investeren-in-energiebesparing/isolatie-en-luchtdichtheid/beglazing/hoogrendementsglas',
-        additionalInfo: 'Let op de afstandhouder tussen de ruiten (spacer): moderne beglazing heeft een "warme rand" spacer. Bij condensatie tussen de ruiten is de beglazing lek en moet vervangen worden. Controleer ook of het glas HR++ of HR+++ is - dit staat vaak in de hoek van het glas gegraveerd.'
-    }
-};
+'use strict';
 
-// Checklist data structure
-const checklistData = [
-    {
-        category: 'documents',
-        title: 'Documents & Certificates (Belgium)',
-        icon: 'fa-file-contract',
-        items: [
-            { text: 'Request EPC (Energy Performance Certificate) - mandatory for sale', tags: ['documents', 'renovation'], deadline: 'epc' },
-            { text: 'Check asbestos certificate (verplicht asbest-attest)', tags: ['documents', 'asbestos', 'renovation'], deadline: 'asbestos' },
-            { text: 'Verify electrical installation certificate (keuring elektrische installatie) - max 25 years old', tags: ['documents', 'electrical'], deadline: 'electrical' },
-            { text: 'Check soil certificate (bodematttest) if applicable', tags: ['documents'] },
-            { text: 'Review conformity certificate for heating/boiler (stookkeuring)', tags: ['documents', 'hvac'] },
-            { text: 'Verify building permit for renovations (bouwvergunning)', tags: ['documents', 'renovation'] },
-            { text: 'Check urban planning certificate (stedenbouwkundig attest)', tags: ['documents'] },
-            { text: 'Request connection certificate for sewage (aansluiting riolering)', tags: ['documents', 'plumbing'] },
-            { text: 'Review property cadastral information', tags: ['documents'] },
-            { text: 'Check for any registered servitudes or easements', tags: ['documents'] }
-        ]
-    },
-    {
-        category: 'asbestos',
-        title: 'Asbestos Detection (Asbest)',
-        icon: 'fa-exclamation-triangle',
-        items: [
-            { text: 'Check roof for asbestos (golfplaten/eterniet)', tags: ['asbestos', 'exterior', 'renovation'] },
-            { text: 'Inspect ceiling panels for asbestos (especially pre-2001)', tags: ['asbestos', 'structural', 'renovation'] },
-            { text: 'Check old floor tiles (vloertegels) for asbestos', tags: ['asbestos', 'renovation'] },
-            { text: 'Inspect insulation materials around pipes', tags: ['asbestos', 'plumbing', 'renovation'] },
-            { text: 'Check window frames/sills (vensterbanken) for asbestos cement', tags: ['asbestos', 'exterior', 'renovation'] },
-            { text: 'Inspect old electrical panels/boxes for asbestos backing', tags: ['asbestos', 'electrical', 'renovation'] },
-            { text: 'Check garage/shed roofing materials', tags: ['asbestos', 'exterior'] },
-            { text: 'Verify removal plan if asbestos found - requires certified company', tags: ['asbestos', 'renovation'] },
-            { text: 'Budget for asbestos removal (can be €20-100/m²)', tags: ['asbestos', 'renovation'] }
-        ]
-    },
-    {
-        category: 'exterior',
-        title: 'Exterior Inspection',
-        icon: 'fa-building',
-        items: [
-            { text: 'Check flat roof (plat dak) condition - very common in Belgium', tags: ['structural', 'exterior', 'renovation'] },
-            { text: 'Inspect EPDM or bitumen roofing membrane condition', tags: ['exterior', 'renovation'] },
-            { text: 'Check lichtkoepels (roof domes/skylights) - verify minimum 15cm height above insulation', tags: ['exterior', 'renovation'] },
-            { text: 'Verify flat roof drainage (waterafvoer) - no standing water', tags: ['exterior', 'plumbing'] },
-            { text: 'Check if doors to flat roof need height adjustment for external insulation', tags: ['exterior', 'renovation'] },
-            { text: 'Inspect gevel (facade) for cracks or damage', tags: ['structural', 'exterior'] },
-            { text: 'Check voegwerk (mortar joints) condition', tags: ['exterior', 'structural'] },
-            { text: 'Inspect goten en regenpijpen (gutters and downspouts)', tags: ['exterior', 'plumbing'] },
-            { text: 'Examine buitenmuren for moisture or saltpeter (salpeter)', tags: ['structural', 'exterior'] },
-            { text: 'Check windows and doors (PVC, wood, aluminum) for sealing', tags: ['exterior', 'renovation'] },
-            { text: 'Verify double or triple glazing (dubbel/driedubbel glas)', tags: ['exterior', 'renovation'], info: 'glazing' },
-            { text: 'Inspect for cavity wall insulation (spouwmuurisolatie)', tags: ['exterior', 'renovation'] },
-            { text: 'Check foundation for cracks or water damage', tags: ['structural', 'exterior', 'basement'] },
-            { text: 'Inspect bricks (baksteen) for frost damage (vorstschade)', tags: ['exterior', 'structural'] },
-            { text: 'Check for adequate drainage around foundation', tags: ['exterior', 'plumbing'] },
-            { text: 'Verify terrace/balcony (terras) waterproofing', tags: ['exterior'] },
-            { text: 'Inspect chimney (schoorsteen) condition', tags: ['exterior', 'structural'] }
-        ]
-    },
-    {
-        category: 'kitchen',
-        title: 'Kitchen Inspection (Keuken)',
-        icon: 'fa-utensils',
-        items: [
-            { text: 'Test all appliances (oven, kookplaat, vaatwasser, koelkast)', tags: ['kitchen', 'electrical'] },
-            { text: 'Check if gas connection present (gasaansluiting) and certified', tags: ['kitchen', 'hvac'] },
-            { text: 'Verify kitchen electrical circuit is separate 20A minimum', tags: ['kitchen', 'electrical'] },
-            { text: 'Check keukenblad (countertop) material and condition', tags: ['kitchen'] },
-            { text: 'Inspect under sink for leaks or water damage', tags: ['kitchen', 'plumbing'] },
-            { text: 'Verify adequate ventilation (afzuigkap/dampkap)', tags: ['kitchen', 'hvac', 'renovation'] },
-            { text: 'Check if ventilation exhausts outside (not recirculation)', tags: ['kitchen', 'hvac', 'renovation'] },
-            { text: 'Test all electrical outlets - need splashproof near sink', tags: ['kitchen', 'electrical'] },
-            { text: 'Check tegels (tiles) condition - floor and wall', tags: ['kitchen'] },
-            { text: 'Inspect cabinet (keukenkasten) condition and hardware', tags: ['kitchen'] },
-            { text: 'Verify adequate lighting above work surfaces', tags: ['kitchen', 'electrical'] },
-            { text: 'Check floor for waterproofing under washing machine location', tags: ['kitchen', 'plumbing', 'renovation'] },
-            { text: 'Inspect aanrecht (sink) and kraan (faucet) operation', tags: ['kitchen', 'plumbing'] }
-        ]
-    },
-    {
-        category: 'bathroom',
-        title: 'Bathroom Inspection (Badkamer)',
-        icon: 'fa-bath',
-        items: [
-            { text: 'Test toilet (WC) flush and check for leaks', tags: ['bathroom', 'plumbing'] },
-            { text: 'Check douche (shower) water pressure and temperature', tags: ['bathroom', 'plumbing'] },
-            { text: 'Inspect shower drainage - Belgian standard 50mm minimum', tags: ['bathroom', 'plumbing', 'renovation'] },
-            { text: 'Verify waterproofing (waterdichte laag) under tiles', tags: ['bathroom', 'renovation'] },
-            { text: 'Check for mechanical ventilation (type C/D) - required in new builds', tags: ['bathroom', 'hvac', 'renovation'] },
-            { text: 'Inspect tegels (tiles) and voegen (grout) condition', tags: ['bathroom'] },
-            { text: 'Test wastafel (sink) and kraan (faucet)', tags: ['bathroom', 'plumbing'] },
-            { text: 'Verify electrical outlets are outside wet zones', tags: ['bathroom', 'electrical'] },
-            { text: 'Check for adequate lighting (IP44 rating near shower)', tags: ['bathroom', 'electrical'] },
-            { text: 'Inspect vloer (floor) for proper slope to drain', tags: ['bathroom', 'renovation'] },
-            { text: 'Look for schimmel (mold) or moisture damage', tags: ['bathroom', 'plumbing'] },
-            { text: 'Check heated towel rail (handdoekdroger) operation if present', tags: ['bathroom', 'hvac', 'electrical'] },
-            { text: 'Verify afvoer (drain) pipes are accessible for maintenance', tags: ['bathroom', 'plumbing', 'renovation'] }
-        ]
-    },
-    {
-        category: 'bedroom',
-        title: 'Bedroom Inspection (Slaapkamer)',
-        icon: 'fa-bed',
-        items: [
-            { text: 'Check all stopcontacten (electrical outlets)', tags: ['bedroom', 'electrical'] },
-            { text: 'Test lichtschakelaars (light switches) and fixtures', tags: ['bedroom', 'electrical'] },
-            { text: 'Inspect kast (closet) space and doors', tags: ['bedroom'] },
-            { text: 'Check ramen (windows) for operation and sealing', tags: ['bedroom', 'exterior'] },
-            { text: 'Examine walls for scheuren (cracks) or damage', tags: ['bedroom', 'structural'] },
-            { text: 'Inspect vloer (flooring) condition - parket, laminaat, tapijt', tags: ['bedroom'] },
-            { text: 'Check plafond (ceiling) for stains or damage', tags: ['bedroom'] },
-            { text: 'Test verwarming (heating) in room - radiator or floor heating', tags: ['bedroom', 'hvac'] },
-            { text: 'Verify rookmelder (smoke detector) presence and operation - mandatory', tags: ['bedroom', 'electrical'] },
-            { text: 'Check for adequate ventilation (ventilatieroosters)', tags: ['bedroom', 'hvac'] }
-        ]
-    },
-    {
-        category: 'livingroom',
-        title: 'Living Room / Salon Inspection (Woonkamer)',
-        icon: 'fa-couch',
-        items: [
-            { text: 'Check all stopcontacten (electrical outlets) - minimum 5 required', tags: ['livingroom', 'electrical'] },
-            { text: 'Test lichtschakelaars (light switches) and fixtures', tags: ['livingroom', 'electrical'] },
-            { text: 'Inspect open haard (fireplace) if present - check keuring certificate', tags: ['livingroom', 'structural', 'hvac'] },
-            { text: 'Check ramen (windows) for operation and double glazing', tags: ['livingroom', 'exterior'] },
-            { text: 'Examine muren (walls) for scheuren (cracks) or damage', tags: ['livingroom', 'structural'] },
-            { text: 'Inspect vloer condition (parket, tegels, laminaat)', tags: ['livingroom'] },
-            { text: 'Check plafond height - minimum 2.3m for habitable room', tags: ['livingroom', 'structural'] },
-            { text: 'Test verwarming (heating) - radiators or floor heating', tags: ['livingroom', 'hvac'] },
-            { text: 'Verify kabel/internet outlets and TV connection', tags: ['livingroom', 'electrical'] },
-            { text: 'Check natural light - living room needs adequate daylight', tags: ['livingroom'] }
-        ]
-    },
-    {
-        category: 'basement',
-        title: 'Basement/Cellar Inspection (Kelder)',
-        icon: 'fa-dungeon',
-        items: [
-            { text: 'Check for vocht (moisture) or water infiltration', tags: ['basement', 'plumbing', 'structural', 'renovation'] },
-            { text: 'Inspect for witte uitslag (saltpeter/efflorescence) on walls', tags: ['basement', 'structural'] },
-            { text: 'Check kelderlucht (cellar smell) - indicates moisture issues', tags: ['basement'] },
-            { text: 'Verify if basement is geschikt voor bewoning (suitable for living)', tags: ['basement', 'renovation'] },
-            { text: 'Check ceiling height - minimum 2.3m for habitable room', tags: ['basement', 'renovation'] },
-            { text: 'Inspect foundation walls for cracks or bowing', tags: ['basement', 'structural'] },
-            { text: 'Check if walls need waterproofing (kelderafdichting)', tags: ['basement', 'renovation'] },
-            { text: 'Verify drainage system (drainage/afvoer)', tags: ['basement', 'plumbing', 'renovation'] },
-            { text: 'Look for schimmel (mold) or mildew', tags: ['basement'] },
-            { text: 'Check insulation if basement is heated', tags: ['basement', 'hvac', 'renovation'] },
-            { text: 'Inspect floor - check if concrete needs sealing', tags: ['basement', 'renovation'] },
-            { text: 'Verify ventilation requirements for habitable space', tags: ['basement', 'hvac', 'renovation'] },
-            { text: 'Check stookplaats (boiler room) accessibility and ventilation', tags: ['basement', 'hvac'] },
-            { text: 'Verify electrical installation meets current standards', tags: ['basement', 'electrical'] }
-        ]
-    },
-    {
-        category: 'attic',
-        title: 'Attic/Roof Space Inspection (Zolder)',
-        icon: 'fa-house-damage',
-        items: [
-            { text: 'Check dakisolatie (roof insulation) - minimum R-value 6.0 (new builds)', tags: ['attic', 'hvac', 'renovation'] },
-            { text: 'Verify insulation thickness - typically 20-30cm needed', tags: ['attic', 'renovation'] },
-            { text: 'Check if zolder can be converted to living space (dakopbouw potential)', tags: ['attic', 'renovation'] },
-            { text: 'Verify floor joists can support living space load', tags: ['attic', 'structural', 'renovation'] },
-            { text: 'Inspect for roof leaks or waterinfiltratie', tags: ['attic', 'structural'] },
-            { text: 'Check ventilation - need air circulation to prevent condensation', tags: ['attic', 'hvac', 'renovation'] },
-            { text: 'Inspect dakstructuur (roof structure/rafters) for sagging', tags: ['attic', 'structural'] },
-            { text: 'Look for signs of houtworm (woodworm) or rot', tags: ['attic', 'structural'] },
-            { text: 'Check electrical wiring - often old and needs replacement', tags: ['attic', 'electrical', 'renovation'] },
-            { text: 'Verify chimney condition from inside', tags: ['attic', 'structural'] },
-            { text: 'Check if velux/dakramen (roof windows) can be added', tags: ['attic', 'renovation'] },
-            { text: 'Verify headroom (stahoogte) - min 2.1m for 50% of floor for habitable space', tags: ['attic', 'renovation'] }
-        ]
-    },
-    {
-        category: 'plumbing',
-        title: 'Water & Plumbing Systems (Sanitair)',
-        icon: 'fa-tint',
-        items: [
-            { text: 'Check hoofdkraan (main water shut-off valve) location and operation', tags: ['plumbing'] },
-            { text: 'Test waterdruk (water pressure) - should be 2-4 bar', tags: ['plumbing', 'kitchen', 'bathroom'] },
-            { text: 'Inspect leidingen (pipes) - lead pipes must be replaced', tags: ['plumbing', 'renovation'] },
-            { text: 'Check if copper or PVC piping used', tags: ['plumbing'] },
-            { text: 'Verify boiler (water heater) age and capacity - 10-15 year lifespan', tags: ['plumbing', 'basement'] },
-            { text: 'Check if condensatieketel (condensing boiler) installed', tags: ['plumbing', 'hvac', 'renovation'] },
-            { text: 'Test warm water recovery time and temperature', tags: ['plumbing'] },
-            { text: 'Inspect riolering (sewer/drainage) connection and certificate', tags: ['plumbing'] },
-            { text: 'Check for gescheiden rioleringsstelsel (separate sewage system)', tags: ['plumbing', 'renovation'] },
-            { text: 'Verify regenwater afvoer (rainwater drainage) separate from sewage', tags: ['plumbing', 'exterior'] },
-            { text: 'Check for proper drainage slopes in all pipes', tags: ['plumbing', 'renovation'] },
-            { text: 'Look for water stains (vochtplekken) on walls and ceilings', tags: ['plumbing', 'structural'] },
-            { text: 'Test all kranen (faucets) for leaks and operation', tags: ['plumbing'] },
-            { text: 'Check waterkwaliteit (water quality) - especially in older homes', tags: ['plumbing'] },
-            { text: 'Verify if regenwatertank (rainwater tank) present and functional', tags: ['plumbing', 'exterior'] }
-        ]
-    },
-    {
-        category: 'electrical',
-        title: 'Electrical Systems (Elektriciteit)',
-        icon: 'fa-bolt',
-        items: [
-            { text: 'Verify elektrische keuring (electrical inspection) is valid - required every 25 years', tags: ['electrical', 'documents'], deadline: 'electrical' },
-            { text: 'Inspect verdeelkast (electrical panel/fuse box)', tags: ['electrical', 'basement'] },
-            { text: 'Check if zekeringkast meets current standards (min 40A, prefer 63A+)', tags: ['electrical', 'renovation'] },
-            { text: 'Verify aardlekschakelaar (earth leakage circuit breaker/differentieelschakelaar) 300mA', tags: ['electrical'] },
-            { text: 'Check for 30mA aardlek in wet rooms (bathroom, kitchen)', tags: ['electrical', 'bathroom', 'kitchen'] },
-            { text: 'Test all stopcontacten (outlets) - need grounding (geaard)', tags: ['electrical'] },
-            { text: 'Verify adequate aantal stopcontacten per room (min. 5 per living room)', tags: ['electrical', 'renovation'] },
-            { text: 'Check if old two-prong outlets need replacing', tags: ['electrical', 'renovation'] },
-            { text: 'Inspect visible bedrading (wiring) - no cloth-covered old wires', tags: ['electrical', 'renovation'] },
-            { text: 'Test all lichtschakelaars (light switches)', tags: ['electrical'] },
-            { text: 'Check deurbel (doorbell) operation', tags: ['electrical'] },
-            { text: 'Verify rookmelders (smoke detectors) - mandatory in all bedrooms + hallway', tags: ['electrical'] },
-            { text: 'Test CO-melder (carbon monoxide detector) if gas present', tags: ['electrical', 'hvac'] },
-            { text: 'Check equipotentiaalverbinding (equipotential bonding) in bathroom', tags: ['electrical', 'bathroom'] },
-            { text: 'Verify if three-phase connection (driefasenaansluiting) available if needed', tags: ['electrical'] }
-        ]
-    },
-    {
-        category: 'structural',
-        title: 'Structural Elements (Structuur)',
-        icon: 'fa-building',
-        items: [
-            { text: 'Check muren (walls) for scheuren (cracks) or bowing', tags: ['structural'] },
-            { text: 'Inspect for scheurvorming around windows/doors - settlement indicator', tags: ['structural'] },
-            { text: 'Verify if walls are dragende muren (load-bearing) - critical for renovations', tags: ['structural', 'renovation'] },
-            { text: 'Check if removal of walls requires structural engineer (stabiliteitsingenieur)', tags: ['structural', 'renovation'] },
-            { text: 'Inspect vloeren (floors) for levelness and squeaks', tags: ['structural'] },
-            { text: 'Verify floor load capacity for planned use', tags: ['structural', 'renovation'] },
-            { text: 'Check houten balken (wooden beams) for rot or woodworm', tags: ['structural'] },
-            { text: 'Inspect plafonds (ceilings) for cracks or sagging', tags: ['structural'] },
-            { text: 'Check if plafond hoogte (ceiling height) meets standards - min 2.3m living space', tags: ['structural', 'renovation'] },
-            { text: 'Verify deurkozijnen (door frames) for squareness', tags: ['structural'] },
-            { text: 'Inspect trap (stairs) and leuningen (railings) for stability', tags: ['structural'] },
-            { text: 'Check staircase dimensions meet Belgian standards (rise max 21cm)', tags: ['structural', 'renovation'] },
-            { text: 'Look for signs of verzakking (settlement) - cracks, uneven floors', tags: ['structural', 'basement'] },
-            { text: 'Inspect fundering (foundation) type and condition', tags: ['structural', 'basement'] },
-            { text: 'Check basement steunbalken (support beams) and palen (posts)', tags: ['structural', 'basement'] },
-            { text: 'Verify if funderingsherstel (foundation repair) needed', tags: ['structural', 'renovation'] }
-        ]
-    },
-    {
-        category: 'hvac',
-        title: 'HVAC & Heating Systems (Verwarming & Ventilatie)',
-        icon: 'fa-fan',
-        items: [
-            { text: 'Check verwarmingsketel (heating boiler) age and condition - 15-20 year lifespan', tags: ['hvac', 'basement'] },
-            { text: 'Verify if condensatieketel (condensing boiler) - more efficient', tags: ['hvac', 'renovation'] },
-            { text: 'Check mazoutketel (oil boiler) vs gas - conversion costs', tags: ['hvac', 'renovation'] },
-            { text: 'Inspect warmtepomp (heat pump) if present - modern alternative', tags: ['hvac', 'renovation'] },
-            { text: 'Test verwarmingssysteem (heating system) operation', tags: ['hvac'] },
-            { text: 'Check radiatoren (radiators) condition and sizing', tags: ['hvac'] },
-            { text: 'Verify if vloerverwarming (underfloor heating) installed', tags: ['hvac', 'renovation'] },
-            { text: 'Inspect stookkeuring (boiler inspection) certificate - required every 2-5 years', tags: ['hvac', 'documents'] },
-            { text: 'Check ventilatie systeem (ventilation) - type C or D required in new builds', tags: ['hvac', 'renovation'] },
-            { text: 'Verify mechanical ventilation (VMC/WTW) present and operational', tags: ['hvac', 'renovation'] },
-            { text: 'Inspect ventilatieroosters (ventilation grills) in all rooms', tags: ['hvac'] },
-            { text: 'Check airco (air conditioning) if present - not common in Belgium', tags: ['hvac'] },
-            { text: 'Verify thermostaat (thermostat) operation and programmability', tags: ['hvac', 'electrical'] },
-            { text: 'Check mazout/stookolie tank (oil tank) age and condition if present', tags: ['hvac', 'basement'] },
-            { text: 'Verify gas connection certificate if gas heating', tags: ['hvac', 'documents'] },
-            { text: 'Ask for onderhoud (service/maintenance) records', tags: ['hvac'] }
-        ]
-    },
-    {
-        category: 'renovation',
-        title: 'Renovation Potential & Checks (Renovatie)',
-        icon: 'fa-tools',
-        items: [
-            { text: 'Check if bouwvergunning (building permit) required for planned changes', tags: ['renovation', 'documents'] },
-            { text: 'Verify plat dak isolatie (flat roof insulation) feasibility - external vs internal', tags: ['renovation', 'exterior'] },
-            { text: 'Check if exterior insulation affects door heights - may need deurverhogen', tags: ['renovation', 'exterior'] },
-            { text: 'Verify lichtkoepel verhogen needed (15cm minimum above insulation)', tags: ['renovation', 'exterior'] },
-            { text: 'Check if dorpel (threshold) height changes affect accessibility', tags: ['renovation'] },
-            { text: 'Assess gevelisolatie (facade insulation) potential - external, internal, or cavity', tags: ['renovation', 'exterior'] },
-            { text: 'Check if cavity wall is suitable for spouwmuurisolatie', tags: ['renovation', 'exterior'] },
-            { text: 'Verify if walls are thick enough for internal insulation without losing space', tags: ['renovation'] },
-            { text: 'Check vloerisolatie (floor insulation) feasibility - may affect ceiling height', tags: ['renovation', 'basement'] },
-            { text: 'Verify kruipruimte (crawl space) accessibility for insulation', tags: ['renovation', 'basement'] },
-            { text: 'Check if ramen vervangen (window replacement) needed for better EPC', tags: ['renovation', 'exterior'] },
-            { text: 'Assess potential for zolderverbouwing (attic conversion)', tags: ['renovation', 'attic'] },
-            { text: 'Check if dakopbouw (roof extension) is permitted', tags: ['renovation', 'attic', 'documents'] },
-            { text: 'Verify if kelderverbouwing (basement conversion) is feasible', tags: ['renovation', 'basement'] },
-            { text: 'Check if aanbouw (extension) is possible within plot boundaries', tags: ['renovation', 'exterior', 'documents'] },
-            { text: 'Assess badkamerrenovatie (bathroom renovation) complexity', tags: ['renovation', 'bathroom'] },
-            { text: 'Check if keukenrenovatie (kitchen renovation) needs plumbing relocation', tags: ['renovation', 'kitchen'] },
-            { text: 'Verify if loodgieterwerk (plumbing) replacement needed', tags: ['renovation', 'plumbing'] },
-            { text: 'Check if volledige herkabeling (complete rewiring) required', tags: ['renovation', 'electrical'] },
-            { text: 'Assess gevelsteen renovatie (brick facade renovation) needs', tags: ['renovation', 'exterior'] },
-            { text: 'Check if voegwerk herstellen (repointing) is needed - budget €40-80/m²', tags: ['renovation', 'exterior'] },
-            { text: 'Verify if schouwen/chimney can be removed or must be preserved', tags: ['renovation', 'structural'] },
-            { text: 'Check potential for zonnepanelen (solar panels) installation', tags: ['renovation', 'exterior', 'electrical'] },
-            { text: 'Verify south-facing roof suitability for solar panels', tags: ['renovation', 'exterior'] },
-            { text: 'Assess budget for asbestsanering (asbestos removal) if needed', tags: ['renovation', 'asbestos'] }
-        ]
-    },
-    {
-        category: 'apartment',
-        title: 'Apartment Specific (Appartement)',
-        icon: 'fa-building',
-        items: [
-            { text: 'Request and review syndicus info (building manager information)', tags: ['apartment', 'documents'] },
-            { text: 'Check recent algemene vergadering verslagen (general assembly minutes)', tags: ['apartment', 'documents'] },
-            { text: 'Review gemeenschappelijke kosten (common charges) amount and inclusions', tags: ['apartment', 'documents'] },
-            { text: 'Verify reservefonds (reserve fund) amount - should be healthy', tags: ['apartment', 'documents'] },
-            { text: 'Check for planned grote werken (major works) in building', tags: ['apartment', 'renovation'] },
-            { text: 'Verify lift (elevator) age and maintenance schedule', tags: ['apartment'] },
-            { text: 'Check if lift keuring (elevator inspection) is up to date', tags: ['apartment', 'documents'] },
-            { text: 'Inspect gemeenschappelijke delen (common areas) condition', tags: ['apartment'] },
-            { text: 'Verify trap (stairwell) cleanliness and maintenance', tags: ['apartment'] },
-            { text: 'Check fietsenstalling (bike storage) availability', tags: ['apartment'] },
-            { text: 'Verify kelder (storage cellar) assignment and condition', tags: ['apartment'] },
-            { text: 'Check parking/garage included or separate cost', tags: ['apartment'] },
-            { text: 'Verify if terras/balkon (terrace/balcony) is privaat or gemeenschappelijk', tags: ['apartment', 'exterior'] },
-            { text: 'Check soundproofing between apartments - test noise levels', tags: ['apartment'] },
-            { text: 'Verify bouwjaar (building year) and any renovations', tags: ['apartment', 'documents'] },
-            { text: 'Check if individual meters for water/heating or shared', tags: ['apartment', 'plumbing'] },
-            { text: 'Verify internet/TV connection possibilities (coax, fiber)', tags: ['apartment', 'electrical'] }
-        ]
-    }
-];
+let state = defaultState();
+let activeIssueFilter = null;
 
-// Application State
-let state = {
-    checklist: {}, // OK checkboxes
-    renovationNeeded: {}, // Renovation/Issue checkboxes
-    documentRequests: {}, // Document request buttons
-    notes: {},
-    globalNotes: '',
-    currentFilter: 'all',
-    propertyType: 'house', // 'house' or 'apartment'
-    propertyInfo: {
-        address: '',
-        contactPerson: '',
-        inspectionDate: '',
-        appointmentTime: '',
-        propertyNotes: ''
-    },
-    firstCheckboxDate: null,
-    lastCheckboxChangeDate: null,
-    compactMode: false
-};
+/* ------------------------------------------------------------------ *
+ * DOM references
+ * ------------------------------------------------------------------ */
+const checklistContainer = byId('checklistContainer');
+const filterButtons = document.querySelectorAll('#filterButtons .filter-btn');
+const globalNotesTextarea = byId('globalNotes');
+const progressFill = byId('progressFill');
+const progressBar = byId('progressBar');
+const checkedCount = byId('checkedCount');
+const issueCount = byId('issueCount');
+const requestCount = byId('requestCount');
+const totalCount = byId('totalCount');
+const percentComplete = byId('percentComplete');
 
-// DOM Elements
-const checklistContainer = document.getElementById('checklistContainer');
-const filterButtons = document.querySelectorAll('.filter-btn');
-const generateReportBtn = document.getElementById('generateReportBtn');
-const resetBtn = document.getElementById('resetBtn');
-const themeToggle = document.getElementById('themeToggle');
-const reportModal = document.getElementById('reportModal');
-const closeModal = document.getElementById('closeModal');
-const reportContent = document.getElementById('reportContent');
-const printReport = document.getElementById('printReport');
-const copyReport = document.getElementById('copyReport');
-const globalNotesTextarea = document.getElementById('globalNotes');
-const progressFill = document.getElementById('progressFill');
-const checkedCount = document.getElementById('checkedCount');
-const issueCount = document.getElementById('issueCount');
-const requestCount = document.getElementById('requestCount');
-const totalCount = document.getElementById('totalCount');
-const percentComplete = document.getElementById('percentComplete');
+const propertyAddressInput = byId('propertyAddress');
+const contactPersonInput = byId('contactPerson');
+const inspectionDateInput = byId('inspectionDate');
+const appointmentTimeInput = byId('appointmentTime');
+const askingPriceInput = byId('askingPrice');
+const propertyNotesInput = byId('propertyNotes');
+const regionSelect = byId('regionSelect');
 
-// Property Information Elements
-const propertyAddressInput = document.getElementById('propertyAddress');
-const contactPersonInput = document.getElementById('contactPerson');
-const inspectionDateInput = document.getElementById('inspectionDate');
-const appointmentTimeInput = document.getElementById('appointmentTime');
-const propertyNotesInput = document.getElementById('propertyNotes');
+const reportModal = byId('reportModal');
+const reportContent = byId('reportContent');
+const helpModal = byId('helpModal');
+const resourcesModal = byId('resourcesModal');
+const infoModal = byId('infoModal');
+const toolsModal = byId('toolsModal');
+const questionsModal = byId('questionsModal');
+const remindersModal = byId('remindersModal');
 
-// Help Modal Elements
-const helpBtn = document.getElementById('helpBtn');
-const helpModal = document.getElementById('helpModal');
-const closeHelpModal = document.getElementById('closeHelpModal');
-const helpTabs = document.querySelectorAll('.help-tab');
-const helpTabContents = document.querySelectorAll('.help-tab-content');
-
-// Deadline Modal Elements
-const deadlineModal = document.getElementById('deadlineModal');
-const closeDeadlineModal = document.getElementById('closeDeadlineModal');
-const deadlineTitle = document.getElementById('deadlineTitle');
-const deadlineText = document.getElementById('deadlineText');
-const deadlineDescription = document.getElementById('deadlineDescription');
-const deadlineAdditionalInfo = document.getElementById('deadlineAdditionalInfo');
-const deadlineSources = document.getElementById('deadlineSources');
-const additionalInfoSection = document.getElementById('additionalInfoSection');
-
-// Toggle All Button
-const toggleAllBtn = document.getElementById('toggleAllBtn');
-
-// Property Info Toggle Elements
-const togglePropertyBtn = document.getElementById('togglePropertyBtn');
+const toggleAllBtn = byId('toggleAllBtn');
+const togglePropertyBtn = byId('togglePropertyBtn');
 const propertyInfoCard = document.querySelector('.property-info-card');
-const propertyInfoGrid = document.getElementById('propertyInfoGrid');
-const propertyAddressPreview = document.getElementById('propertyAddressPreview');
+const propertyAddressPreview = byId('propertyAddressPreview');
+const scrollToTopBtn = byId('scrollToTopBtn');
+const compactModeBtn = byId('compactModeBtn');
 
-// Scroll to Top Elements
-const logoContainer = document.getElementById('logoContainer');
-const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+/* ------------------------------------------------------------------ *
+ * State persistence
+ * ------------------------------------------------------------------ */
+function saveState() {
+    if (!writeStorage(STORAGE_KEYS.state, JSON.stringify(state))) {
+        showToast(t('storage.failed'), 'error');
+    }
+}
 
-// Compact Mode Elements
-const compactModeBtn = document.getElementById('compactModeBtn');
+function loadState() {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('data');
 
-// Toggle Compact Mode Function
-function toggleCompactMode() {
-    state.compactMode = !state.compactMode;
-    document.body.classList.toggle('compact-mode', state.compactMode);
-
-    // Update button appearance
-    if (state.compactMode) {
-        compactModeBtn.classList.add('active');
+    if (encoded) {
+        const shared = decodeState(encoded);
+        if (shared) {
+            state = shared;
+            saveState();
+            const url = new URL(window.location.href);
+            url.search = '';
+            window.history.replaceState({}, document.title, url.toString());
+        }
     } else {
-        compactModeBtn.classList.remove('active');
+        const saved = readJSON(STORAGE_KEYS.state, null);
+        if (saved) state = normaliseState(saved);
+    }
+
+    globalNotesTextarea.value = state.globalNotes || '';
+    propertyAddressInput.value = state.propertyInfo.address || '';
+    contactPersonInput.value = state.propertyInfo.contactPerson || '';
+    inspectionDateInput.value = state.propertyInfo.inspectionDate || '';
+    appointmentTimeInput.value = state.propertyInfo.appointmentTime || '';
+    askingPriceInput.value = state.propertyInfo.askingPrice || '';
+    propertyNotesInput.value = state.propertyInfo.propertyNotes || '';
+
+    if (!inspectionDateInput.value) {
+        state.propertyInfo.inspectionDate = todayISO();
+        inspectionDateInput.value = state.propertyInfo.inspectionDate;
+        saveState();
+    }
+
+    syncPropertyTypeButtons();
+    syncCategoryFilterButtons();
+    syncRegionSelect();
+}
+
+function syncPropertyTypeButtons() {
+    document.querySelectorAll('.property-type-btn').forEach(btn => {
+        const active = btn.dataset.propertyType === state.propertyType;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+    });
+}
+
+function syncCategoryFilterButtons() {
+    let matched = false;
+    filterButtons.forEach(btn => {
+        const active = btn.dataset.category === state.currentFilter;
+        if (active) matched = true;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+    });
+    if (!matched) {
+        state.currentFilter = 'all';
+        filterButtons.forEach(btn => {
+            const isAll = btn.dataset.category === 'all';
+            btn.classList.toggle('active', isAll);
+            btn.setAttribute('aria-pressed', String(isAll));
+        });
+    }
+}
+
+function syncRegionSelect() {
+    if (!regionSelect) return;
+    regionSelect.innerHTML = '';
+    REGIONS.forEach(region => {
+        const option = document.createElement('option');
+        option.value = region.id;
+        option.textContent = pick(region.label);
+        regionSelect.appendChild(option);
+    });
+    regionSelect.value = state.region;
+}
+
+/* ------------------------------------------------------------------ *
+ * Rendering
+ * ------------------------------------------------------------------ */
+function categoryMatchesFilter(category, filter) {
+    if (!filter || filter === 'all') return true;
+    if (category.category === filter) return true;
+    return category.items.some(item => item.tags.includes(filter));
+}
+
+function renderChecklist() {
+    checklistContainer.innerHTML = '';
+    activeIssueFilter = null;
+
+    const fragment = document.createDocumentFragment();
+
+    visibleCategories(state).forEach(category => {
+        const group = document.createElement('div');
+        group.className = 'category-group';
+        group.dataset.category = category.category;
+
+        const headerId = `cat-header-${category.category}`;
+        const contentId = `cat-content-${category.category}`;
+
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.id = headerId;
+        header.setAttribute('role', 'button');
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('aria-expanded', 'true');
+        header.setAttribute('aria-controls', contentId);
+        header.innerHTML = `
+            <h3><i class="fas ${escapeHTML(category.icon)}" aria-hidden="true"></i> ${escapeHTML(categoryTitle(category))}</h3>
+            <i class="fas fa-chevron-down toggle-icon" aria-hidden="true"></i>
+        `;
+
+        const content = document.createElement('div');
+        content.className = 'category-content';
+        content.id = contentId;
+        content.setAttribute('role', 'region');
+        content.setAttribute('aria-labelledby', headerId);
+
+        category.items.forEach((item, index) => content.appendChild(buildItem(category, item, index)));
+
+        const toggle = () => {
+            const collapsed = header.classList.toggle('collapsed');
+            content.classList.toggle('collapsed', collapsed);
+            header.setAttribute('aria-expanded', String(!collapsed));
+            updateToggleButtonState();
+        };
+        header.addEventListener('click', toggle);
+        header.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+
+        group.appendChild(header);
+        group.appendChild(content);
+        fragment.appendChild(group);
+    });
+
+    checklistContainer.appendChild(fragment);
+
+    checklistContainer.querySelectorAll('input[type="checkbox"]:not(.renovation-checkbox)')
+        .forEach(cb => cb.addEventListener('change', handleCheckboxChange));
+    checklistContainer.querySelectorAll('.renovation-checkbox')
+        .forEach(cb => cb.addEventListener('change', handleRenovationChange));
+    checklistContainer.querySelectorAll('.request-doc-btn')
+        .forEach(btn => btn.addEventListener('click', handleDocumentRequest));
+    checklistContainer.querySelectorAll('.item-note-textarea')
+        .forEach(area => area.addEventListener('input', handleNoteChange));
+
+    updateIssueFilters();
+}
+
+function buildItem(category, item, index) {
+    const id = itemId(category, index);
+    const isOK = !!state.checklist[id];
+    const hasIssue = !!state.renovationNeeded[id];
+    const requested = !!state.documentRequests[id];
+    const note = state.notes[id] || '';
+    const isDocument = category.category === 'documents';
+
+    const el = document.createElement('div');
+    el.className = 'checklist-item';
+    el.dataset.key = id;
+    el.dataset.index = String(index);
+
+    const safeId = escapeHTML(id);
+    let checkboxHTML;
+    if (isDocument) {
+        checkboxHTML = `
+            <div class="checkbox-wrapper"${requested ? ' style="opacity:0.5;"' : ''}>
+                <input type="checkbox" id="item-${safeId}" ${isOK ? 'checked' : ''} ${requested ? 'disabled' : ''} data-key="${safeId}">
+                <label for="item-${safeId}" class="checkbox-label ok-label">${escapeHTML(t('item.have'))}</label>
+            </div>
+            <button class="request-doc-btn ${requested ? 'requested' : ''}" data-key="${safeId}" aria-pressed="${requested}">
+                ${escapeHTML(requested ? t('item.requested') : t('item.request'))}
+            </button>`;
+    } else {
+        checkboxHTML = `
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="item-${safeId}" ${isOK ? 'checked' : ''} data-key="${safeId}">
+                <label for="item-${safeId}" class="checkbox-label ok-label">${escapeHTML(t('item.ok'))}</label>
+            </div>
+            <div class="checkbox-wrapper renovation-check">
+                <input type="checkbox" id="reno-${safeId}" ${hasIssue ? 'checked' : ''} data-key="${safeId}" class="renovation-checkbox">
+                <label for="reno-${safeId}" class="checkbox-label issue-label">${escapeHTML(t('item.issue'))}</label>
+            </div>`;
+    }
+
+    const topicKey = item.deadline || item.info;
+    const topic = lookupTopic(topicKey);
+    const infoButton = topic
+        ? `<button class="info-topic-btn" data-topic="${escapeHTML(topicKey)}" title="${escapeHTML(t('item.moreInfo'))}" aria-label="${escapeHTML(t('item.moreInfo'))}"><i class="fas fa-info-circle" aria-hidden="true"></i></button>`
+        : '';
+
+    const why = itemWhy(category, index, item);
+    const whyId = `why-${id}`;
+    const whyBlock = why
+        ? `<button class="why-toggle" type="button" data-why-target="${escapeHTML(whyId)}" aria-expanded="false" aria-controls="${escapeHTML(whyId)}">
+               <i class="fas fa-circle-question" aria-hidden="true"></i> ${escapeHTML(t('item.why'))}
+           </button>
+           <div class="item-why" id="${escapeHTML(whyId)}" hidden>
+               <strong>${escapeHTML(t('item.whyTitle'))}:</strong> ${escapeHTML(why)}
+           </div>`
+        : '';
+
+    const noteDisplay = note
+        ? `<span class="note-text">${escapeHTML(note)}</span> <button class="edit-note-btn" data-key="${safeId}" title="${escapeHTML(t('item.editNote'))}" aria-label="${escapeHTML(t('item.editNote'))}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>`
+        : `<button class="add-note-btn" data-key="${safeId}" title="${escapeHTML(t('item.addNote'))}"><i class="fas fa-plus-circle" aria-hidden="true"></i> ${escapeHTML(t('item.addNote'))}</button>`;
+
+    el.innerHTML = `
+        <div class="checkbox-container">${checkboxHTML}</div>
+        <div class="item-content">
+            <div class="item-text-wrapper">
+                <div class="item-text ${isOK ? 'checked' : ''} ${hasIssue ? 'needs-renovation' : ''}" id="text-${safeId}">
+                    ${escapeHTML(itemText(category, index, item))}
+                    ${infoButton}
+                </div>
+                <div class="compact-note-display" data-key="${safeId}">${noteDisplay}</div>
+            </div>
+            ${whyBlock}
+            <div class="item-tags">
+                ${item.tags.map(tag => `<span class="tag">${escapeHTML(tagLabel(tag))}</span>`).join('')}
+            </div>
+            <div class="item-notes">
+                <label class="visually-hidden" for="note-${safeId}">${escapeHTML(t('item.notes.ph'))}</label>
+                <textarea id="note-${safeId}" placeholder="${escapeHTML(t('item.notes.ph'))}" data-key="${safeId}" class="item-note-textarea">${escapeHTML(note)}</textarea>
+            </div>
+        </div>`;
+
+    if (state.showUncheckedOnly && isOK) el.style.display = 'none';
+    return el;
+}
+
+/* ------------------------------------------------------------------ *
+ * Filters
+ * ------------------------------------------------------------------ */
+function getCategoryIcon(tag) {
+    const icons = {
+        documents: 'fas fa-file-contract', asbestos: 'fas fa-exclamation-triangle',
+        exterior: 'fas fa-building', kitchen: 'fas fa-utensils', bathroom: 'fas fa-bath',
+        bedroom: 'fas fa-bed', livingroom: 'fas fa-couch', basement: 'fas fa-dungeon',
+        attic: 'fas fa-house-damage', plumbing: 'fas fa-tint', electrical: 'fas fa-bolt',
+        structural: 'fas fa-hard-hat', hvac: 'fas fa-fan', renovation: 'fas fa-tools',
+        apartment: 'fas fa-building'
+    };
+    return icons[tag] || 'fas fa-tag';
+}
+
+function updateIssueFilters() {
+    const container = byId('issueFilterButtons');
+    if (!container) return;
+
+    const counts = {};
+    visibleCategories(state).forEach(category => {
+        category.items.forEach((item, index) => {
+            if (!state.renovationNeeded[itemId(category, index)]) return;
+            item.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; });
+        });
+    });
+
+    container.innerHTML = '';
+    const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+    if (!tags.length) {
+        const empty = document.createElement('p');
+        empty.className = 'issue-filter-empty';
+        empty.textContent = t('filter.issuesEmpty');
+        container.appendChild(empty);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    tags.forEach(tag => {
+        const button = document.createElement('button');
+        button.className = 'issue-filter-btn' + (activeIssueFilter === tag ? ' active' : '');
+        button.dataset.issueCategory = tag;
+        button.setAttribute('aria-pressed', String(activeIssueFilter === tag));
+        button.innerHTML = `
+            <i class="${escapeHTML(getCategoryIcon(tag))}" aria-hidden="true"></i>
+            ${escapeHTML(tagLabel(tag))}
+            <span class="issue-count">${counts[tag]}</span>`;
+        button.addEventListener('click', () => handleIssueFilterClick(button, tag));
+        fragment.appendChild(button);
+    });
+    container.appendChild(fragment);
+}
+
+function handleIssueFilterClick(button, tag) {
+    const wasActive = button.classList.contains('active');
+    document.querySelectorAll('.issue-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
+    });
+    activeIssueFilter = wasActive ? null : tag;
+    if (!wasActive) {
+        button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
+    }
+    applyFilters();
+}
+
+function applyFilters() {
+    document.querySelectorAll('.category-group').forEach(group => {
+        const category = checklistData.find(c => c.category === group.dataset.category);
+        if (!category) return;
+
+        const categoryVisible = categoryMatchesFilter(category, state.currentFilter);
+        let anyVisible = false;
+
+        group.querySelectorAll('.checklist-item').forEach(el => {
+            const item = category.items[Number(el.dataset.index)];
+            const id = el.dataset.key;
+            if (!item) return;
+
+            let visible = categoryVisible;
+            if (visible && activeIssueFilter) {
+                visible = !!state.renovationNeeded[id] && item.tags.includes(activeIssueFilter);
+            }
+            if (visible && state.showUncheckedOnly && state.checklist[id]) visible = false;
+
+            el.style.display = visible ? 'flex' : 'none';
+            if (visible) anyVisible = true;
+        });
+
+        const show = categoryVisible && (anyVisible || (!activeIssueFilter && !state.showUncheckedOnly));
+        group.classList.toggle('hidden', !show);
+    });
+}
+
+/* ------------------------------------------------------------------ *
+ * Interaction
+ * ------------------------------------------------------------------ */
+function updateCheckboxDates() {
+    const now = new Date().toISOString();
+    if (!state.firstCheckboxDate) {
+        const any = Object.values(state.checklist).some(Boolean) ||
+            Object.values(state.renovationNeeded).some(Boolean) ||
+            Object.values(state.documentRequests).some(Boolean);
+        if (any) state.firstCheckboxDate = now;
+    }
+    state.lastCheckboxChangeDate = now;
+}
+
+function handleCheckboxChange(e) {
+    const key = e.target.dataset.key;
+    state.checklist[key] = e.target.checked;
+    updateCheckboxDates();
+    const textEl = byId(`text-${key}`);
+    if (textEl) textEl.classList.toggle('checked', e.target.checked);
+    saveState();
+    updateProgress();
+    if (state.showUncheckedOnly) applyFilters();
+}
+
+function handleRenovationChange(e) {
+    const key = e.target.dataset.key;
+    state.renovationNeeded[key] = e.target.checked;
+    updateCheckboxDates();
+    const textEl = byId(`text-${key}`);
+    if (textEl) textEl.classList.toggle('needs-renovation', e.target.checked);
+    saveState();
+    updateProgress();
+    updateIssueFilters();
+    if (activeIssueFilter) applyFilters();
+}
+
+function handleDocumentRequest(e) {
+    const button = e.currentTarget;
+    const key = button.dataset.key;
+    state.documentRequests[key] = !state.documentRequests[key];
+    updateCheckboxDates();
+
+    const requested = state.documentRequests[key];
+    const have = byId(`item-${key}`);
+
+    button.classList.toggle('requested', requested);
+    button.textContent = requested ? t('item.requested') : t('item.request');
+    button.setAttribute('aria-pressed', String(requested));
+
+    if (requested) {
+        state.checklist[key] = false;
+        if (have) {
+            have.checked = false;
+            have.disabled = true;
+            have.parentElement.style.opacity = '0.5';
+        }
+        const textEl = byId(`text-${key}`);
+        if (textEl) textEl.classList.remove('checked');
+    } else if (have) {
+        have.disabled = false;
+        have.parentElement.style.opacity = '';
     }
 
     saveState();
+    updateProgress();
 }
 
-// Load Compact Mode State
-function loadCompactModeState() {
-    if (state.compactMode) {
-        document.body.classList.add('compact-mode');
-        compactModeBtn.classList.add('active');
-    }
+function handleNoteChange(e) {
+    const key = e.target.dataset.key;
+    state.notes[key] = e.target.value;
+    updateCompactNoteDisplay(key);
+    saveState();
 }
 
-function loadShowUncheckedState() {
-    const showUncheckedBtn = document.getElementById('showUncheckedBtn');
-    if (showUncheckedBtn && state.showUncheckedOnly) {
-        showUncheckedBtn.classList.add('active');
-        const buttonText = showUncheckedBtn.querySelector('span');
-        const buttonIcon = showUncheckedBtn.querySelector('i');
-        buttonText.textContent = 'Show All';
-        buttonIcon.className = 'fas fa-eye';
-    }
+function updateCompactNoteDisplay(key) {
+    const display = document.querySelector(`.compact-note-display[data-key="${CSS.escape(key)}"]`);
+    if (!display) return;
+    const note = state.notes[key] || '';
+    display.innerHTML = note
+        ? `<span class="note-text">${escapeHTML(note)}</span> <button class="edit-note-btn" data-key="${escapeHTML(key)}" title="${escapeHTML(t('item.editNote'))}" aria-label="${escapeHTML(t('item.editNote'))}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>`
+        : `<button class="add-note-btn" data-key="${escapeHTML(key)}" title="${escapeHTML(t('item.addNote'))}"><i class="fas fa-plus-circle" aria-hidden="true"></i> ${escapeHTML(t('item.addNote'))}</button>`;
 }
 
-// Scroll to Top Function
-function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-}
+function handleCompactNoteEdit(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const button = e.target.closest('.add-note-btn, .edit-note-btn');
+    if (!button) return;
+    const itemEl = button.closest('.checklist-item');
+    if (!itemEl) return;
+    const textarea = itemEl.querySelector('.item-note-textarea');
+    const notes = itemEl.querySelector('.item-notes');
+    if (!textarea) return;
 
-// Scroll to Top with Animation
-function scrollToTopWithAnimation() {
-    // Add clicking animation class
-    scrollToTopBtn.classList.add('clicking');
+    if (notes) notes.classList.add('editing');
+    textarea.style.display = 'block';
+    textarea.style.visibility = 'visible';
+    textarea.style.minHeight = '80px';
+    setTimeout(() => { textarea.focus(); if (textarea.value) textarea.select(); }, 10);
 
-    // Start scrolling
-    scrollToTop();
-
-    // Remove animation class after animation completes
-    setTimeout(() => {
-        scrollToTopBtn.classList.remove('clicking');
-    }, 600);
-}
-
-// Handle Scroll Event
-function handleScroll() {
-    // Show/hide scroll-to-top button based on scroll position
-    if (window.scrollY > 300) {
-        scrollToTopBtn.classList.add('visible');
-    } else {
-        scrollToTopBtn.classList.remove('visible');
-    }
-}
-
-// Toggle Property Info Function
-function togglePropertyInfo() {
-    propertyInfoCard.classList.toggle('collapsed');
-
-    // Save state
-    const isCollapsed = propertyInfoCard.classList.contains('collapsed');
-    localStorage.setItem('propertyInfoCollapsed', isCollapsed);
-
-    // Update address preview
-    updatePropertyAddressPreview();
-}
-
-// Update Property Address Preview
-function updatePropertyAddressPreview() {
-    const address = propertyAddressInput.value.trim();
-    if (address && propertyInfoCard.classList.contains('collapsed')) {
-        propertyAddressPreview.textContent = address;
-    } else {
-        propertyAddressPreview.textContent = '';
-    }
-}
-
-// Load Property Info Collapsed State
-function loadPropertyInfoState() {
-    const isCollapsed = localStorage.getItem('propertyInfoCollapsed') === 'true';
-    if (isCollapsed) {
-        propertyInfoCard.classList.add('collapsed');
-        updatePropertyAddressPreview();
-    }
-}
-
-// Toggle All Categories Function
-function toggleAllCategories() {
-    const categoryHeaders = document.querySelectorAll('.category-header');
-
-    // Check if all categories are currently collapsed
-    const allCollapsed = Array.from(categoryHeaders).every(header =>
-        header.classList.contains('collapsed')
-    );
-
-    // Toggle all categories
-    categoryHeaders.forEach(header => {
-        const content = header.nextElementSibling;
-
-        if (allCollapsed) {
-            // Expand all
-            header.classList.remove('collapsed');
-            content.classList.remove('collapsed');
-        } else {
-            // Collapse all
-            header.classList.add('collapsed');
-            content.classList.add('collapsed');
+    const hide = () => {
+        if (state.compactMode) {
+            textarea.style.display = '';
+            textarea.style.visibility = '';
+            textarea.style.minHeight = '';
+            if (notes) notes.classList.remove('editing');
         }
+        textarea.removeEventListener('blur', hide);
+    };
+    textarea.addEventListener('blur', hide);
+}
+
+/* ------------------------------------------------------------------ *
+ * Progress
+ * ------------------------------------------------------------------ */
+function updateProgress() {
+    const summary = summariseState(state);
+    progressFill.style.width = `${summary.percent}%`;
+    if (progressBar) progressBar.setAttribute('aria-valuenow', String(summary.percent));
+    checkedCount.textContent = summary.ok;
+    issueCount.textContent = summary.issues;
+    requestCount.textContent = summary.requests;
+    totalCount.textContent = summary.total;
+    percentComplete.textContent = `${summary.percent}%`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Info modal (legal + advisory topics, region aware)
+ * ------------------------------------------------------------------ */
+function statusBadge(status) {
+    const map = {
+        verified: { cls: 'ok', key: 'status.verified' },
+        unverified: { cls: 'warn', key: 'status.unverified' },
+        'not-applicable': { cls: 'muted', key: 'status.notApplicable' }
+    };
+    const entry = map[status] || map.unverified;
+    return `<span class="status-badge status-${entry.cls}">${escapeHTML(t(entry.key))}</span>`;
+}
+
+function sourcesHTML(sources) {
+    const list = (sources || []).map(s => ({ label: s.label, url: safeUrl(s.url) })).filter(s => s.url);
+    if (!list.length) return '';
+    return `<ul class="source-list">${list.map(s => `
+        <li><a href="${escapeHTML(s.url)}" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-external-link-alt" aria-hidden="true"></i> ${escapeHTML(s.label)}
+        </a></li>`).join('')}</ul>`;
+}
+
+function showTopic(topicKey) {
+    const found = lookupTopic(topicKey);
+    if (!found) return;
+
+    const titleEl = byId('infoModalTitle');
+    const bodyEl = byId('infoModalBody');
+    titleEl.innerHTML = `<i class="fas ${escapeHTML(found.topic.icon || 'fa-info-circle')}" aria-hidden="true"></i> ${escapeHTML(pick(found.topic.title))}`;
+
+    if (found.kind === 'advisory') {
+        bodyEl.innerHTML = `
+            <div class="info-section">
+                <h3><i class="fas fa-clock" aria-hidden="true"></i> ${escapeHTML(t('info.whenToCheck'))}</h3>
+                <p class="info-highlight">${escapeHTML(pick(found.topic.when))}</p>
+            </div>
+            <div class="info-section">
+                <h3><i class="fas fa-eye" aria-hidden="true"></i> ${escapeHTML(t('info.whatToLookFor'))}</h3>
+                <p>${escapeHTML(pick(found.topic.description))}</p>
+            </div>
+            <div class="info-section">
+                <h3><i class="fas fa-lightbulb" aria-hidden="true"></i> ${escapeHTML(t('info.whyItMatters'))}</h3>
+                <p>${escapeHTML(pick(found.topic.detail))}</p>
+            </div>`;
+        openModal(infoModal);
+        return;
+    }
+
+    const topic = found.topic;
+    let html = `
+        <div class="info-section">
+            <h3><i class="fas fa-info-circle" aria-hidden="true"></i> ${escapeHTML(t('info.description'))}</h3>
+            <p>${escapeHTML(pick(topic.description))}</p>
+        </div>
+        <div class="info-section">
+            <h3><i class="fas fa-lightbulb" aria-hidden="true"></i> ${escapeHTML(t('info.whyItMatters'))}</h3>
+            <p>${escapeHTML(pick(topic.why))}</p>
+        </div>
+        <h3 class="info-region-heading"><i class="fas fa-scale-balanced" aria-hidden="true"></i> ${escapeHTML(t('info.perRegion'))}</h3>`;
+
+    REGIONS.forEach(region => {
+        const block = topicForRegion(topic, region.id);
+        if (!block) return;
+        const isCurrent = region.id === state.region;
+        html += `
+            <div class="info-section region-block${isCurrent ? ' region-current' : ''}">
+                <h4>
+                    <i class="fas fa-location-dot" aria-hidden="true"></i> ${escapeHTML(pick(region.label))}
+                    ${statusBadge(block.status)}
+                    ${isCurrent ? `<span class="region-current-tag">${escapeHTML(t('info.yourRegion'))}</span>` : ''}
+                </h4>
+                <p class="info-highlight">${escapeHTML(pick(block.deadline))}</p>
+                <p>${escapeHTML(pick(block.detail))}</p>
+                ${block.status === 'unverified' ? `<p class="info-warning"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> ${escapeHTML(t('info.unverifiedWarning'))}</p>` : ''}
+                ${sourcesHTML(block.sources)}
+                <p class="info-verified">${escapeHTML(t('info.lastVerified'))}: ${escapeHTML(formatDate(block.lastVerified, currentLanguage))}</p>
+            </div>`;
     });
 
-    // Update button state and text
+    bodyEl.innerHTML = html;
+    openModal(infoModal);
+}
+
+/* ------------------------------------------------------------------ *
+ * Resources (region filtered)
+ * ------------------------------------------------------------------ */
+function renderResources() {
+    const container = byId('resourcesContent');
+    if (!container) return;
+
+    container.innerHTML = LINK_GROUPS.map(group => {
+        const links = group.links
+            .filter(link => !link.regions || link.regions.includes(state.region))
+            .map(link => Object.assign({}, link, { url: safeUrl(link.url) }))
+            .filter(link => link.url);
+        if (!links.length) return '';
+        return `
+            <div class="help-section resource-group">
+                <h4><i class="fas ${escapeHTML(group.icon)}" aria-hidden="true"></i> ${escapeHTML(pick(group.title))}</h4>
+                <p>${escapeHTML(pick(group.intro))}</p>
+                <ul class="resource-list">
+                    ${links.map(link => `
+                        <li>
+                            <a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-external-link-alt" aria-hidden="true"></i> ${escapeHTML(pick(link.label))}
+                            </a>
+                            ${link.note ? `<span class="resource-note">${escapeHTML(pick(link.note))}</span>` : ''}
+                        </li>`).join('')}
+                </ul>
+            </div>`;
+    }).join('');
+
+    const hint = byId('resourcesRegionHint');
+    if (hint) {
+        hint.textContent = t('resources.regionHint').replace('{region}', regionLabel(state.region)) +
+            ' ' + t('resources.lastCheck').replace('{date}', formatDate(LINKS_META.lastCheck, currentLanguage));
+    }
+}
+
+function renderGuide() {
+    const container = byId('guideContent');
+    if (!container) return;
+    const steps = BUYING_GUIDE[currentLanguage] || BUYING_GUIDE[DEFAULT_LANGUAGE];
+    container.innerHTML = steps.map(step => `
+        <div class="help-section">
+            <h4><i class="fas ${escapeHTML(step.icon)}" aria-hidden="true"></i> ${escapeHTML(step.title)}</h4>
+            <p>${escapeHTML(step.body)}</p>
+        </div>`).join('');
+}
+
+function renderFaq() {
+    const container = byId('faqContent');
+    if (!container) return;
+    const entries = FAQ_CONTENT[currentLanguage] || FAQ_CONTENT[DEFAULT_LANGUAGE];
+    container.innerHTML = entries.map(entry => `
+        <details class="faq-item">
+            <summary>${escapeHTML(entry.q)}</summary>
+            <p>${escapeHTML(entry.a)}</p>
+        </details>`).join('');
+}
+
+/**
+ * Renders the About / How to use / Roadmap / GDPR / Privacy tabs from
+ * HELP_CONTENT so they follow the language like everything else.
+ * `linkify` turns the few known references into real links after escaping,
+ * so no untrusted HTML is ever injected.
+ */
+function linkifyHelp(text) {
+    return escapeHTML(text)
+        .replace(/huiskeuring@compyra\.com/g, '<a href="mailto:huiskeuring@compyra.com">huiskeuring@compyra.com</a>')
+        .replace(/(^|[\s(])compyra\.com/g, '$1<a href="https://compyra.com" target="_blank" rel="noopener noreferrer">compyra.com</a>');
+}
+
+function renderHelpContent() {
+    const bundle = HELP_CONTENT[currentLanguage] || HELP_CONTENT[DEFAULT_LANGUAGE];
+    const fallback = HELP_CONTENT[DEFAULT_LANGUAGE];
+
+    ['about', 'usage', 'roadmap', 'gdpr', 'privacy'].forEach(tab => {
+        const panel = byId(`${tab}-tab`);
+        if (!panel) return;
+        const content = (bundle && bundle[tab]) || (fallback && fallback[tab]);
+        if (!content) return;
+
+        panel.innerHTML = `
+            <h3>${escapeHTML(content.heading)}</h3>
+            ${content.sections.map(section => `
+                <div class="help-section">
+                    <h4><i class="fas ${escapeHTML(section.icon)}" aria-hidden="true"></i> ${escapeHTML(section.title)}</h4>
+                    ${(section.p || []).map(p => `<p>${linkifyHelp(p)}</p>`).join('')}
+                    ${section.ul ? `<ul>${section.ul.map(li => `<li>${linkifyHelp(li)}</li>`).join('')}</ul>` : ''}
+                </div>`).join('')}`;
+    });
+}
+
+/* ------------------------------------------------------------------ *
+ * Report
+ * ------------------------------------------------------------------ */
+function collectItems() {
+    const result = { ok: [], issues: [], unchecked: [], notes: [], documents: [] };
+    visibleCategories(state).forEach(category => {
+        category.items.forEach((item, index) => {
+            const id = itemId(category, index);
+            const data = {
+                id: id,
+                category: categoryTitle(category),
+                categorySlug: category.category,
+                text: itemText(category, index, item),
+                why: itemWhy(category, index, item),
+                note: state.notes[id] || '',
+                tags: item.tags,
+                topic: item.deadline || item.info || null
+            };
+            const isOK = !!state.checklist[id];
+            const hasIssue = !!state.renovationNeeded[id];
+            if (isOK) result.ok.push(data);
+            if (hasIssue) result.issues.push(data);
+            if (!isOK && !hasIssue) result.unchecked.push(data);
+            if (data.note) result.notes.push(data);
+            if (state.documentRequests[id]) result.documents.push(data);
+        });
+    });
+    return result;
+}
+
+function reportListHTML(title, icon, items, extraClass) {
+    if (!items.length) return '';
+    return `
+        <div class="report-section">
+            <h3><i class="fas ${icon}" aria-hidden="true"></i> ${escapeHTML(title)} (${items.length})</h3>
+            <ul>
+                ${items.map(item => `
+                    <li class="${extraClass || ''}">
+                        <strong>${escapeHTML(item.category)}:</strong> ${escapeHTML(item.text)}
+                        ${item.note ? `<div class="report-note"><strong>${escapeHTML(t('report.note'))}:</strong> ${escapeHTML(item.note)}</div>` : ''}
+                    </li>`).join('')}
+            </ul>
+        </div>`;
+}
+
+function buildReportHTML() {
+    const info = state.propertyInfo;
+    const summary = summariseState(state);
+    const groups = collectItems();
+    let html = '<div class="report-container">';
+
+    if (info.address || info.contactPerson) {
+        html += `
+            <div class="report-section property-info-report">
+                <h3><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHTML(t('section.propertyInfo'))}</h3>
+                ${info.address ? `<p><strong>${escapeHTML(t('field.address'))}:</strong> ${escapeHTML(info.address)}</p>` : ''}
+                ${info.contactPerson ? `<p><strong>${escapeHTML(t('field.contact'))}:</strong> ${escapeHTML(info.contactPerson)}</p>` : ''}
+                ${info.inspectionDate ? `<p><strong>${escapeHTML(t('field.date'))}:</strong> ${escapeHTML(formatDate(info.inspectionDate, currentLanguage))}</p>` : ''}
+                ${info.appointmentTime ? `<p><strong>${escapeHTML(t('field.time'))}:</strong> ${escapeHTML(info.appointmentTime)}</p>` : ''}
+                ${info.askingPrice ? `<p><strong>${escapeHTML(t('field.price'))}:</strong> ${escapeHTML(info.askingPrice)}</p>` : ''}
+                ${info.propertyNotes ? `<p><strong>${escapeHTML(t('field.details'))}:</strong> ${escapeHTML(info.propertyNotes)}</p>` : ''}
+            </div>`;
+    }
+
+    html += `
+        <div class="report-section">
+            <h3><i class="fas fa-info-circle" aria-hidden="true"></i> ${escapeHTML(t('report.summary'))}</h3>
+            <p><strong>${escapeHTML(t('report.generated'))}:</strong> ${escapeHTML(formatDate(new Date().toISOString(), currentLanguage))}</p>
+            <p><strong>${escapeHTML(t('section.propertyType'))}:</strong> ${escapeHTML(state.propertyType === 'apartment' ? t('type.apartment') : t('type.house'))}</p>
+            <p><strong>${escapeHTML(t('field.region'))}:</strong> ${escapeHTML(regionLabel(state.region))}</p>
+            <p><strong>${escapeHTML(t('report.progress'))}:</strong> ${summary.checked} / ${summary.total} ${escapeHTML(t('report.itemsChecked'))} (${summary.percent}%)</p>
+        </div>`;
+
+    html += reportListHTML(t('report.documents'), 'fa-file-alt', groups.documents);
+    html += reportListHTML(t('report.issues'), 'fa-exclamation-triangle', groups.issues, 'report-issue');
+    html += reportListHTML(t('report.ok'), 'fa-check-circle', groups.ok);
+    html += reportListHTML(t('report.unchecked'), 'fa-times-circle', groups.unchecked);
+    html += reportListHTML(t('report.withNotes'), 'fa-sticky-note', groups.notes);
+
+    if (state.globalNotes) {
+        html += `
+            <div class="report-section">
+                <h3><i class="fas fa-file-alt" aria-hidden="true"></i> ${escapeHTML(t('report.generalNotes'))}</h3>
+                <div class="report-note">${escapeHTML(state.globalNotes)}</div>
+            </div>`;
+    }
+
+    html += `<p class="report-disclaimer">${escapeHTML(t('report.disclaimer'))}</p>`;
+    return html + '</div>';
+}
+
+function generateReport() {
+    reportContent.innerHTML = buildReportHTML();
+    openModal(reportModal);
+}
+
+/* ------------------------------------------------------------------ *
+ * Seller / agent question sheet
+ * ------------------------------------------------------------------ *
+ * Deliberately NOT the same as the issue list: it turns findings into
+ * questions with a follow-up, adds the documents to request, and adds the
+ * standard questions that apply to every viewing.
+ * ------------------------------------------------------------------ */
+const STANDARD_QUESTIONS = {
+    all: ['q.std.why', 'q.std.howLong', 'q.std.works', 'q.std.invoices', 'q.std.neighbours', 'q.std.bills', 'q.std.offers', 'q.std.included'],
+    house: ['q.std.roofAge', 'q.std.boilerAge', 'q.std.damp', 'q.std.garden'],
+    apartment: ['q.std.charges', 'q.std.assembly', 'q.std.reserve', 'q.std.plannedWorks']
+};
+
+function buildQuestionSheet() {
+    const groups = collectItems();
+    const sections = [];
+
+    const standard = STANDARD_QUESTIONS.all
+        .concat(state.propertyType === 'apartment' ? STANDARD_QUESTIONS.apartment : STANDARD_QUESTIONS.house)
+        .map(key => t(key));
+    sections.push({ title: t('questions.standard'), icon: 'fa-comments', items: standard });
+
+    if (groups.documents.length) {
+        sections.push({
+            title: t('questions.documents'),
+            icon: 'fa-file-contract',
+            items: groups.documents.map(item => t('questions.docTemplate').replace('{item}', item.text))
+        });
+    }
+
+    if (groups.issues.length) {
+        sections.push({
+            title: t('questions.issues'),
+            icon: 'fa-triangle-exclamation',
+            items: groups.issues.map(item => {
+                const base = t('questions.issueTemplate').replace('{item}', item.text);
+                return item.note ? `${base} (${t('report.note')}: ${item.note})` : base;
+            })
+        });
+    }
+
+    const legalTopics = new Set();
+    groups.issues.concat(groups.documents).forEach(item => {
+        if (item.topic && LEGAL_TOPICS[item.topic]) legalTopics.add(item.topic);
+    });
+    if (legalTopics.size) {
+        sections.push({
+            title: t('questions.legal'),
+            icon: 'fa-scale-balanced',
+            items: Array.from(legalTopics).map(key => {
+                const block = topicForRegion(LEGAL_TOPICS[key], state.region);
+                const deadline = block ? pick(block.deadline) : '';
+                return t('questions.legalTemplate')
+                    .replace('{topic}', pick(LEGAL_TOPICS[key].title))
+                    .replace('{deadline}', deadline);
+            })
+        });
+    }
+
+    return sections;
+}
+
+function showQuestionSheet() {
+    const container = byId('questionsContent');
+    const sections = buildQuestionSheet();
+    container.innerHTML = `
+        <p class="tab-intro">${escapeHTML(t('questions.intro'))}</p>
+        ${sections.map(section => `
+            <div class="help-section">
+                <h4><i class="fas ${escapeHTML(section.icon)}" aria-hidden="true"></i> ${escapeHTML(section.title)}</h4>
+                <ol class="question-list">
+                    ${section.items.map(q => `<li>${escapeHTML(q)}</li>`).join('')}
+                </ol>
+            </div>`).join('')}`;
+    openModal(questionsModal);
+}
+
+function questionSheetAsText() {
+    const lines = [t('questions.title'), '='.repeat(40), ''];
+    if (state.propertyInfo.address) lines.push(`${t('field.address')}: ${state.propertyInfo.address}`, '');
+    buildQuestionSheet().forEach(section => {
+        lines.push(section.title, '-'.repeat(section.title.length));
+        section.items.forEach((q, i) => lines.push(`${i + 1}. ${q}`));
+        lines.push('');
+    });
+    return lines.join('\n');
+}
+
+/* ------------------------------------------------------------------ *
+ * Deadline reminders (.ics)
+ * ------------------------------------------------------------------ */
+function activeReminders() {
+    return LEGAL_REMINDERS.filter(reminder => {
+        if (reminder.regions && !reminder.regions.includes(state.region)) return false;
+        if (reminder.anchor === 'deed' && !state.keyDates.deedDate) return false;
+        if (reminder.anchor === 'drawdown' && !state.keyDates.drawdownDate) return false;
+        return true;
+    }).map(reminder => {
+        let anchorDate;
+        if (reminder.anchor === 'deed') anchorDate = new Date(state.keyDates.deedDate);
+        else if (reminder.anchor === 'drawdown') anchorDate = new Date(state.keyDates.drawdownDate);
+        else anchorDate = new Date();
+
+        const due = addMonths(anchorDate, reminder.offsetMonths);
+        return {
+            def: reminder,
+            due: due,
+            overdue: due < new Date(),
+            title: pick(reminder.title),
+            body: pick(reminder.body)
+        };
+    }).sort((a, b) => a.due - b.due);
+}
+
+function icsEscape(value) {
+    return String(value || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\r?\n/g, '\\n');
+}
+
+function icsDate(date) {
+    return date.toISOString().split('T')[0].replace(/-/g, '');
+}
+
+function buildIcs(reminders) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const address = state.propertyInfo.address || '';
+    const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//huiskeuring.be//Inspection reminders//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH'
+    ];
+
+    reminders.forEach(reminder => {
+        const end = new Date(reminder.due.getTime() + 86400000);
+        lines.push(
+            'BEGIN:VEVENT',
+            `UID:${reminder.def.id}-${icsDate(reminder.due)}@huiskeuring.be`,
+            `DTSTAMP:${stamp}`,
+            `DTSTART;VALUE=DATE:${icsDate(reminder.due)}`,
+            `DTEND;VALUE=DATE:${icsDate(end)}`,
+            `SUMMARY:${icsEscape(reminder.title + (address ? ' - ' + address : ''))}`,
+            `DESCRIPTION:${icsEscape(reminder.body + '\n\n' + t('reminders.source'))}`,
+            address ? `LOCATION:${icsEscape(address)}` : 'X-HK-NOLOC:1',
+            'BEGIN:VALARM',
+            `TRIGGER:-P${reminder.def.leadDays}D`,
+            'ACTION:DISPLAY',
+            `DESCRIPTION:${icsEscape(reminder.title)}`,
+            'END:VALARM',
+            'END:VEVENT'
+        );
+    });
+
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+}
+
+function showReminders() {
+    const container = byId('remindersContent');
+    const reminders = activeReminders();
+
+    const dateFields = `
+        <div class="reminder-dates">
+            <div class="form-group">
+                <label for="deedDate">${escapeHTML(t('reminders.deedDate'))}</label>
+                <input type="date" id="deedDate" value="${escapeHTML(state.keyDates.deedDate || '')}">
+            </div>
+            <div class="form-group">
+                <label for="drawdownDate">${escapeHTML(t('reminders.drawdownDate'))}</label>
+                <input type="date" id="drawdownDate" value="${escapeHTML(state.keyDates.drawdownDate || '')}">
+            </div>
+        </div>`;
+
+    const list = reminders.length
+        ? `<ul class="reminder-list">${reminders.map(r => `
+            <li class="${r.overdue ? 'reminder-overdue' : ''}">
+                <span class="reminder-date">${escapeHTML(formatDate(r.due.toISOString(), currentLanguage))}</span>
+                <strong>${escapeHTML(r.title)}</strong>
+                <p>${escapeHTML(r.body)}</p>
+                ${r.overdue ? `<span class="reminder-flag">${escapeHTML(t('reminders.overdue'))}</span>` : ''}
+            </li>`).join('')}</ul>`
+        : `<p class="issue-filter-empty">${escapeHTML(t('reminders.empty'))}</p>`;
+
+    container.innerHTML = `
+        <p class="tab-intro">${escapeHTML(t('reminders.intro'))}</p>
+        ${dateFields}
+        ${list}`;
+
+    byId('deedDate').addEventListener('change', (e) => {
+        state.keyDates.deedDate = e.target.value;
+        saveState();
+        showReminders();
+    });
+    byId('drawdownDate').addEventListener('change', (e) => {
+        state.keyDates.drawdownDate = e.target.value;
+        saveState();
+        showReminders();
+    });
+
+    const download = byId('downloadIcsBtn');
+    if (download) download.disabled = reminders.length === 0;
+
+    openModal(remindersModal);
+}
+
+function downloadReminders() {
+    const reminders = activeReminders();
+    if (!reminders.length) {
+        showToast(t('reminders.empty'), 'error');
+        return;
+    }
+    downloadFile(`huiskeuring-${slugify(state.propertyInfo.address)}-reminders.ics`, buildIcs(reminders), 'text/calendar');
+    showToast(t('reminders.downloaded'));
+}
+
+/* ------------------------------------------------------------------ *
+ * Import / export / library
+ * ------------------------------------------------------------------ */
+function exportJSON() {
+    const payload = {
+        format: 'huiskeuring.be/inspection',
+        formatVersion: 1,
+        schemaVersion: SCHEMA_VERSION,
+        exportedAt: new Date().toISOString(),
+        language: currentLanguage,
+        state: state
+    };
+    downloadFile(
+        `huiskeuring-${slugify(state.propertyInfo.address)}-${todayISO()}.json`,
+        JSON.stringify(payload, null, 2),
+        'application/json'
+    );
+    showToast(t('tools.exported'));
+}
+
+function importJSON(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const parsed = JSON.parse(String(reader.result));
+            const incoming = parsed && parsed.state ? parsed.state : parsed;
+            const next = normaliseState(incoming);
+            if (!next) throw new Error('unrecognised');
+
+            state = next;
+            saveState();
+            loadState();
+            renderChecklist();
+            applyFilters();
+            updateProgress();
+            updateToggleButtonState();
+            renderResources();
+            showToast(t('tools.imported'));
+            closeModal(toolsModal);
+        } catch (error) {
+            console.error('Import failed:', error);
+            showToast(t('tools.importFailed'), 'error');
+        }
+    };
+    reader.onerror = () => showToast(t('tools.importFailed'), 'error');
+    reader.readAsText(file);
+}
+
+function renderLibrary() {
+    const container = byId('libraryList');
+    if (!container) return;
+    const list = loadLibrary();
+
+    if (!list.length) {
+        container.innerHTML = `<p class="issue-filter-empty">${escapeHTML(t('library.empty'))}</p>`;
+        return;
+    }
+
+    container.innerHTML = `<ul class="library-list">${list.map(entry => `
+        <li>
+            <div>
+                <strong>${escapeHTML(entry.label)}</strong>
+                <span class="library-meta">${escapeHTML(formatDate(entry.savedAt, currentLanguage))} &middot;
+                ${entry.summary.issues} ${escapeHTML(t('progress.issues').toLowerCase())} &middot;
+                ${entry.summary.percent}% ${escapeHTML(t('progress.complete').toLowerCase())}</span>
+            </div>
+            <button class="btn btn-secondary btn-small" data-load-library="${escapeHTML(entry.id)}">${escapeHTML(t('library.load'))}</button>
+            <button class="btn btn-secondary btn-small" data-delete-library="${escapeHTML(entry.id)}" aria-label="${escapeHTML(t('library.delete'))}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+        </li>`).join('')}</ul>`;
+
+    container.querySelectorAll('[data-load-library]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const entry = loadLibrary().find(e => e.id === btn.dataset.loadLibrary);
+            if (!entry) return;
+            const decoded = decodeState(entry.data);
+            if (!decoded) { showToast(t('tools.importFailed'), 'error'); return; }
+            state = decoded;
+            saveState();
+            loadState();
+            renderChecklist();
+            applyFilters();
+            updateProgress();
+            renderResources();
+            closeModal(toolsModal);
+            showToast(t('library.loaded'));
+        });
+    });
+
+    container.querySelectorAll('[data-delete-library]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            saveLibrary(loadLibrary().filter(e => e.id !== btn.dataset.deleteLibrary));
+            renderLibrary();
+        });
+    });
+}
+
+/* ------------------------------------------------------------------ *
+ * Blank printable checklist
+ * ------------------------------------------------------------------ */
+function printBlankChecklist() {
+    const categories = visibleCategories(state);
+    const rows = categories.map(category => `
+        <section class="blank-category">
+            <h2>${escapeHTML(categoryTitle(category))}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-check">${escapeHTML(t('item.ok'))}</th>
+                        <th class="col-check">${escapeHTML(t('item.issue'))}</th>
+                        <th>${escapeHTML(t('blank.item'))}</th>
+                        <th class="col-notes">${escapeHTML(t('blank.notes'))}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${category.items.map((item, index) => `
+                        <tr>
+                            <td class="col-check"></td>
+                            <td class="col-check"></td>
+                            <td>${escapeHTML(itemText(category, index, item))}</td>
+                            <td class="col-notes"></td>
+                        </tr>`).join('')}
+                </tbody>
+            </table>
+        </section>`).join('');
+
+    const win = window.open('', '_blank');
+    if (!win) { showToast(t('tools.popupBlocked'), 'error'); return; }
+
+    win.document.write(`<!DOCTYPE html>
+<html lang="${escapeHTML(t('html.lang'))}">
+<head>
+<meta charset="utf-8">
+<title>${escapeHTML(t('blank.title'))}</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10pt; color: #000; margin: 14mm; }
+  h1 { font-size: 16pt; margin: 0 0 2mm; }
+  .meta { display: flex; gap: 8mm; flex-wrap: wrap; font-size: 9pt; margin-bottom: 6mm; }
+  .meta span { border-bottom: 1px solid #000; min-width: 55mm; padding-bottom: 1mm; }
+  .blank-category { page-break-inside: avoid; margin-bottom: 6mm; }
+  h2 { font-size: 11pt; margin: 4mm 0 1mm; border-bottom: 2px solid #000; padding-bottom: 1mm; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #999; padding: 1.4mm 2mm; text-align: left; vertical-align: top; font-size: 9pt; }
+  th { background: #eee; font-size: 8pt; text-transform: uppercase; letter-spacing: .04em; }
+  .col-check { width: 11mm; text-align: center; }
+  .col-notes { width: 46mm; }
+  tbody tr { height: 8mm; }
+  footer { margin-top: 6mm; font-size: 8pt; color: #444; }
+  @page { size: A4; margin: 12mm; }
+</style>
+</head>
+<body>
+  <h1>${escapeHTML(t('blank.title'))}</h1>
+  <div class="meta">
+    <span>${escapeHTML(t('field.address'))}: </span>
+    <span>${escapeHTML(t('field.date'))}: </span>
+    <span>${escapeHTML(t('field.contact'))}: </span>
+    <span>${escapeHTML(t('field.price'))}: </span>
+  </div>
+  ${rows}
+  <footer>${escapeHTML(t('blank.footer'))}</footer>
+</body>
+</html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+}
+
+/* ------------------------------------------------------------------ *
+ * Freshness banner
+ * ------------------------------------------------------------------ */
+function renderFreshnessBanner() {
+    const banner = byId('freshnessBanner');
+    if (!banner) return;
+
+    if (readStorage(STORAGE_KEYS.freshnessDismissed) === LEGAL_META.contentVersion) {
+        banner.hidden = true;
+        return;
+    }
+    /* Only show it where there is room; on very small screens the space is
+       better spent on the checklist itself. */
+    if (window.innerWidth < 620) {
+        banner.hidden = true;
+        return;
+    }
+
+    const info = freshnessInfo();
+    const text = (info.overdue ? t('freshness.overdue') : t('freshness.ok'))
+        .replace('{date}', formatDate(info.lastReview, currentLanguage))
+        .replace('{next}', formatDate(info.nextReview, currentLanguage));
+
+    byId('freshnessText').textContent = text;
+    banner.classList.toggle('freshness-overdue', info.overdue);
+    banner.hidden = false;
+}
+
+/* ------------------------------------------------------------------ *
+ * View helpers
+ * ------------------------------------------------------------------ */
+function toggleCompactMode() {
+    state.compactMode = !state.compactMode;
+    document.body.classList.toggle('compact-mode', state.compactMode);
+    compactModeBtn.classList.toggle('active', state.compactMode);
+    compactModeBtn.setAttribute('aria-pressed', String(state.compactMode));
+    saveState();
+}
+
+function loadCompactModeState() {
+    document.body.classList.toggle('compact-mode', state.compactMode);
+    if (compactModeBtn) {
+        compactModeBtn.classList.toggle('active', state.compactMode);
+        compactModeBtn.setAttribute('aria-pressed', String(state.compactMode));
+    }
+}
+
+function updateShowUncheckedButton() {
+    const button = byId('showUncheckedBtn');
+    if (!button) return;
+    const label = button.querySelector('.toggle-text');
+    const icon = button.querySelector('i');
+    button.classList.toggle('active', state.showUncheckedOnly);
+    button.setAttribute('aria-pressed', String(state.showUncheckedOnly));
+    if (label) label.textContent = state.showUncheckedOnly ? t('progress.showAll') : t('progress.showUnchecked');
+    if (icon) icon.className = state.showUncheckedOnly ? 'fas fa-eye' : 'fas fa-filter';
+}
+
+function toggleShowUnchecked() {
+    state.showUncheckedOnly = !state.showUncheckedOnly;
+    updateShowUncheckedButton();
+    applyFilters();
+    saveState();
+}
+
+function toggleAllCategories() {
+    const headers = Array.from(document.querySelectorAll('.category-header'));
+    if (!headers.length) return;
+    const allCollapsed = headers.every(h => h.classList.contains('collapsed'));
+    headers.forEach(header => {
+        const content = header.nextElementSibling;
+        header.classList.toggle('collapsed', !allCollapsed);
+        header.setAttribute('aria-expanded', String(allCollapsed));
+        if (content) content.classList.toggle('collapsed', !allCollapsed);
+    });
     updateToggleButtonState();
 }
 
 function updateToggleButtonState() {
-    const categoryHeaders = document.querySelectorAll('.category-header');
-    const buttonText = toggleAllBtn.querySelector('span');
-    const buttonIcon = toggleAllBtn.querySelector('i');
+    if (!toggleAllBtn) return;
+    const headers = Array.from(document.querySelectorAll('.category-header'));
+    const label = toggleAllBtn.querySelector('.toggle-text');
+    const icon = toggleAllBtn.querySelector('i');
+    const allCollapsed = headers.length > 0 && headers.every(h => h.classList.contains('collapsed'));
+    toggleAllBtn.classList.toggle('collapsed', allCollapsed);
+    if (label) label.textContent = allCollapsed ? t('progress.expandAll') : t('progress.collapseAll');
+    if (icon) icon.className = allCollapsed ? 'fas fa-expand-alt' : 'fas fa-compress-alt';
+}
 
-    // Check if all visible categories are currently collapsed
-    const allCollapsed = Array.from(categoryHeaders).every(header =>
-        header.classList.contains('collapsed')
-    );
+function togglePropertyInfo() {
+    const collapsed = propertyInfoCard.classList.toggle('collapsed');
+    togglePropertyBtn.setAttribute('aria-expanded', String(!collapsed));
+    writeStorage(STORAGE_KEYS.propertyInfoCollapsed, String(collapsed));
+    updatePropertyAddressPreview();
+}
 
-    if (allCollapsed) {
-        // All are collapsed
-        toggleAllBtn.classList.add('collapsed');
-        buttonText.textContent = 'Alles Uitklappen';
-        buttonIcon.className = 'fas fa-expand-alt';
-    } else {
-        // At least one is expanded
-        toggleAllBtn.classList.remove('collapsed');
-        buttonText.textContent = 'Alles Inklappen';
-        buttonIcon.className = 'fas fa-compress-alt';
+function updatePropertyAddressPreview() {
+    const address = propertyAddressInput.value.trim();
+    propertyAddressPreview.textContent =
+        (address && propertyInfoCard.classList.contains('collapsed')) ? address : '';
+}
+
+function loadPropertyInfoState() {
+    if (readStorage(STORAGE_KEYS.propertyInfoCollapsed) === 'true') {
+        propertyInfoCard.classList.add('collapsed');
+        togglePropertyBtn.setAttribute('aria-expanded', 'false');
+        updatePropertyAddressPreview();
     }
 }
 
-// Toggle show unchecked only
-function toggleShowUnchecked() {
-    state.showUncheckedOnly = !state.showUncheckedOnly;
+let scrollTicking = false;
+function handleScroll() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    window.requestAnimationFrame(() => {
+        scrollToTopBtn.classList.toggle('visible', window.scrollY > 300);
+        scrollTicking = false;
+    });
+}
 
-    const showUncheckedBtn = document.getElementById('showUncheckedBtn');
-    const buttonText = showUncheckedBtn.querySelector('span');
-    const buttonIcon = showUncheckedBtn.querySelector('i');
+function resetChecklist() {
+    if (!window.confirm(t('reset.confirm'))) return;
+    const compact = state.compactMode;
+    const type = state.propertyType;
+    const region = state.region;
 
-    if (state.showUncheckedOnly) {
-        showUncheckedBtn.classList.add('active');
-        buttonText.textContent = 'Show All';
-        buttonIcon.className = 'fas fa-eye';
-    } else {
-        showUncheckedBtn.classList.remove('active');
-        buttonText.textContent = 'Show Unchecked';
-        buttonIcon.className = 'fas fa-filter';
-    }
+    state = defaultState();
+    state.compactMode = compact;
+    state.propertyType = type;
+    state.region = region;
+    state.propertyInfo.inspectionDate = todayISO();
 
+    globalNotesTextarea.value = '';
+    propertyAddressInput.value = '';
+    contactPersonInput.value = '';
+    inspectionDateInput.value = state.propertyInfo.inspectionDate;
+    appointmentTimeInput.value = '';
+    askingPriceInput.value = '';
+    propertyNotesInput.value = '';
+
+    activeIssueFilter = null;
+    saveState();
+    syncPropertyTypeButtons();
+    syncCategoryFilterButtons();
+    updateShowUncheckedButton();
+    updatePropertyAddressPreview();
     renderChecklist();
-    saveState();
+    applyFilters();
+    updateProgress();
+    updateToggleButtonState();
 }
 
-// Initialize Application
-function init() {
-    loadState();
+/* ------------------------------------------------------------------ *
+ * Language switching
+ * ------------------------------------------------------------------ */
+function setLanguage(lang) {
+    if (!SUPPORTED_LANGUAGES.some(l => l.code === lang)) return;
+    currentLanguage = lang;
+    writeStorage(STORAGE_KEYS.language, lang);
+
+    applyTranslations();
+    initTheme(byId('themeSelect'));
+    syncRegionSelect();
     renderChecklist();
-    setupEventListeners();
+    applyFilters();
     updateProgress();
-    loadTheme();
-    loadPropertyInfoState();
-    loadCompactModeState();
-    loadShowUncheckedState();
-    checkFirstVisit();
+    updateToggleButtonState();
+    updateShowUncheckedButton();
+    renderResources();
+    renderGuide();
+    renderFaq();
+    renderHelpContent();
+    renderFreshnessBanner();
 }
 
-// Check if first visit and show help modal
-function checkFirstVisit() {
-    const hasVisitedBefore = localStorage.getItem('hasSeenHelpPage');
-
-    if (!hasVisitedBefore) {
-        // First time visitor - show help modal
-        helpModal.classList.add('show');
-        // Mark that they've visited
-        localStorage.setItem('hasSeenHelpPage', 'true');
-    }
+/* ------------------------------------------------------------------ *
+ * Events
+ * ------------------------------------------------------------------ */
+function closeMobileMenu() {
+    const burger = byId('burgerMenu');
+    if (!burger) return;
+    burger.classList.remove('active');
+    burger.setAttribute('aria-expanded', 'false');
+    byId('headerActions').classList.remove('active');
+    byId('menuOverlay').classList.remove('active');
+    document.body.classList.remove('menu-open');
 }
 
-// Load state from localStorage
-function loadState() {
-    // First check if there's URL state (higher priority than localStorage)
-    const urlState = loadStateFromURL();
-
-    const savedState = localStorage.getItem('houseInspectionState');
-    if (urlState) {
-        // URL state takes precedence
-        state = urlState;
-
-        // Save the loaded URL state to localStorage
-        saveState();
-
-        // Clear the URL parameters to return to clean URL
-        clearURLParameters();
-    } else if (savedState) {
-        const parsedState = JSON.parse(savedState);
-        // Merge with default state to ensure all properties exist
-        state = {
-            checklist: parsedState.checklist || {},
-            renovationNeeded: parsedState.renovationNeeded || {},
-            documentRequests: parsedState.documentRequests || {},
-            notes: parsedState.notes || {},
-            globalNotes: parsedState.globalNotes || '',
-            currentFilter: parsedState.currentFilter || 'all',
-            propertyType: parsedState.propertyType || 'house',
-            propertyInfo: parsedState.propertyInfo || {
-                address: '',
-                contactPerson: '',
-                inspectionDate: '',
-                appointmentTime: '',
-                propertyNotes: ''
-            },
-            firstCheckboxDate: parsedState.firstCheckboxDate || null,
-            lastCheckboxChangeDate: parsedState.lastCheckboxChangeDate || null,
-            compactMode: parsedState.compactMode || false,
-            showUncheckedOnly: parsedState.showUncheckedOnly || false
-        };
-    }
-
-    // Load global notes
-    if (state.globalNotes) {
-        globalNotesTextarea.value = state.globalNotes;
-    }
-
-    // Load property information
-    if (state.propertyInfo) {
-        propertyAddressInput.value = state.propertyInfo.address || '';
-        contactPersonInput.value = state.propertyInfo.contactPerson || '';
-        inspectionDateInput.value = state.propertyInfo.inspectionDate || '';
-        appointmentTimeInput.value = state.propertyInfo.appointmentTime || '';
-        propertyNotesInput.value = state.propertyInfo.propertyNotes || '';
-    }
-
-    // Set default date to today if empty
-    if (!inspectionDateInput.value) {
-        const today = new Date().toISOString().split('T')[0];
-        inspectionDateInput.value = today;
-        state.propertyInfo.inspectionDate = today;
-        saveState();
-    }
-
-    // Restore property type selection
-    const propertyTypeButtons = document.querySelectorAll('.property-type-btn');
-    propertyTypeButtons.forEach(btn => {
-        if (btn.dataset.propertyType === state.propertyType) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-}
-
-// Save state to localStorage
-function saveState() {
-    localStorage.setItem('houseInspectionState', JSON.stringify(state));
-}
-
-// URL State Management Functions
-function encodeStateToURL() {
-    try {
-        // Compress the state by only including non-empty values
-        const compactState = {
-            c: state.checklist,
-            r: state.renovationNeeded,
-            d: state.documentRequests,
-            n: state.notes,
-            g: state.globalNotes,
-            f: state.currentFilter !== 'all' ? state.currentFilter : undefined,
-            t: state.propertyType !== 'house' ? state.propertyType : undefined,
-            p: state.propertyInfo
-        };
-
-        // Remove undefined values
-        Object.keys(compactState).forEach(key => {
-            if (compactState[key] === undefined ||
-                (typeof compactState[key] === 'object' && Object.keys(compactState[key]).length === 0) ||
-                compactState[key] === '') {
-                delete compactState[key];
-            }
-        });
-
-        const jsonString = JSON.stringify(compactState);
-        const base64 = btoa(unescape(encodeURIComponent(jsonString)));
-
-        const url = new URL(window.location.href.split('?')[0]);
-        url.searchParams.set('data', base64);
-
-        return url.toString();
-    } catch (error) {
-        console.error('Error encoding state to URL:', error);
-        return window.location.href;
-    }
-}
-
-function loadStateFromURL() {
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-
-        if (!encodedData) {
-            return null;
-        }
-
-        const jsonString = decodeURIComponent(escape(atob(encodedData)));
-        const compactState = JSON.parse(jsonString);
-
-        // Expand the compact state back to full state
-        const fullState = {
-            checklist: compactState.c || {},
-            renovationNeeded: compactState.r || {},
-            documentRequests: compactState.d || {},
-            notes: compactState.n || {},
-            globalNotes: compactState.g || '',
-            currentFilter: compactState.f || 'all',
-            propertyType: compactState.t || 'house',
-            propertyInfo: compactState.p || {
-                address: '',
-                contactPerson: '',
-                inspectionDate: '',
-                appointmentTime: '',
-                propertyNotes: ''
-            }
-        };
-
-        return fullState;
-    } catch (error) {
-        console.error('Error loading state from URL:', error);
-        return null;
-    }
-}
-
-function clearURLParameters() {
-    // Remove URL parameters without reloading the page
-    const url = new URL(window.location.href);
-    url.search = ''; // Clear all query parameters
-    window.history.replaceState({}, document.title, url.toString());
-}
-
-function copyShareURLToClipboard() {
-    const shareURL = encodeStateToURL();
-
-    navigator.clipboard.writeText(shareURL).then(() => {
-        // Show success feedback
-        const shareBtn = document.getElementById('shareUrlBtn');
-        const originalHTML = shareBtn.innerHTML;
-        shareBtn.innerHTML = '<i class="fas fa-check"></i> URL Copied!';
-        shareBtn.style.backgroundColor = '#27ae60';
-
-        setTimeout(() => {
-            shareBtn.innerHTML = originalHTML;
-            shareBtn.style.backgroundColor = '';
-        }, 2000);
-    }).catch(err => {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = shareURL;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.select();
-
-        try {
-            document.execCommand('copy');
-            const shareBtn = document.getElementById('shareUrlBtn');
-            const originalHTML = shareBtn.innerHTML;
-            shareBtn.innerHTML = '<i class="fas fa-check"></i> URL Copied!';
-            shareBtn.style.backgroundColor = '#27ae60';
-
-            setTimeout(() => {
-                shareBtn.innerHTML = originalHTML;
-                shareBtn.style.backgroundColor = '';
-            }, 2000);
-        } catch (err) {
-            alert('Could not copy URL. Please copy manually: ' + shareURL);
-        }
-
-        document.body.removeChild(textArea);
-    });
-}
-
-// Render checklist
-function renderChecklist() {
-    checklistContainer.innerHTML = '';
-
-    checklistData.forEach((category, categoryIndex) => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'category-group';
-        categoryDiv.dataset.category = category.category;
-
-        // Check if category should be shown based on filter
-        if (!shouldShowCategory(category, state.currentFilter)) {
-            categoryDiv.classList.add('hidden');
-        }
-
-        // Category header
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'category-header';
-        headerDiv.innerHTML = `
-            <h3><i class="fas ${category.icon}"></i> ${category.title}</h3>
-            <i class="fas fa-chevron-down toggle-icon"></i>
-        `;
-
-        // Category content
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'category-content';
-
-        // Render items
-        category.items.forEach((item, itemIndex) => {
-            const itemKey = `${categoryIndex}-${itemIndex}`;
-            const isOK = state.checklist[itemKey] || false;
-            const needsRenovation = state.renovationNeeded[itemKey] || false;
-            const docRequested = state.documentRequests[itemKey] || false;
-            const itemNote = state.notes[itemKey] || '';
-            const isDocument = category.category === 'documents';
-
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'checklist-item';
-
-            // Determine renovation subcategory based on tags
-            let renovationSubcategory = '';
-            if (item.tags.includes('renovation')) {
-                if (item.tags.some(t => ['attic', 'basement', 'exterior'].includes(t)) &&
-                    (item.text.includes('isolatie') || item.text.includes('insulation'))) {
-                    renovationSubcategory = 'renovation-insulation';
-                } else if (item.text.includes('plat dak') || item.text.includes('lichtkoepel') || item.text.includes('roof')) {
-                    renovationSubcategory = 'renovation-roofing';
-                } else if (item.tags.includes('plumbing') || item.text.includes('plumbing') || item.text.includes('loodgieter')) {
-                    renovationSubcategory = 'renovation-plumbing';
-                } else if (item.tags.includes('electrical') || item.text.includes('electrical') || item.text.includes('bedrading') || item.text.includes('herkabeling')) {
-                    renovationSubcategory = 'renovation-electrical';
-                } else if (item.tags.includes('structural') || item.text.includes('structural') || item.text.includes('muren') || item.text.includes('fundering')) {
-                    renovationSubcategory = 'renovation-structural';
-                } else if (item.text.includes('verbouwing') || item.text.includes('conversion') || item.text.includes('dakopbouw') || item.text.includes('aanbouw')) {
-                    renovationSubcategory = 'renovation-conversion';
-                }
-            }
-            itemDiv.dataset.renovationCategory = renovationSubcategory;
-
-            let checkboxHTML = '';
-            if (isDocument) {
-                checkboxHTML = `
-                    <div class="checkbox-wrapper" style="${docRequested ? 'opacity: 0.5;' : ''}">
-                        <input type="checkbox" 
-                               id="item-${itemKey}" 
-                               ${isOK ? 'checked' : ''}
-                               ${docRequested ? 'disabled' : ''}
-                               data-key="${itemKey}">
-                        <label for="item-${itemKey}" class="checkbox-label ok-label">✓ Have</label>
-                    </div>
-                    <button class="request-doc-btn ${docRequested ? 'requested' : ''}" 
-                            data-key="${itemKey}">
-                        ${docRequested ? '✓ Requested' : 'Request'}
-                    </button>
-                `;
-            } else {
-                checkboxHTML = `
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" 
-                               id="item-${itemKey}" 
-                               ${isOK ? 'checked' : ''}
-                               data-key="${itemKey}">
-                        <label for="item-${itemKey}" class="checkbox-label ok-label">✓ OK</label>
-                    </div>
-                    <div class="checkbox-wrapper renovation-check">
-                        <input type="checkbox" 
-                               id="reno-${itemKey}" 
-                               ${needsRenovation ? 'checked' : ''}
-                               data-key="${itemKey}"
-                               class="renovation-checkbox">
-                        <label for="reno-${itemKey}" class="checkbox-label issue-label">⚠ Issue</label>
-                    </div>
-                `;
-            }
-
-            itemDiv.innerHTML = `
-                <div class="checkbox-container">
-                    ${checkboxHTML}
-                </div>
-                <div class="item-content">
-                 <div class="item-text-wrapper">
-                        <div class="item-text ${isOK ? 'checked' : ''} ${needsRenovation ? 'needs-renovation' : ''}" id="text-${itemKey}">
-                            ${item.text}
-                            ${item.deadline ? `<button class="info-deadline-btn" data-deadline="${item.deadline}" title="Click voor deadline informatie"><i class="fas fa-info-circle"></i></button>` : ''}
-                            ${item.info ? `<button class="info-deadline-btn" data-deadline="${item.info}" title="Click voor informatie"><i class="fas fa-info-circle"></i></button>` : ''}
-                        </div>
-                        <div class="compact-note-display" data-key="${itemKey}">
-                            ${itemNote ? `<span class="note-text">${itemNote}</span> <button class="edit-note-btn" data-key="${itemKey}" title="Edit note"><i class="fas fa-pencil-alt"></i></button>` : `<button class="add-note-btn" data-key="${itemKey}" title="Add note"><i class="fas fa-plus-circle"></i> Add note</button>`}
-                        </div>
-                    </div>
-                    <div class="item-tags">
-                        ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    </div>
-                    <div class="item-notes">
-                        <textarea 
-                            placeholder="Add notes for this item..."
-                            data-key="${itemKey}"
-                            class="item-note-textarea"
-                        >${itemNote}</textarea>
-                    </div>
-                </div>
-            `;
-
-            // Hide item if showUncheckedOnly is true and item is checked
-            if (state.showUncheckedOnly && isOK) {
-                itemDiv.style.display = 'none';
-            }
-
-            contentDiv.appendChild(itemDiv);
-        });
-
-        categoryDiv.appendChild(headerDiv);
-        categoryDiv.appendChild(contentDiv);
-        checklistContainer.appendChild(categoryDiv);
-
-        // Add collapse/expand functionality
-        headerDiv.addEventListener('click', () => {
-            headerDiv.classList.toggle('collapsed');
-            contentDiv.classList.toggle('collapsed');
-        });
-    });
-
-    // Add checkbox event listeners
-    document.querySelectorAll('input[type="checkbox"]:not(.renovation-checkbox)').forEach(checkbox => {
-        checkbox.addEventListener('change', handleCheckboxChange);
-    });
-
-    // Add renovation checkbox event listeners
-    document.querySelectorAll('.renovation-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', handleRenovationChange);
-    });
-
-    // Add document request button listeners
-    document.querySelectorAll('.request-doc-btn').forEach(btn => {
-        btn.addEventListener('click', handleDocumentRequest);
-    });
-
-    // Add note textarea event listeners
-    document.querySelectorAll('.item-note-textarea').forEach(textarea => {
-        textarea.addEventListener('input', handleNoteChange);
-    });
-
-    // Update issue filters after rendering
-    updateIssueFilters();
-}
-
-// Update issue filter buttons based on currently checked issues
-function updateIssueFilters() {
-    const issueFilterContainer = document.getElementById('issueFilterButtons');
-    if (!issueFilterContainer) {
-        return;
-    }
-
-    // Count issues by category
-    const issueCounts = {};
-    
-    // Iterate through only the categories that should be shown for current property type
-    checklistData.forEach((category, categoryIndex) => {
-        // Skip categories that shouldn't be shown for current property type
-        if (!shouldShowCategory(category, 'all')) {
-            return;
-        }
-        
-        category.items.forEach((item, itemIndex) => {
-            const itemKey = `${categoryIndex}-${itemIndex}`;
-            
-            // Check if this item has an issue checked
-            if (state.renovationNeeded[itemKey]) {
-                // Count issues for each tag/category
-                item.tags.forEach(tag => {
-                    if (!issueCounts[tag]) {
-                        issueCounts[tag] = {
-                            count: 0,
-                            icon: getCategoryIcon(tag),
-                            displayName: getCategoryDisplayName(tag)
-                        };
-                    }
-                    issueCounts[tag].count++;
-                });
-            }
-        });
-    });
-
-    // Clear existing issue filter buttons
-    issueFilterContainer.innerHTML = '';
-
-    // Create buttons for categories with issues
-    const sortedCategories = Object.keys(issueCounts).sort((a, b) => {
-        // Sort by count descending
-        return issueCounts[b].count - issueCounts[a].count;
-    });
-
-    // Use DocumentFragment for better performance
-    const fragment = document.createDocumentFragment();
-    
-    sortedCategories.forEach(category => {
-        const data = issueCounts[category];
-        const button = document.createElement('button');
-        button.className = 'issue-filter-btn';
-        button.dataset.issueCategory = category;
-        
-        button.innerHTML = `
-            <i class="${data.icon}"></i>
-            ${data.displayName}
-            <span class="issue-count">${data.count}</span>
-        `;
-        
-        button.addEventListener('click', () => {
-            handleIssueFilterClick(button, category);
-        });
-        
-        fragment.appendChild(button);
-    });
-    
-    issueFilterContainer.appendChild(fragment);
-}
-
-// Get icon for a category
-function getCategoryIcon(category) {
-    const icons = {
-        'documents': 'fas fa-file-contract',
-        'asbestos': 'fas fa-exclamation-triangle',
-        'exterior': 'fas fa-building',
-        'kitchen': 'fas fa-utensils',
-        'bathroom': 'fas fa-bath',
-        'bedroom': 'fas fa-bed',
-        'livingroom': 'fas fa-couch',
-        'basement': 'fas fa-dungeon',
-        'attic': 'fas fa-house-damage',
-        'plumbing': 'fas fa-tint',
-        'electrical': 'fas fa-bolt',
-        'structural': 'fas fa-hard-hat',
-        'hvac': 'fas fa-fan',
-        'renovation': 'fas fa-tools'
-    };
-    return icons[category] || 'fas fa-tag';
-}
-
-// Get display name for a category
-function getCategoryDisplayName(category) {
-    const names = {
-        'documents': 'Documents',
-        'asbestos': 'Asbestos',
-        'exterior': 'Exterior',
-        'kitchen': 'Kitchen',
-        'bathroom': 'Bathroom',
-        'bedroom': 'Bedroom',
-        'livingroom': 'Living Room',
-        'basement': 'Basement',
-        'attic': 'Attic',
-        'plumbing': 'Water',
-        'electrical': 'Electrical',
-        'structural': 'Structural',
-        'hvac': 'Heating',
-        'renovation': 'Renovation'
-    };
-    return names[category] || category.charAt(0).toUpperCase() + category.slice(1);
-}
-
-// Handle issue filter button click
-function handleIssueFilterClick(button, issueCategory) {
-    const allIssueFilterButtons = document.querySelectorAll('.issue-filter-btn');
-    
-    // Toggle active state
-    const wasActive = button.classList.contains('active');
-    
-    // Deactivate all issue filter buttons
-    allIssueFilterButtons.forEach(btn => btn.classList.remove('active'));
-    
-    if (wasActive) {
-        // If was active, deactivate and show all items
-        filterByIssueCategory(null);
-    } else {
-        // Activate this button and filter
-        button.classList.add('active');
-        filterByIssueCategory(issueCategory);
-    }
-}
-
-// Filter checklist to show only items with issues in a specific category
-function filterByIssueCategory(issueCategory) {
-    const categoryGroups = document.querySelectorAll('.category-group');
-    
-    categoryGroups.forEach((group, groupIndex) => {
-        const groupCategory = group.dataset.category;
-        const categoryData = checklistData.find(c => c.category === groupCategory);
-        const categoryIndex = checklistData.findIndex(c => c.category === groupCategory);
-        
-        if (!issueCategory) {
-            // No filter - show all items (respect current category filter)
-            group.classList.remove('hidden');
-            group.querySelectorAll('.checklist-item').forEach(item => {
-                item.style.display = 'flex';
-            });
-            // Re-apply current category filter
-            filterChecklist(state.currentFilter);
-            return;
-        }
-        
-        // Check if this category has any items with issues in the selected category
-        let hasMatchingIssues = false;
-        
-        group.querySelectorAll('.checklist-item').forEach((item, itemIndex) => {
-            const itemKey = `${categoryIndex}-${itemIndex}`;
-            const itemData = categoryData.items[itemIndex];
-            
-            // Check if this item has an issue checked AND matches the issue category
-            const hasIssue = state.renovationNeeded[itemKey];
-            const matchesCategory = itemData.tags.includes(issueCategory);
-            
-            if (hasIssue && matchesCategory) {
-                item.style.display = 'flex';
-                hasMatchingIssues = true;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-        
-        // Show/hide the entire category group based on whether it has matching issues
-        if (hasMatchingIssues) {
-            group.classList.remove('hidden');
-        } else {
-            group.classList.add('hidden');
-        }
-    });
-}
-
-// Check if category should be shown based on filter
-function shouldShowCategory(category, filter) {
-    // First check property type - hide apartment-only items if house is selected
-    if (state.propertyType === 'house' && category.category === 'apartment') {
-        return false;
-    }
-
-    // Hide house-specific categories if apartment is selected
-    if (state.propertyType === 'apartment') {
-        if (category.category === 'basement' || category.category === 'attic') {
-            return false;
-        }
-    }
-
-    if (!filter || filter === 'all') {
-        return true;
-    }
-
-    // Handle renovation filters
-    if (filter.startsWith('renovation-')) {
-        // Check if any items in this category match the renovation subcategory
-        return category.items.some(item => {
-            return item.tags.includes('renovation');
-        });
-    }
-
-    // Check if any item in the category has the filter tag or matches category
-    return category.items.some(item =>
-        item.tags.includes(filter) || category.category === filter
-    );
-}
-
-// Update Checkbox Tracking Dates
-function updateCheckboxDates() {
-    const now = new Date().toISOString();
-
-    // Check if this is the first checkbox action
-    if (!state.firstCheckboxDate) {
-        // Check if any checkbox/issue/request is checked
-        const hasAnyChecked = Object.values(state.checklist).some(v => v) ||
-            Object.values(state.renovationNeeded).some(v => v) ||
-            Object.values(state.documentRequests).some(v => v);
-
-        if (hasAnyChecked) {
-            state.firstCheckboxDate = now;
-        }
-    }
-
-    // Always update last change date
-    state.lastCheckboxChangeDate = now;
-}
-
-// Handle checkbox change
-function handleCheckboxChange(e) {
-    const key = e.target.dataset.key;
-    state.checklist[key] = e.target.checked;
-
-    // Update tracking dates
-    updateCheckboxDates();
-
-    // Update text styling
-    const textElement = document.getElementById(`text-${key}`);
-    if (e.target.checked) {
-        textElement.classList.add('checked');
-    } else {
-        textElement.classList.remove('checked');
-    }
-
-    saveState();
-    updateProgress();
-}
-
-// Handle renovation/issue checkbox change
-function handleRenovationChange(e) {
-    const key = e.target.dataset.key;
-    state.renovationNeeded[key] = e.target.checked;
-
-    // Update tracking dates
-    updateCheckboxDates();
-
-    // Update text styling
-    const textElement = document.getElementById(`text-${key}`);
-    if (e.target.checked) {
-        textElement.classList.add('needs-renovation');
-    } else {
-        textElement.classList.remove('needs-renovation');
-    }
-
-    saveState();
-    updateProgress();
-    updateIssueFilters(); // Update issue filter buttons when issues change
-}
-
-// Handle document request button
-function handleDocumentRequest(e) {
-    const key = e.target.dataset.key;
-    state.documentRequests[key] = !state.documentRequests[key];
-
-    // Update tracking dates
-    updateCheckboxDates();
-
-    const haveCheckbox = document.getElementById(`item-${key}`);
-
-    if (state.documentRequests[key]) {
-        e.target.classList.add('requested');
-        e.target.textContent = '✓ Requested';
-        // Uncheck and disable the Have checkbox
-        state.checklist[key] = false;
-        if (haveCheckbox) {
-            haveCheckbox.checked = false;
-            haveCheckbox.disabled = true;
-            haveCheckbox.parentElement.style.opacity = '0.5';
-        }
-        const textElement = document.getElementById(`text-${key}`);
-        if (textElement) {
-            textElement.classList.remove('checked');
-        }
-    } else {
-        e.target.classList.remove('requested');
-        e.target.textContent = 'Request';
-        // Re-enable the Have checkbox
-        if (haveCheckbox) {
-            haveCheckbox.disabled = false;
-            haveCheckbox.parentElement.style.opacity = '1';
-        }
-    }
-
-    saveState();
-    updateProgress();
-}
-
-// Handle note change
-function handleNoteChange(e) {
-    const key = e.target.dataset.key;
-    state.notes[key] = e.target.value;
-
-    // Update compact note display
-    updateCompactNoteDisplay(key);
-
-    saveState();
-}
-
-// Handle compact mode note edit
-function handleCompactNoteEdit(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Find the button that was clicked
-    const button = e.target.closest('.add-note-btn, .edit-note-btn');
-    if (!button) return;
-
-    const key = button.dataset.key;
-    const itemDiv = button.closest('.checklist-item');
-
-    if (!itemDiv) {
-        console.error('Could not find item div');
-        return;
-    }
-
-    const noteTextarea = itemDiv.querySelector('.item-note-textarea');
-
-    if (!noteTextarea) {
-        console.error('Could not find textarea');
-        return;
-    }
-
-    const itemNotes = itemDiv.querySelector('.item-notes');
-
-    // Show the textarea and its container
-    if (itemNotes) {
-        itemNotes.classList.add('editing');
-    }
-    noteTextarea.style.display = 'block';
-    noteTextarea.style.visibility = 'visible';
-    noteTextarea.style.height = 'auto';
-    noteTextarea.style.minHeight = '80px';
-
-    // Focus and select content
-    setTimeout(() => {
-        noteTextarea.focus();
-        if (noteTextarea.value) {
-            noteTextarea.select();
-        }
-    }, 10);
-
-    // Hide when focus is lost
-    const hideTextarea = (event) => {
-        if (state.compactMode) {
-            noteTextarea.style.display = '';
-            noteTextarea.style.visibility = '';
-            noteTextarea.style.height = '';
-            noteTextarea.style.minHeight = '';
-            if (itemNotes) {
-                itemNotes.classList.remove('editing');
-            }
-        }
-        noteTextarea.removeEventListener('blur', hideTextarea);
-    };
-
-    noteTextarea.addEventListener('blur', hideTextarea);
-}
-
-// Update compact note display
-function updateCompactNoteDisplay(key) {
-    const compactNoteDisplay = document.querySelector(`.compact-note-display[data-key="${key}"]`);
-    if (compactNoteDisplay) {
-        const note = state.notes[key] || '';
-        if (note) {
-            compactNoteDisplay.innerHTML = `<span class="note-text">${note}</span> <button class="edit-note-btn" data-key="${key}" title="Edit note"><i class="fas fa-pencil-alt"></i></button>`;
-        } else {
-            compactNoteDisplay.innerHTML = `<button class="add-note-btn" data-key="${key}" title="Add note"><i class="fas fa-plus-circle"></i> Add note</button>`;
-        }
-
-        // Re-attach event listener
-        const btn = compactNoteDisplay.querySelector('.add-note-btn, .edit-note-btn');
-        if (btn) {
-            btn.addEventListener('click', handleCompactNoteEdit);
-        }
-    }
-}
-
-// Setup event listeners
 function setupEventListeners() {
-    // Burger Menu
-    const burgerMenu = document.getElementById('burgerMenu');
-    const headerActions = document.querySelector('.header-actions');
-    const menuOverlay = document.getElementById('menuOverlay');
+    const burger = byId('burgerMenu');
+    const headerActions = byId('headerActions');
+    const overlay = byId('menuOverlay');
 
-    if (burgerMenu && menuOverlay) {
-        burgerMenu.addEventListener('click', (e) => {
+    if (burger && overlay) {
+        burger.addEventListener('click', (e) => {
             e.stopPropagation();
-            burgerMenu.classList.toggle('active');
-            headerActions.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
+            const open = !burger.classList.contains('active');
+            burger.classList.toggle('active', open);
+            burger.setAttribute('aria-expanded', String(open));
+            headerActions.classList.toggle('active', open);
+            overlay.classList.toggle('active', open);
+            document.body.classList.toggle('menu-open', open);
         });
+        overlay.addEventListener('click', closeMobileMenu);
+        headerActions.querySelectorAll('.btn').forEach(btn => btn.addEventListener('click', closeMobileMenu));
+    }
 
-        // Close menu when clicking overlay
-        menuOverlay.addEventListener('click', () => {
-            burgerMenu.classList.remove('active');
-            headerActions.classList.remove('active');
-            menuOverlay.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        });
+    byId('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+    byId('themeSelect').addEventListener('change', (e) => setThemeMode(e.target.value));
 
-        // Close menu when a button inside is clicked
-        headerActions.querySelectorAll('.btn, .theme-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                burgerMenu.classList.remove('active');
-                headerActions.classList.remove('active');
-                menuOverlay.classList.remove('active');
-                document.body.classList.remove('menu-open');
-            });
+    if (regionSelect) {
+        regionSelect.addEventListener('change', (e) => {
+            state.region = e.target.value;
+            saveState();
+            renderResources();
+            showToast(t('region.changed').replace('{region}', regionLabel(state.region)));
         });
     }
 
-    // Filter buttons
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active'));
+            filterButtons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
             btn.classList.add('active');
-            const category = btn.dataset.category;
-            state.currentFilter = category;
-            
-            // Clear active issue filters when switching category filters
-            document.querySelectorAll('.issue-filter-btn').forEach(issueBtn => {
-                issueBtn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'true');
+            state.currentFilter = btn.dataset.category;
+            activeIssueFilter = null;
+            document.querySelectorAll('.issue-filter-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
             });
-            
-            filterChecklist(category);
+            applyFilters();
+            saveState();
         });
     });
 
-    // Property type buttons
-    const propertyTypeButtons = document.querySelectorAll('.property-type-btn');
-    propertyTypeButtons.forEach(btn => {
+    document.querySelectorAll('.property-type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            propertyTypeButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const propertyType = btn.dataset.propertyType;
-            state.propertyType = propertyType;
+            state.propertyType = btn.dataset.propertyType;
+            syncPropertyTypeButtons();
             saveState();
             renderChecklist();
+            applyFilters();
             updateProgress();
             updateToggleButtonState();
         });
     });
 
-    // Generate report
-    generateReportBtn.addEventListener('click', generateReport);
+    byId('generateReportBtn').addEventListener('click', generateReport);
+    byId('resetBtn').addEventListener('click', resetChecklist);
+    byId('printReport').addEventListener('click', () => window.print());
 
-    // Share URL button
-    const shareUrlBtn = document.getElementById('shareUrlBtn');
-    shareUrlBtn.addEventListener('click', copyShareURLToClipboard);
-
-    // Reset button
-    resetBtn.addEventListener('click', resetChecklist);
-
-    // Theme toggle
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // Modal controls
-    closeModal.addEventListener('click', () => {
-        reportModal.classList.remove('show');
+    byId('copyReport').addEventListener('click', async () => {
+        const ok = await copyText(reportContent.innerText);
+        showToast(ok ? t('report.copied') : t('share.failed'), ok ? '' : 'error');
     });
 
-    reportModal.addEventListener('click', (e) => {
-        if (e.target === reportModal) {
-            reportModal.classList.remove('show');
+    byId('shareReportBtn').addEventListener('click', async () => {
+        const url = buildShareUrl(state, 'report.html');
+        const ok = await copyText(url);
+        if (ok) showToast(t('report.linkCopied'));
+        else window.prompt(t('share.failed'), url);
+    });
+
+    byId('shareUrlBtn').addEventListener('click', async () => {
+        const url = buildShareUrl(state, 'index.html');
+        const ok = await copyText(url);
+        if (ok) showToast(t('share.copied'));
+        else window.prompt(t('share.failed'), url);
+    });
+
+    byId('helpBtn').addEventListener('click', () => openModal(helpModal));
+    byId('helpBtnHeader').addEventListener('click', () => openModal(helpModal));
+    byId('resourcesBtn').addEventListener('click', () => { renderResources(); openModal(resourcesModal); });
+    byId('toolsBtn').addEventListener('click', () => { renderLibrary(); openModal(toolsModal); });
+    byId('questionsBtn').addEventListener('click', showQuestionSheet);
+    byId('remindersBtn').addEventListener('click', showReminders);
+
+    byId('downloadIcsBtn').addEventListener('click', downloadReminders);
+    byId('printQuestionsBtn').addEventListener('click', () => window.print());
+    byId('copyQuestionsBtn').addEventListener('click', async () => {
+        const ok = await copyText(questionSheetAsText());
+        showToast(ok ? t('report.copied') : t('share.failed'), ok ? '' : 'error');
+    });
+
+    byId('exportJsonBtn').addEventListener('click', exportJSON);
+    byId('importJsonInput').addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) importJSON(e.target.files[0]);
+        e.target.value = '';
+    });
+    byId('saveLibraryBtn').addEventListener('click', () => {
+        const entry = saveToLibrary(state);
+        showToast(entry ? t('library.saved') : t('storage.failed'), entry ? '' : 'error');
+        renderLibrary();
+    });
+    byId('blankChecklistBtn').addEventListener('click', printBlankChecklist);
+
+    [reportModal, helpModal, resourcesModal, infoModal, toolsModal, questionsModal, remindersModal]
+        .forEach(modal => wireModal(modal));
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (document.querySelector('.modal.show')) closeTopModal();
+            else closeMobileMenu();
         }
+        trapFocus(e);
     });
 
-    printReport.addEventListener('click', () => {
-        window.print();
-    });
+    globalNotesTextarea.addEventListener('input', (e) => { state.globalNotes = e.target.value; saveState(); });
 
-    copyReport.addEventListener('click', copyReportToClipboard);
-
-    // Global notes
-    globalNotesTextarea.addEventListener('input', (e) => {
-        state.globalNotes = e.target.value;
-        saveState();
-    });
-
-    // Property information inputs
     propertyAddressInput.addEventListener('input', (e) => {
         state.propertyInfo.address = e.target.value;
+        const detected = regionFromPostalCode(e.target.value);
+        if (detected && detected !== state.region) {
+            state.region = detected;
+            syncRegionSelect();
+            renderResources();
+            showToast(t('region.detected').replace('{region}', regionLabel(detected)));
+        }
         saveState();
         updatePropertyAddressPreview();
     });
+    contactPersonInput.addEventListener('input', (e) => { state.propertyInfo.contactPerson = e.target.value; saveState(); });
+    inspectionDateInput.addEventListener('change', (e) => { state.propertyInfo.inspectionDate = e.target.value; saveState(); });
+    appointmentTimeInput.addEventListener('change', (e) => { state.propertyInfo.appointmentTime = e.target.value; saveState(); });
+    askingPriceInput.addEventListener('input', (e) => { state.propertyInfo.askingPrice = e.target.value; saveState(); });
+    propertyNotesInput.addEventListener('input', (e) => { state.propertyInfo.propertyNotes = e.target.value; saveState(); });
 
-    contactPersonInput.addEventListener('input', (e) => {
-        state.propertyInfo.contactPerson = e.target.value;
-        saveState();
-    });
-
-    inspectionDateInput.addEventListener('change', (e) => {
-        state.propertyInfo.inspectionDate = e.target.value;
-        saveState();
-    });
-
-    appointmentTimeInput.addEventListener('change', (e) => {
-        state.propertyInfo.appointmentTime = e.target.value;
-        saveState();
-    });
-
-    propertyNotesInput.addEventListener('input', (e) => {
-        state.propertyInfo.propertyNotes = e.target.value;
-        saveState();
-    });
-
-    // Help Modal
-    helpBtn.addEventListener('click', () => {
-        helpModal.classList.add('show');
-    });
-
-    // Help Button in Header
-    const helpBtnHeader = document.getElementById('helpBtnHeader');
-    if (helpBtnHeader) {
-        helpBtnHeader.addEventListener('click', () => {
-            helpModal.classList.add('show');
-        });
-    }
-
-    closeHelpModal.addEventListener('click', () => {
-        helpModal.classList.remove('show');
-    });
-
-    helpModal.addEventListener('click', (e) => {
-        if (e.target === helpModal) {
-            helpModal.classList.remove('show');
-        }
-    });
-
-    // Help Tabs
-    helpTabs.forEach(tab => {
+    document.querySelectorAll('.help-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-
-            // Remove active from all tabs and contents
-            helpTabs.forEach(t => t.classList.remove('active'));
-            helpTabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active to clicked tab and corresponding content
-            tab.classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-        });
-    });
-
-    // Toggle All Categories
-    toggleAllBtn.addEventListener('click', toggleAllCategories);
-
-    // Show Unchecked Only
-    const showUncheckedBtn = document.getElementById('showUncheckedBtn');
-    if (showUncheckedBtn) {
-        showUncheckedBtn.addEventListener('click', toggleShowUnchecked);
-    }
-
-    // Toggle Property Info
-    if (togglePropertyBtn) {
-        togglePropertyBtn.addEventListener('click', togglePropertyInfo);
-    }
-
-    // Scroll to Top
-    if (scrollToTopBtn) {
-        scrollToTopBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            scrollToTopWithAnimation();
-        });
-    }
-
-    if (logoContainer) {
-        logoContainer.addEventListener('click', scrollToTop);
-    }
-
-    // Handle scroll events
-    window.addEventListener('scroll', handleScroll);
-
-    // Compact mode note editing (event delegation)
-    checklistContainer.addEventListener('click', (e) => {
-        const noteBtn = e.target.closest('.add-note-btn, .edit-note-btn');
-        if (noteBtn && state.compactMode) {
-            handleCompactNoteEdit(e);
-        }
-    });
-
-    // Compact Mode
-    if (compactModeBtn) {
-        compactModeBtn.addEventListener('click', toggleCompactMode);
-    }
-
-    // Deadline Modal
-    closeDeadlineModal.addEventListener('click', () => {
-        deadlineModal.classList.remove('show');
-    });
-
-    deadlineModal.addEventListener('click', (e) => {
-        if (e.target === deadlineModal) {
-            deadlineModal.classList.remove('show');
-        }
-    });
-
-    // Deadline info buttons - delegated event
-    checklistContainer.addEventListener('click', (e) => {
-        if (e.target.closest('.info-deadline-btn')) {
-            const btn = e.target.closest('.info-deadline-btn');
-            const deadlineKey = btn.dataset.deadline;
-            showDeadlineInfo(deadlineKey);
-        }
-    });
-}
-
-// Filter checklist
-function filterChecklist(category) {
-    const categoryGroups = document.querySelectorAll('.category-group');
-
-    // Default to 'all' if category is undefined
-    if (!category) {
-        category = 'all';
-    }
-
-    categoryGroups.forEach(group => {
-        const groupCategory = group.dataset.category;
-        const categoryData = checklistData.find(c => c.category === groupCategory);
-
-        if (category === 'all') {
-            group.classList.remove('hidden');
-            // Show all items in the category
-            group.querySelectorAll('.checklist-item').forEach(item => {
-                item.style.display = 'flex';
+            document.querySelectorAll('.help-tab').forEach(t2 => {
+                t2.classList.remove('active');
+                t2.setAttribute('aria-selected', 'false');
             });
-        } else {
-            // Regular category filtering
-            if (shouldShowCategory(categoryData, category)) {
-                group.classList.remove('hidden');
-                // Show all items when filtering by regular category
-                group.querySelectorAll('.checklist-item').forEach(item => {
-                    item.style.display = 'flex';
-                });
-            } else {
-                group.classList.add('hidden');
-            }
-        }
-    });
-}
-
-// Show deadline information
-function showDeadlineInfo(deadlineKey) {
-    const info = deadlineInfo[deadlineKey];
-    if (!info) return;
-
-    deadlineTitle.textContent = info.title;
-    deadlineText.textContent = info.deadline;
-    deadlineDescription.textContent = info.description;
-
-    // Show additional info if available
-    if (info.additionalInfo) {
-        deadlineAdditionalInfo.textContent = info.additionalInfo;
-        additionalInfoSection.style.display = 'block';
-    } else {
-        additionalInfoSection.style.display = 'none';
-    }
-
-    // Build sources HTML
-    let sourcesHTML = '';
-    if (info.source) {
-        sourcesHTML += `<a href="${info.source}" target="_blank" rel="noopener">
-            <i class="fas fa-external-link-alt"></i> ${info.source.includes('vlaanderen') ? 'Vlaanderen' : info.source.includes('fgov') ? 'FOD Economie' : info.source.includes('ovam') ? 'OVAM' : 'Officiële bron'}
-        </a>`;
-    }
-    if (info.sourceWal) {
-        sourcesHTML += `<a href="${info.sourceWal}" target="_blank" rel="noopener">
-            <i class="fas fa-external-link-alt"></i> Wallonië
-        </a>`;
-    }
-    if (info.sourceBrussels) {
-        sourcesHTML += `<a href="${info.sourceBrussels}" target="_blank" rel="noopener">
-            <i class="fas fa-external-link-alt"></i> Brussels Gewest
-        </a>`;
-    }
-
-    deadlineSources.innerHTML = sourcesHTML;
-    deadlineModal.classList.add('show');
-}
-
-// Update progress
-function updateProgress() {
-    // Only count items from categories that should be shown based on property type
-    const totalItems = checklistData.reduce((sum, cat) => {
-        // Skip apartment category if house is selected
-        if (state.propertyType === 'house' && cat.category === 'apartment') {
-            return sum;
-        }
-        // Skip basement/attic if apartment is selected
-        if (state.propertyType === 'apartment' && (cat.category === 'basement' || cat.category === 'attic')) {
-            return sum;
-        }
-        return sum + cat.items.length;
-    }, 0);
-
-    // Count OK items (not including those that also have issues)
-    const okOnlyItems = Object.keys(state.checklist).filter(key =>
-        state.checklist[key] && !state.renovationNeeded[key]
-    ).length;
-
-    // Count items with issues (whether or not they're also marked OK)
-    const issueItems = Object.values(state.renovationNeeded).filter(v => v).length;
-
-    // Count document requests
-    const requestItems = Object.values(state.documentRequests).filter(v => v).length;
-
-    // Total checked = OK-only + issues
-    const checkedItems = okOnlyItems + issueItems;
-    const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-
-    progressFill.style.width = `${percentage}%`;
-    checkedCount.textContent = okOnlyItems;
-    issueCount.textContent = issueItems;
-    requestCount.textContent = requestItems;
-    totalCount.textContent = totalItems;
-    percentComplete.textContent = `${percentage}%`;
-}
-
-// Generate report
-function generateReport() {
-    let reportHTML = '<div class="report-container">';
-
-    // Property Information Section
-    if (state.propertyInfo.address || state.propertyInfo.contactPerson) {
-        reportHTML += `
-            <div class="report-section property-info-report">
-                <h3><i class="fas fa-map-marker-alt"></i> Property Information</h3>
-                ${state.propertyInfo.address ? `<p><strong><i class="fas fa-home"></i> Address:</strong> ${state.propertyInfo.address}</p>` : ''}
-                ${state.propertyInfo.contactPerson ? `<p><strong><i class="fas fa-user"></i> Contact Person:</strong> ${state.propertyInfo.contactPerson}</p>` : ''}
-                ${state.propertyInfo.inspectionDate ? `<p><strong><i class="fas fa-calendar"></i> Inspection Date:</strong> ${new Date(state.propertyInfo.inspectionDate).toLocaleDateString()}</p>` : ''}
-                ${state.propertyInfo.appointmentTime ? `<p><strong><i class="fas fa-clock"></i> Appointment Time:</strong> ${state.propertyInfo.appointmentTime}</p>` : ''}
-                ${state.propertyInfo.propertyNotes ? `<p><strong><i class="fas fa-info-circle"></i> Property Details:</strong> ${state.propertyInfo.propertyNotes}</p>` : ''}
-            </div>
-        `;
-    }
-
-    // Header info
-    reportHTML += `
-        <div class="report-section">
-            <h3><i class="fas fa-info-circle"></i> Inspection Summary</h3>
-            <p><strong>Report Generated:</strong> ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-            ${state.firstCheckboxDate ? `<p><strong>First Checkbox Date:</strong> ${new Date(state.firstCheckboxDate).toLocaleDateString()} at ${new Date(state.firstCheckboxDate).toLocaleTimeString()}</p>` : ''}
-            ${state.lastCheckboxChangeDate ? `<p><strong>Last Checkbox Change:</strong> ${new Date(state.lastCheckboxChangeDate).toLocaleDateString()} at ${new Date(state.lastCheckboxChangeDate).toLocaleTimeString()}</p>` : ''}
-            <p><strong>Progress:</strong> ${checkedCount.textContent} of ${totalCount.textContent} items checked (${percentComplete.textContent})</p>
-        </div>
-    `;
-
-    // Items OK
-    const okItems = [];
-    const issueItems = [];
-    const uncheckedItems = [];
-    const itemsWithNotes = [];
-    const documentsRequested = [];
-
-    checklistData.forEach((category, categoryIndex) => {
-        category.items.forEach((item, itemIndex) => {
-            const itemKey = `${categoryIndex}-${itemIndex}`;
-            const isOK = state.checklist[itemKey] || false;
-            const needsRenovation = state.renovationNeeded[itemKey] || false;
-            const docRequested = state.documentRequests[itemKey] || false;
-            const note = state.notes[itemKey] || '';
-
-            const itemData = {
-                category: category.title,
-                text: item.text,
-                note: note
-            };
-
-            if (isOK) {
-                okItems.push(itemData);
-            }
-
-            if (needsRenovation) {
-                issueItems.push(itemData);
-            }
-
-            if (!isOK && !needsRenovation) {
-                uncheckedItems.push(itemData);
-            }
-
-            if (note) {
-                itemsWithNotes.push(itemData);
-            }
-
-            if (docRequested) {
-                documentsRequested.push(itemData);
-            }
+            document.querySelectorAll('.help-tab-content').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            const panel = byId(`${tab.dataset.tab}-tab`);
+            if (panel) panel.classList.add('active');
         });
     });
 
-    // Documents to request - MOVED HERE FIRST
-    if (documentsRequested.length > 0) {
-        reportHTML += `
-            <div class="report-section">
-                <h3><i class="fas fa-file-alt"></i> Documents to Request (${documentsRequested.length})</h3>
-                <ul>
-                    ${documentsRequested.map(item => `
-                        <li>
-                            <strong>${item.category}:</strong> ${item.text}
-                            ${item.note ? `<div class="report-note"><strong>Note:</strong> ${item.note}</div>` : ''}
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
+    toggleAllBtn.addEventListener('click', toggleAllCategories);
+    byId('showUncheckedBtn').addEventListener('click', toggleShowUnchecked);
+    togglePropertyBtn.addEventListener('click', togglePropertyInfo);
+    compactModeBtn.addEventListener('click', toggleCompactMode);
+
+    scrollToTopBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        scrollToTopBtn.classList.add('clicking');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => scrollToTopBtn.classList.remove('clicking'), 600);
+    });
+    byId('logoContainer').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', renderFreshnessBanner);
+
+    const dismiss = byId('freshnessDismiss');
+    if (dismiss) {
+        dismiss.addEventListener('click', () => {
+            writeStorage(STORAGE_KEYS.freshnessDismissed, LEGAL_META.contentVersion);
+            byId('freshnessBanner').hidden = true;
+        });
     }
 
-    // Issues/Renovation needed section - SECOND
-    if (issueItems.length > 0) {
-        reportHTML += `
-            <div class="report-section">
-                <h3><i class="fas fa-exclamation-triangle"></i> Issues Found / Renovation Needed (${issueItems.length})</h3>
-                <ul>
-                    ${issueItems.map(item => `
-                        <li style="color: #ff9800;">
-                            <strong>${item.category}:</strong> ${item.text}
-                            ${item.note ? `<div class="report-note"><strong>Note:</strong> ${item.note}</div>` : ''}
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    // OK items section - THIRD
-    reportHTML += `
-        <div class="report-section">
-            <h3><i class="fas fa-check-circle"></i> Items Checked OK (${okItems.length})</h3>
-            <ul>
-                ${okItems.map(item => `
-                    <li>
-                        <strong>${item.category}:</strong> ${item.text}
-                        ${item.note ? `<div class="report-note"><strong>Note:</strong> ${item.note}</div>` : ''}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `;
-
-    // Unchecked items section
-    reportHTML += `
-        <div class="report-section">
-            <h3><i class="fas fa-times-circle"></i> Not Yet Checked (${uncheckedItems.length})</h3>
-            <ul>
-                ${uncheckedItems.map(item => `
-                    <li>
-                        <strong>${item.category}:</strong> ${item.text}
-                        ${item.note ? `<div class="report-note"><strong>Note:</strong> ${item.note}</div>` : ''}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `;
-
-    // Items with notes
-    if (itemsWithNotes.length > 0) {
-        reportHTML += `
-            <div class="report-section">
-                <h3><i class="fas fa-sticky-note"></i> Items with Notes (${itemsWithNotes.length})</h3>
-                <ul>
-                    ${itemsWithNotes.map(item => `
-                        <li>
-                            <strong>${item.category}:</strong> ${item.text}
-                            <div class="report-note"><strong>Note:</strong> ${item.note}</div>
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    // Global notes
-    if (state.globalNotes) {
-        reportHTML += `
-            <div class="report-section">
-                <h3><i class="fas fa-file-alt"></i> General Notes</h3>
-                <div class="report-note">${state.globalNotes}</div>
-            </div>
-        `;
-    }
-
-    reportHTML += '</div>';
-
-    reportContent.innerHTML = reportHTML;
-    reportModal.classList.add('show');
-}
-
-// Copy report to clipboard
-function copyReportToClipboard() {
-    const reportText = reportContent.innerText;
-    navigator.clipboard.writeText(reportText).then(() => {
-        alert('Report copied to clipboard!');
-    }).catch(err => {
-        console.error('Failed to copy report:', err);
+    checklistContainer.addEventListener('click', (e) => {
+        const infoBtn = e.target.closest('.info-topic-btn');
+        if (infoBtn) {
+            e.stopPropagation();
+            showTopic(infoBtn.dataset.topic);
+            return;
+        }
+        const whyBtn = e.target.closest('.why-toggle');
+        if (whyBtn) {
+            const panel = byId(whyBtn.dataset.whyTarget);
+            if (panel) {
+                const expanded = whyBtn.getAttribute('aria-expanded') === 'true';
+                whyBtn.setAttribute('aria-expanded', String(!expanded));
+                whyBtn.classList.toggle('open', !expanded);
+                panel.hidden = expanded;
+            }
+            return;
+        }
+        const noteBtn = e.target.closest('.add-note-btn, .edit-note-btn');
+        if (noteBtn && state.compactMode) handleCompactNoteEdit(e);
     });
 }
 
-// Reset checklist
-function resetChecklist() {
-    if (confirm('Are you sure you want to reset all checkboxes and notes? This cannot be undone.')) {
-        const today = new Date().toISOString().split('T')[0];
-        state = {
-            checklist: {},
-            renovationNeeded: {},
-            documentRequests: {},
-            notes: {},
-            globalNotes: '',
-            currentFilter: 'all',
-            propertyInfo: {
-                address: '',
-                contactPerson: '',
-                inspectionDate: today,
-                appointmentTime: '',
-                propertyNotes: ''
-            },
-            firstCheckboxDate: null,
-            lastCheckboxChangeDate: null,
-            compactMode: state.compactMode // Preserve compact mode setting
-        };
-        globalNotesTextarea.value = '';
-        propertyAddressInput.value = '';
-        contactPersonInput.value = '';
-        inspectionDateInput.value = today;
-        appointmentTimeInput.value = '';
-        propertyNotesInput.value = '';
-        saveState();
-        renderChecklist();
-        updateProgress();
-
-        // Reset filter
-        filterButtons.forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-category="all"]').classList.add('active');
-        
-        // Clear issue filters
-        document.querySelectorAll('.issue-filter-btn').forEach(btn => btn.classList.remove('active'));
-    }
+function checkFirstVisit() {
+    if (readStorage(STORAGE_KEYS.seenHelp)) return;
+    if (new URLSearchParams(window.location.search).get('data')) return;
+    openModal(helpModal);
+    writeStorage(STORAGE_KEYS.seenHelp, 'true');
 }
 
-// Theme functions
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+/* ------------------------------------------------------------------ *
+ * Bootstrap
+ * ------------------------------------------------------------------ */
+function init() {
+    currentLanguage = resolveInitialLanguage();
+    initTheme(byId('themeSelect'));
+    buildLanguageSelect(byId('languageSelect'));
+    applyTranslations();
 
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    loadState();
+    loadCompactModeState();
+    loadPropertyInfoState();
+    updateShowUncheckedButton();
 
-    // Update icon
-    const icon = themeToggle.querySelector('i');
-    if (newTheme === 'dark') {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-    }
+    renderChecklist();
+    applyFilters();
+    updateProgress();
+    updateToggleButtonState();
+
+    renderResources();
+    renderGuide();
+    renderFaq();
+    renderHelpContent();
+    renderFreshnessBanner();
+
+    const yearEl = byId('footerYear');
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+    setupEventListeners();
+    checkFirstVisit();
 }
 
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
-    // Update icon
-    const icon = themeToggle.querySelector('i');
-    if (savedTheme === 'dark') {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-    }
-}
-
-// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', init);

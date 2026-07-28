@@ -1,0 +1,7 @@
+# huiskeuring.be - free house inspection checklist for Belgium
+# All content is public. Crawling is welcome.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://huiskeuring.be/sitemap.xml

@@ -33,39 +33,15 @@
     scrollbar-color: var(--current-accent) var(--bg-color);
 }
 
-:root {
-    --primary-color: #333333;
-    --secondary-color: #666666;
-    --accent-color: #00ff00;
-    --accent-color-dark: #00ff00;
-    --accent-color-light: #27ae60; /* Darker green for light theme */
-    --dark-bg: #121212;
-    --light-bg: #f8f9fa;
-    --text-dark: #333;
-    --text-light: #f8f9fa;
-    --border-radius: 8px;
-    --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
-    
-    /* Theme variables */
-    --bg-color: var(--light-bg);
-    --text-color: var(--text-dark);
-    --card-bg: white;
-    --header-bg: white;
-    --border-color: #eee;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --current-accent: var(--accent-color-light); /* Use darker green in light theme */
-}
+/* All design tokens and every theme are defined in one place, at the bottom of
+   this file under "THEMES". Do not add variable definitions here - a second
+   :root block silently overrides the theme contract and is very hard to spot. */
 
-/* Dark Theme */
-[data-theme="dark"] {
-    --bg-color: #121212;
-    --text-color: #f8f9fa;
-    --card-bg: #1e1e1e;
-    --header-bg: #1a1a1a;
-    --border-color: #333;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --current-accent: var(--accent-color-dark); /* Use bright green in dark theme */
+/* The closed mobile drawer sits off-screen to the right. `overflow-x: hidden`
+   on body alone does not stop that from scrolling, because the drawer is
+   position:fixed - it has to be on html as well. */
+html {
+    overflow-x: hidden;
 }
 
 body {
@@ -230,9 +206,19 @@ body.menu-open {
 
 .header-actions {
     display: flex;
-    gap: 15px;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
     align-items: center;
     transition: var(--transition);
+}
+
+.header-actions .btn {
+    padding: 10px 16px;
+    font-size: 0.92rem;
+    white-space: nowrap;
 }
 
 /* Burger Menu */
@@ -1561,19 +1547,35 @@ body.compact-mode .filter-section .filter-divider {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 280px;
+        width: min(280px, 85vw);
         height: 100vh;
         background: var(--card-bg);
         flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-y: auto;
         padding: 80px 20px 20px;
         box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
         z-index: 1000;
         gap: 15px;
-        transition: right 0.3s ease;
+        /* visibility keeps the closed drawer out of the tab order and out of the
+           screen reader tree; without it every button in it is still focusable. */
+        visibility: hidden;
+        transition: right 0.3s ease, visibility 0s linear 0.3s;
     }
 
     .header-actions.active {
         right: 0;
+        visibility: visible;
+        transition: right 0.3s ease, visibility 0s;
+    }
+
+    .header-actions .select-group {
+        width: 100%;
+    }
+
+    .header-actions .header-select {
+        flex: 1;
     }
 
     .header-actions .btn {
@@ -1830,22 +1832,779 @@ body.compact-mode .filter-section .filter-divider {
     color: var(--current-accent);
 }
 
+/* ==================================================================
+   Accessibility helpers
+   ================================================================== */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3000;
+    padding: 12px 20px;
+    background: var(--current-accent);
+    color: #000;
+    font-weight: 600;
+    border-radius: 0 0 var(--border-radius) 0;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+.noscript-warning {
+    background: #ff9800;
+    color: #000;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+:focus-visible {
+    outline: 3px solid var(--current-accent);
+    outline-offset: 2px;
+}
+
+.category-header:focus-visible,
+.filter-btn:focus-visible,
+.issue-filter-btn:focus-visible {
+    outline: 3px solid var(--current-accent);
+    outline-offset: 2px;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* ==================================================================
+   Header selects (language & theme)
+   ================================================================== */
+.select-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+    color: var(--text-color);
+}
+
+.select-group i {
+    color: var(--current-accent);
+}
+
+.header-select {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.header-select:hover {
+    border-color: var(--current-accent);
+}
+
+/* ==================================================================
+   "Why does this matter?" explanation
+   ================================================================== */
+.why-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 4px 12px;
+    border: 1px solid var(--current-accent);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--current-accent);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.why-toggle:hover,
+.why-toggle.open {
+    background: var(--current-accent);
+    color: #000;
+}
+
+.item-why[hidden] {
+    display: none;
+}
+
+.item-why {
+    margin-top: 10px;
+    padding: 12px 16px;
+    border-left: 4px solid var(--current-accent);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background: var(--border-color);
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+.item-why strong {
+    color: var(--current-accent);
+}
+
+/* ==================================================================
+   Issue filter empty state
+   ================================================================== */
+.issue-filter-empty {
+    margin: 0;
+    padding: 10px 0;
+    color: var(--text-color);
+    opacity: 0.7;
+    font-size: 0.92rem;
+}
+
+/* ==================================================================
+   Resources, buying guide and FAQ
+   ================================================================== */
+.tab-intro {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.resource-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.resource-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.resource-list li:last-child {
+    border-bottom: none;
+}
+
+.resource-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--current-accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.resource-list a:hover {
+    text-decoration: underline;
+}
+
+.resource-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.88rem;
+    opacity: 0.8;
+}
+
+.faq-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 12px;
+    padding: 0 16px;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    padding: 14px 0;
+    font-weight: 600;
+    color: var(--text-color);
+    list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::before {
+    content: '\002B';
+    display: inline-block;
+    width: 1.2em;
+    color: var(--current-accent);
+    font-weight: 700;
+}
+
+.faq-item[open] summary::before {
+    content: '\2212';
+}
+
+.faq-item p {
+    margin: 0 0 16px 1.2em;
+    line-height: 1.7;
+}
+
+/* ==================================================================
+   Toast & button feedback
+   ================================================================== */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 20px);
+    z-index: 3000;
+    max-width: 90vw;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--current-accent);
+    color: #000;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.btn-success-flash {
+    background-color: #27ae60 !important;
+    color: #fff !important;
+}
+
+/* ==================================================================
+   Report extras
+   ================================================================== */
+.report-section li.report-issue {
+    color: #ff9800;
+}
+
+.report-disclaimer {
+    margin-top: 24px;
+    padding: 14px 18px;
+    border-radius: var(--border-radius);
+    background: var(--border-color);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ==================================================================
+   THEMES
+   ------------------------------------------------------------------
+   Every theme sets the same variable contract, so adding a theme means
+   adding one block here plus one entry in THEMES in js/core.js.
+   ================================================================== */
+:root {
+    --primary-color: #333333;
+    --secondary-color: #666666;
+    --accent-color: #00ff00;
+    --accent-color-dark: #00ff00;
+    --accent-color-light: #27ae60;
+    --dark-bg: #121212;
+    --light-bg: #f8f9fa;
+    --text-dark: #333;
+    --text-light: #f8f9fa;
+    --border-radius: 8px;
+    --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+
+    /* Theme contract */
+    --bg-color: #f8f9fa;
+    --text-color: #333333;
+    --text-secondary: #5a6068;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+    --border-color: #e6e8eb;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --current-accent: #1f8a4c;
+    --accent-contrast: #ffffff;
+    --issue-color: #c2620a;
+    --ok-color: #1f8a4c;
+    --info-color: #1d6fb8;
+}
+
+/* Daylight (default light) */
+[data-theme="light"] {
+    --bg-color: #f8f9fa;
+    --text-color: #333333;
+    --text-secondary: #5a6068;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+    --border-color: #e6e8eb;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --current-accent: #1f8a4c;
+    --accent-contrast: #ffffff;
+    --issue-color: #c2620a;
+    --ok-color: #1f8a4c;
+    --info-color: #1d6fb8;
+}
+
+/* Midnight */
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #f1f3f5;
+    --text-secondary: #a8b0b8;
+    --card-bg: #1e1e1e;
+    --header-bg: #1a1a1a;
+    --border-color: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --current-accent: #3ddc84;
+    --accent-contrast: #06240f;
+    --issue-color: #ffb057;
+    --ok-color: #3ddc84;
+    --info-color: #63b3ed;
+}
+
+/* Slate - a calmer, blue-grey dark theme */
+[data-theme="slate"] {
+    --bg-color: #10151c;
+    --text-color: #e6edf3;
+    --text-secondary: #9aa7b4;
+    --card-bg: #18202b;
+    --header-bg: #141b24;
+    --border-color: #2a3542;
+    --shadow-color: rgba(0, 0, 0, 0.55);
+    --current-accent: #56a8ff;
+    --accent-contrast: #04121f;
+    --issue-color: #f0a45c;
+    --ok-color: #57c98b;
+    --info-color: #56a8ff;
+}
+
+/* Paper - warm, low blue light, easy for long reading sessions */
+[data-theme="paper"] {
+    --bg-color: #f4ecdc;
+    --text-color: #3a2f21;
+    --text-secondary: #6d5c46;
+    --card-bg: #fbf6ea;
+    --header-bg: #fbf6ea;
+    --border-color: #e0d3ba;
+    --shadow-color: rgba(90, 70, 40, 0.14);
+    --current-accent: #8a5a1e;
+    --accent-contrast: #fff8ec;
+    --issue-color: #a8480f;
+    --ok-color: #4b7233;
+    --info-color: #2f6690;
+}
+
+/* High contrast - accessibility first */
+[data-theme="contrast"] {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --text-secondary: #e8e8e8;
+    --card-bg: #000000;
+    --header-bg: #000000;
+    --border-color: #ffffff;
+    --shadow-color: rgba(255, 255, 255, 0.25);
+    --current-accent: #ffe600;
+    --accent-contrast: #000000;
+    --issue-color: #ff9d3c;
+    --ok-color: #4dff88;
+    --info-color: #6cd4ff;
+}
+
+[data-theme="contrast"] .btn,
+[data-theme="contrast"] .filter-btn,
+[data-theme="contrast"] .category-header,
+[data-theme="contrast"] .modal-content,
+[data-theme="contrast"] .property-info-card,
+[data-theme="contrast"] .progress-card,
+[data-theme="contrast"] .notes-card {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="contrast"] .item-why,
+[data-theme="contrast"] .report-note,
+[data-theme="contrast"] .tag {
+    background: #1a1a1a;
+    border: 1px solid var(--border-color);
+}
+
+/* ==================================================================
+   Region / status badges
+   ================================================================== */
+.status-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.status-ok { background: var(--ok-color); color: var(--accent-contrast); }
+.status-warn { background: var(--issue-color); color: #fff; }
+.status-muted { background: var(--border-color); color: var(--text-secondary); }
+
+.info-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-section:last-child { border-bottom: none; }
+
+.info-section h3,
+.info-section h4 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--current-accent);
+    margin-bottom: 0.6rem;
+    font-size: 1.05rem;
+}
+
+.info-section p { line-height: 1.7; margin-bottom: 0.6rem; }
+
+.info-highlight {
+    font-weight: 700;
+    color: var(--issue-color);
+}
+
+.info-region-heading {
+    margin: 1.5rem 0 1rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.region-block {
+    background: var(--bg-color);
+    border-left: 4px solid var(--border-color);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    padding: 14px 18px;
+}
+
+.region-block.region-current { border-left-color: var(--current-accent); }
+
+.region-current-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--current-accent);
+}
+
+.info-warning {
+    background: rgba(194, 98, 10, 0.12);
+    border-left: 3px solid var(--issue-color);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+}
+
+.info-verified {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.source-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.source-list li { margin-bottom: 6px; }
+
+.source-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--info-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.source-list a:hover { text-decoration: underline; }
+
+/* ==================================================================
+   Freshness banner
+   ================================================================== */
+.freshness-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1rem 0 1.5rem;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--ok-color);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.freshness-banner[hidden] { display: none; }
+.freshness-banner i { color: var(--ok-color); }
+.freshness-banner.freshness-overdue { border-left-color: var(--issue-color); }
+.freshness-banner.freshness-overdue i { color: var(--issue-color); }
+
+.freshness-dismiss {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.freshness-dismiss:hover { background: var(--border-color); }
+
+/* ==================================================================
+   Tools, library, questions, reminders
+   ================================================================== */
+.tool-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+}
+
+.file-button { cursor: pointer; }
+
+.btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+.library-list { list-style: none; margin: 0; padding: 0; }
+
+.library-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.library-list li:last-child { border-bottom: none; }
+.library-list li > div { flex: 1; min-width: 180px; }
+
+.library-meta {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.question-list { margin: 0 0 0 1.2rem; padding: 0; line-height: 1.7; }
+.question-list li { margin-bottom: 10px; }
+
+.reminder-dates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.reminder-list { list-style: none; margin: 0; padding: 0; }
+
+.reminder-list li {
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: var(--border-radius);
+    background: var(--bg-color);
+    border-left: 4px solid var(--current-accent);
+}
+
+.reminder-list li.reminder-overdue { border-left-color: var(--issue-color); }
+
+.reminder-date {
+    display: inline-block;
+    font-weight: 700;
+    color: var(--current-accent);
+    margin-right: 10px;
+}
+
+.reminder-overdue .reminder-date { color: var(--issue-color); }
+.reminder-list p { margin: 6px 0 0; font-size: 0.92rem; line-height: 1.6; }
+
+.reminder-flag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--issue-color);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ==================================================================
+   Comparison page
+   ================================================================== */
+.compare-page { padding: 2rem 0 4rem; }
+
+.compare-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.compare-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.compare-chip.selected {
+    border-color: var(--current-accent);
+    background: var(--current-accent);
+    color: var(--accent-contrast);
+}
+
+.compare-table-wrap { overflow-x: auto; }
+
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.compare-table th,
+.compare-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: top;
+}
+
+.compare-table thead th {
+    background: var(--bg-color);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+}
+
+.compare-table tbody th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 220px;
+}
+
+.compare-table td.best {
+    background: rgba(31, 138, 76, 0.12);
+    font-weight: 700;
+}
+
+.compare-subhead {
+    background: var(--bg-color);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--current-accent) !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.compare-bar {
+    display: block;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--current-accent);
+    margin-top: 6px;
+}
+
+/* ==================================================================
+   Read-only report page
+   ================================================================== */
+.readonly-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--info-color);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.readonly-page { padding: 2rem 0 4rem; }
+.readonly-page .report-container { background: var(--card-bg); padding: 2rem; border-radius: var(--border-radius); }
+
 @media print {
     .header,
     .filter-section,
     .progress-section,
-    .modal-footer {
-        display: none;
+    .notes-section,
+    .checklist-section,
+    .footer,
+    .modal-footer,
+    .modal-header .close-btn,
+    .skip-link,
+    .toast,
+    .menu-overlay,
+    .freshness-banner,
+    .compare-picker,
+    .property-info-section {
+        display: none !important;
     }
 
-    body {
-        background-color: white;
-        color: black;
+    body { background-color: #fff; color: #000; }
+
+    .modal,
+    .modal.show {
+        display: block !important;
+        position: static;
+        background: none;
+        overflow: visible;
+        padding: 0;
     }
 
     .modal-content {
         box-shadow: none;
         max-height: none;
+        max-width: none;
+        animation: none;
+    }
+
+    .modal-body { overflow: visible !important; max-height: none !important; }
+    .report-section, .help-section { page-break-inside: avoid; }
+    .readonly-page, .compare-page { display: block !important; }
+    .compare-table { page-break-inside: auto; }
+
+    a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        word-break: break-all;
     }
 }
+
+
 

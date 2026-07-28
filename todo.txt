@@ -1,2 +1,10 @@
+Done - integrated on 2026-07-28.
+
 https://www.vlaanderen.be/verzekering-gewaarborgd-wonen
 
+The Verzekering Gewaarborgd Wonen is now a checklist item in the "Documents"
+category with a full in-depth info topic explaining why to apply and the
+1-year application deadline, and it is listed in the Resources panel
+(EN / NL / FR variants of the official page).
+
+The working log, backlog and feature ideas now live in house/todo.md.

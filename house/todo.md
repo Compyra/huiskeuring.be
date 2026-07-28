@@ -1,77 +1,322 @@
-# Huiskeuring.be - Project Masterwork Prompt
+# huiskeuring.be - Working log, backlog and ideas
 
-## Instructions
+> **Mission:** be the go-to resource for anyone buying or viewing a house in Belgium -
+> fast, trustworthy, multilingual, accurate per region, and genuinely helpful.
 
-You are a world-leading web developer taking over the **huiskeuring.be** project as your finishing masterwork. Your mission is to create an incredibly impressive, high-performance platform that will become the go-to resource for anyone buying or viewing houses in Belgium.
+**Live:** <https://huiskeuring.be/> · **Source of truth for legal facts:** `js/legal.js`
 
-### Core Requirements
+---
 
-#### 1. **Multilingual Support**
-- Full support for **English**, **Dutch**, and **French**
-- Language auto-detection based on user device settings
-- Easy language switcher accessible throughout the site
-- All content accurately translated and culturally adapted
+## 1. Original brief (kept for reference)
 
-#### 2. **Exceptional SEO Optimization**
-- Target users actively searching for house-buying information in Belgium
-- Implement technical SEO best practices (Core Web Vitals, structured data, meta tags)
-- Create comprehensive keyword strategy around "house inspection", "home buying Belgium", "maison Belgique", "huiskeuring"
-- Optimize for local search and location-based queries
-- Build high-quality backlink strategy with relevant Belgian real estate resources
-- Focus on user intent: buyers, sellers, and house inspectors
+1. **Multilingual** - EN / NL / FR, auto-detection, easy switcher, culturally adapted.
+2. **Exceptional SEO** - Core Web Vitals, structured data, meta tags, Belgian buyer intent.
+3. **UX excellence** - mobile-first, fast, WCAG 2.1 AA, clear journey.
+4. **Themes** - multiple professional themes, system detection, manual override, persistence.
+5. **Accurate, up-to-date information** - audits, official sources, version control on changes.
+6. **Official resources** - cadastre, flood maps, guaranteed housing insurance, EPC, portals, municipal rules.
+7. **Key sections** - buying guide, what to look for, legal requirements, good to know, regional guides, resource library, FAQ.
+8. **Technical stack** - performant, SEO-friendly, secure.
 
-#### 3. **User Experience Excellence**
-- Intuitive navigation and clear information hierarchy
-- Fast loading times and smooth interactions
-- Mobile-first responsive design
-- Accessibility compliance (WCAG 2.1 AA)
-- Clear CTAs and user journey optimization
+---
 
-#### 4. **Theme & Visual Design**
-- Implement multiple professional themes
-- Detect system theme preference (light/dark mode)
-- Auto-apply matching theme on page load
-- Allow manual theme override with persistence
-- Premium, modern design that builds trust with users
+## 2. File map (after the pass-2 split)
 
-#### 5. **Accurate, Up-to-Date Information**
-- Maintain rigorous information accuracy standards
-- Regular content audits and updates
-- Source all information from reliable, official channels
-- Version control for information changes
+| File | Purpose | Review cadence |
+|------|---------|----------------|
+| `index.html` | Checklist app, SEO metadata, structured data, static help content | on change |
+| `report.html` | Shareable **read-only** report page | on change |
+| `compare.html` | **Side-by-side property comparison** | on change |
+| `style.css` | All styling, 6 themes, responsive rules, print stylesheets | on change |
+| `js/i18n.js` | UI strings EN/NL/FR, buying guide, FAQ, language detection | on change |
+| **`js/legal.js`** | **Legal facts, deadlines and amounts per region + `lastVerified`** | **every 6 months** |
+| **`js/links.js`** | **Every external URL in the project** | **every 6 months** |
+| `js/checklist.js` | Checklist items (English source) + `why` explanations | on change |
+| `js/checklist.nl.js` | Dutch item translations, keyed by item id | on change |
+| `js/checklist.fr.js` | French item translations, keyed by item id | on change |
+| `js/core.js` | Shared runtime: escaping, storage, i18n, themes, region, state, share links, library | on change |
+| `js/app.js` | Checklist page logic | on change |
+| `js/report.js` | Read-only report page logic | on change |
+| `js/compare.js` | Comparison page logic | on change |
+| **`tools/verify.ps1`** | **Automated pre-release verification, 9 checks** | **before every release** |
+| `assets/fonts/`, `assets/webfonts/`, `assets/vendor/` | Self-hosted fonts and icons | on version bump |
+| `assets/LICENSES.md` | Third-party licence attribution | on version bump |
+| `site.webmanifest`, `robots.txt`, `sitemap.xml` | PWA + search engine directives | on change |
 
-#### 6. **Official Resources & Tools**
-Integrate links and information from:
-- **Cadastral Information** (Kadaster/Cadastre) - Property ownership and details
-- **Water/Flood Risk Maps** - Official Flemish/Walloon government flood zone mapping
-- **Insurance Information** - Link to: https://www.vlaanderen.be/verzekering-gewaarborgd-wonen (Guaranteed Housing Insurance)
-- **Energy Performance Certificates (EPC)**
-- **Official Real Estate Portals**
-- **Municipality-specific building regulations**
+**Rule:** no legal rule, deadline, tax rate or external URL may live anywhere except
+`js/legal.js` and `js/links.js`. That is what makes the 6-month review tractable.
 
-#### 7. **Key Information Sections**
-- **House Buying Guide**: Step-by-step process for Belgian house buyers
-- **What to Look For**: Inspection checklist and red flags
-- **Legal Requirements**: Permits, registrations, paperwork
-- **Good to Know**: Tips, common pitfalls, best practices
-- **Regional Guides**: Specific information by province/region
-- **Resource Library**: Links to official government maps, cadastral data, insurance options
-- **FAQ**: Address common questions from buyers and visitors
+---
 
-#### 8. **Technical Stack**
-- Modern, performant frontend framework
-- SEO-friendly architecture
-- Fast hosting and CDN optimization
-- Analytics integration for user insights
-- Secure, scalable backend
+## 3. Changelog
 
-### Success Criteria
-This is your masterpiece. It should be:
-- The #1 resource for house buyers in Belgium
-- Trusted, professional, and comprehensive
-- Lightning-fast and beautifully designed
-- Highly discoverable via search engines
-- Genuinely helpful to every visitor
-- Maintain international standards while serving Belgian market
+### 2026-07-28 - Pass 3: completion, full translation, verification
 
-**Go create something extraordinary.**
+#### Translation is now complete
+- **All 223 checklist items have a translated `text` AND a translated `why` in Dutch and
+  French.** Verified by script: `nl: entries=223 withWhy=223 missingWhy=0`, same for `fr`.
+- **The help modal is no longer hard-coded English.** The About, How to use, Roadmap, GDPR
+  and Privacy tabs were 220 lines of untranslatable HTML. They now live in `HELP_CONTENT`
+  in `js/i18n.js` (39 sections per language) and are rendered by `renderHelpContent()`,
+  so they follow the language switcher like everything else.
+  The "How to use" tab was also rewritten from 9 to 12 steps to cover the region selector,
+  the question sheet, the reminders and the backup/compare tools that pass 2 added.
+- **The `<noscript>` message is now shown in all three languages at once** - it cannot be
+  translated by JavaScript, so all three are always present.
+- **UI key parity verified by script:** en=230, nl=230, fr=230, with zero keys missing or
+  extra in either direction, and all 96 `data-i18n` attributes in the HTML resolve.
+
+#### Bugs found and fixed in this pass
+| # | Issue | Impact |
+|---|-------|--------|
+| 1 | Help modal tabs (About/Usage/Roadmap/GDPR/Privacy) were hard-coded English | A Dutch or French visitor got an English privacy policy and English GDPR rights - the two texts where language matters most legally. |
+| 2 | `<noscript>` warning was English only | Users with JavaScript disabled got no message they could read. |
+| 3 | Duplicate `:root` and `[data-theme="dark"]` blocks at the top of `style.css` | Two competing sets of design tokens; whichever came last silently won. Removed, with a comment at the old location explaining why nothing may be defined there. |
+| 4 | "How to use" documented a 9-step flow that no longer matched the app | Users could not find the region selector, reminders, question sheet or backup tools. |
+| 5 | `compare.html` print button reused the `report.print` key ("Print report") | Wrong label on a page that is not a report. Added a generic `btn.print` key. |
+| 6 | The closed mobile drawer let the page scroll ~13-85 px sideways below 768 px | `overflow-x: hidden` was only on `body`, which does not contain a `position: fixed` child. Added it to `html` as well. |
+| 7 | Every control inside the closed mobile drawer was still keyboard focusable | Tabbing through the page walked into an invisible off-screen menu. The drawer is now `visibility: hidden` until opened, which removes it from the tab order and from the screen reader tree. |
+| 8 | The header comment of `js/checklist.js` documented fields that do not exist (`legal:`, `ask:`) and omitted the real one (`deadline:`) | Anyone extending the checklist from the documentation would have written a field the app silently ignores. |
+
+#### Verification performed (all automated, all passing)
+
+All of it is now permanent: **`tools/verify.ps1`**, 9 checks, run with
+`powershell -ExecutionPolicy Bypass -File tools\verify.ps1` (add `-SkipLinks` to skip the
+network check). It exits 1 on the first problem, so it can gate a release.
+
+| Check | Result |
+|-------|--------|
+| Strict UTF-8 validity + double-encoding + replacement characters, all JS/HTML/CSS/MD | clean |
+| Every external URL in `js/*.js` and `*.html` | **64 URLs, 64 x HTTP 200** |
+| Every local `src=` / `href=` in the three HTML pages | all resolve |
+| Every `url()` in the bundled font CSS | all resolve |
+| Every `byId()` call against the actual element ids | all resolve (`deedDate` / `drawdownDate` are created at runtime inside the reminders modal) |
+| Every `deadline:` / `info:` key against `LEGAL_TOPICS` + `ADVISORY_TOPICS` | all resolve |
+| Consistency of the key legal figures across all three languages | 6 years 8/8/8, 18 months 8/8/8, 25 years 6/6/6 - symmetric, no stale "5 years" anywhere |
+| Browser run of all three pages in all three languages | zero console errors, zero failed requests |
+| Horizontal overflow at 320 / 360 / 400 / 768 / 1024 / 1440 px on all three pages | 0 px everywhere, page cannot be scrolled sideways |
+| Mobile drawer open / close cycle at 320 px | hidden and off-screen when closed, fully on-screen when open, correctly re-hidden after closing, `aria-expanded` tracks state |
+| XSS regression: HTML in the address field and in a note | not executed, not injected into the report |
+
+#### Small additions
+- **`tools/verify.ps1`** - the whole checklist above as one command, so it stops being
+  rewritten by hand before each release.
+- The Resources panel now states **when the links were last verified**, next to the region
+  hint, so the freshness promise is visible where the links are used.
+- Generic `btn.print` label added in all three languages.
+- Cache-busting parameters bumped to `?v12` across the three HTML pages.
+
+---
+
+### 2026-07-28 - Pass 2: regions, split, features, self-hosting
+
+#### Architecture: split for maintenance
+- `data.js` split into **`js/legal.js`** (the 6-month review file) and **`js/links.js`**
+  (every external URL), with the checklist content in **`js/checklist.js`**.
+- New **`js/core.js`** holds everything shared by the three pages, so `app.js`,
+  `report.js` and `compare.js` only contain page-specific logic.
+- `SCHEMA_VERSION` raised to 3 (new `region`, `keyDates` and `askingPrice` fields).
+
+#### Legal accuracy per region (brief items 5 and 7)
+- Every legal topic now carries a block **per region** (Flanders / Wallonia / Brussels,
+  plus `federal` where a rule is federal) with `status`, `lastVerified` and `sources`.
+- Honest `status` model: `verified`, `unverified`, `not-applicable`. The UI shows an
+  explicit warning for anything we could not confirm on an official page instead of
+  presenting a guess as a fact. **This was a deliberate choice** - Wallonia and Brussels
+  publish far less machine-readable guidance than Flanders, and a confident-sounding
+  wrong deadline is worse than an honest "go and ask".
+- A **region selector** was added, auto-detected from the postal code in the address.
+  It changes the legal panel, the resource links and the reminders.
+
+**Verified this pass (with official source URLs in `js/legal.js`):**
+
+| Topic | Flanders | Wallonia | Brussels |
+|---|---|---|---|
+| EPC/PEB validity | 10 years | not verified | 10 years |
+| Renovation obligation E/F to D | **6 years** after the deed (raised from 5, final 12/12/2025), fine 500-5,000 EUR | none confirmed | none confirmed |
+| Electrical inspection | federal: valid 25 y, **18 months** to correct | same (federal) | same (federal) |
+| Asbestos certificate | mandatory pre-2001 buildings, all owners by 2032, max 10 y | **does not exist** | **does not exist** |
+| Soil | bodemattest before compromis (OVAM) | **extrait conforme BDES** before any transfer | attestation exists, timing not verified |
+| Heating maintenance | mazout yearly, gas every 2 years | interval not verified | interval not verified |
+| Smoke detectors | every home, every storey, since 1 Jan 2020 | details not verified | details not verified |
+| Oil tank | VLAREM, interval not verified | periodic control compulsory | permit thresholds not verified |
+| Registration duty | **2%** sole own home (1 Jan 2025), **12%** otherwise | 3% / 12.5% not confirmed on a government page | **12.5%** with abattement on the first 200,000 EUR |
+| Minimum EPC for rentals | phased from 1 Jan 2030 to 2040 | not verified | not verified |
+| Verzekering Gewaarborgd Wonen | free, apply within 1 year, 10 y cover, 3 m wait, max 3 y | **does not exist** | **does not exist** |
+
+#### Self-hosted fonts and icons (legality + privacy + performance)
+- **Montserrat** (SIL OFL 1.1) and **Roboto** (Apache 2.0) downloaded into
+  `assets/fonts/`, latin + latin-ext subsets only, with a generated `@font-face`
+  stylesheet. Both licences explicitly allow redistribution and self-hosting.
+- **Font Awesome Free 6.5.2** (icons CC BY 4.0, fonts SIL OFL 1.1, code MIT) bundled
+  locally, **solid style only** because that is all the interface uses.
+- Attribution written to `assets/LICENSES.md`.
+- Result: **zero third-party requests**. No visitor IP reaches a CDN, the site keeps
+  working if a CDN is blocked or down, and render-blocking latency drops.
+
+#### New features
+| Feature | Where | Notes |
+|---|---|---|
+| **Deadline reminders** | Reminders button | Enter the deed date and the first drawdown; generates a standards-compliant `.ics` with alarms 30-365 days ahead, filtered by region. Covers the insurance 1-year window, the electrical 18 months, the 6-year renovation obligation, boiler servicing, detector lifetime and asbestos certificate expiry. |
+| **Print-friendly blank checklist** | Backup panel | Opens a clean A4 print view with OK / Issue tick boxes and a notes column, in the current language and for the selected property type. For people who prefer a clipboard. |
+| **Shareable read-only report** | Report modal, "Share read-only link" | `report.html?data=...` renders the inspection with no editable controls and `noindex`. The data still lives in the link, never on a server. |
+| **Import / export JSON** | Backup panel | Real, portable backups with a `format` marker and schema version. Import validates and normalises before applying. |
+| **Multiple complete themes** | Theme selector | System, Daylight, Midnight, **Slate**, **Paper**, **High contrast**. All six define the same CSS variable contract, so a seventh is one CSS block plus one line in `core.js`. |
+| **Content freshness banner** | Top of the checklist | Shows when the legal content was last verified and when the next review is due, turns amber when overdue, is dismissible per content version, and **hides itself below 620 px** so it never eats space on a phone. |
+| **Seller / agent question sheet** | Questions button | Deliberately *not* the issue list: standard questions for every viewing (different for house vs apartment), a request line per document, a "what exactly, since when, what was done, is there an invoice" follow-up per issue found, and a legal-deadline question per relevant topic with the deadline for your region. Printable and copyable. |
+| **Compare properties side by side** | `compare.html` | Save inspections to a local library, then compare up to four on price, progress, issues, documents outstanding and issues per area. The best value in each row is highlighted. |
+
+#### Multilingual (brief item 1)
+- Checklist item **text and `why` explanations** are now translatable per item, keyed by
+  item id, with graceful per-item fallback to English.
+- Complete in NL and FR: all UI chrome, category titles, tag labels, progress and
+  report labels, the buying guide, the FAQ, all legal topics and their per-region
+  detail, all resource link labels and notes, the question sheet and the reminders.
+- Item titles were translated in this pass; the long-form `why` explanations were
+  completed in pass 3.
+
+#### Other improvements
+- Asking price field, used by the comparison table.
+- Resource links are filtered by region and labelled per language.
+- `report.html` and `compare.html` share the theme and language preference.
+- Storage failures (private mode, quota) now surface a toast telling the user to export
+  a backup instead of silently losing data.
+
+---
+
+## 4. Issues found and fixed
+
+### Fixed in pass 2
+| # | Issue | Impact |
+|---|---|---|
+| 1 | All legal deadlines were presented as if they applied everywhere in Belgium | Wrong for two of the three regions. Now modelled per region with explicit status. |
+| 2 | `heatinginspection` topic key had no matching topic after the data split | Info button would have silently done nothing. |
+| 3 | Fonts and icons loaded from Google Fonts and cdnjs | Every visitor's IP was exposed to two third parties; a GDPR and performance liability. Now fully self-hosted with licence attribution. |
+| 4 | `deadlineInfo` presented advisory topics under a "Deadline" heading | Misleading: "look at this from the street" is not a legal deadline. Advisory topics now have their own layout. |
+| 5 | Item ids were position based with no protection against reordering | A reordered category would have moved every tick. `SCHEMA_VERSION` is now documented at the top of `checklist.js` and enforced in `core.js`. |
+| 6 | No way to keep more than one inspection | Users had to juggle share URLs. Local library + JSON export now cover it. |
+| 7 | `state` had no place for the deed / drawdown dates | The most valuable deadlines could not be computed at all. |
+| 8 | Header overflowed horizontally once more buttons were added | Fixed with `flex: 1 1 auto; min-width: 0` and wrapping. |
+| 9 | Two source URLs used in pass 1 were 404 (`energie.wallonie.be/fr/certificat-peb.html`, `economie.fgov.be/.../elektriciteit-controles-en`) | Replaced with pages verified to return 200. |
+| 10 | Skip link used `left: -9999px` | Contributed to horizontal scroll width. Now uses a transform. |
+
+### Fixed in pass 1 (kept for the record)
+XSS through unescaped notes and the `?data=` share link; notes containing `</textarea>`;
+reset dropping `propertyType`; progress counting hidden categories; filter buttons not
+restored on load; category filter cancelling "show unchecked"; `navigator.clipboard`
+assumed to exist; malformed `href` on the OVAM source; O(n^2) filter reset; missing
+favicons/manifest/description/canonical/OG; no Escape-to-close or focus management on
+modals; non-keyboard-operable category headers; unthrottled scroll listener;
+stack overflow on `btoa` for large inspections; `bodematttest` typo.
+
+### Known open issues
+- Several Wallonia and Brussels rules are marked `unverified` in `js/legal.js`. This is
+  deliberate and visible to the user, but each one still needs a manual check against a
+  primary source. The regional portals are JavaScript-driven and largely un-fetchable,
+  so this needs a human with a browser, not a script.
+- The comparison page compares saved snapshots, so re-saving a property overwrites the
+  entry with the same address rather than keeping a history.
+- `compare.html` and `report.html` are `noindex`; if the read-only report should ever be
+  indexable, it needs its own canonical strategy.
+- The `apartment` category has 16 items, so the visible total is 207 for a house and 197
+  for an apartment (basement and attic are hidden). That is intended, but it means the
+  two property types are not directly comparable on "issues found" alone.
+- The checklist item texts keep the Dutch construction term in brackets in the English
+  version ("Check muren (walls)..."), because that is the wording that appears on Belgian
+  documents. The NL and FR versions do not need the bracket and do not have it. This is
+  intentional, not an inconsistency.
+
+---
+
+## 5. Backlog
+
+### Next up
+1. **Verify the `unverified` regional facts.** Nine region blocks in `js/legal.js` are
+   flagged: Walloon PEB validity and renovation obligation, Walloon and Brussels heating
+   intervals, Walloon and Brussels smoke detector rules, Flemish and Brussels oil tank
+   intervals, Brussels soil attestation timing, and the Walloon registration duty rates.
+   Each needs one primary source and an updated `lastVerified`.
+2. **Photo attachments per issue.** Store in IndexedDB, thumbnail in the report, include
+   in the JSON export. Most requested thing for a viewing on a phone.
+3. **PWA / offline mode.** A service worker caching the shell and assets. The app is
+   already fully client-side and now has no external requests, so this is mostly caching
+   plus an install prompt. Essential for inspecting a cellar with no signal.
+4. **Proper PDF export** instead of relying on the browser print dialog.
+5. **Renovation cost estimator.** Attach an indicative price range per issue, total the
+   ticked issues into a negotiation figure, and index it to ABEX with a yearly update.
+6. **German translation** for the Eastern Cantons. The engine is ready: add a `de` block
+   to `TRANSLATIONS`, `HELP_CONTENT`, `BUYING_GUIDE` and `FAQ_CONTENT`, a
+   `js/checklist.de.js`, a `de` entry in `SUPPORTED_LANGUAGES`, `de` fields in the
+   `legal.js` and `links.js` bundles, and an `hreflang` link in the three HTML pages.
+
+### Ideas and feature requests
+- **Deal-breaker scoring** - weight items by severity so the report opens with the three
+  things that should worry the buyer most.
+- **Municipality enrichment** - from the postal code, deep-link to that commune's planning
+  department and to the flood map for the exact address.
+- **Seasonal hints** - some defects only show in specific conditions (damp after rain,
+  overheating in summer, cold bridges in winter). Suggest a second visit at a better time.
+- **Second-opinion mode** - two people inspect the same property on their own phones and
+  merge the two share links into one report.
+- **Negotiation summary** - one page with the issues, their indicative cost and the
+  resulting suggested offer, ready to send to the agent.
+- **Timeline view** - all deadlines for a purchase on one horizontal timeline.
+- **Print-friendly one-page summary** next to the full report.
+- **Import from an Immoweb / Immovlan listing URL** to pre-fill address, price and EPC.
+- **Accessibility audit with a real screen reader** (NVDA + VoiceOver) rather than only
+  automated checks.
+- **German translation** for the Eastern Cantons - the fourth official language area.
+- **Dyslexia-friendly typography option** on top of the existing Paper theme.
+- **Anonymous opt-in aggregate statistics** ("72% of visitors find an issue with the
+  electrical installation"). Requires a backend, so weigh it carefully against the
+  current zero-tracking promise - probably better as a manual survey.
+- **Backlink strategy** - reach out to Belgian notary, real estate and consumer sites and
+  offer the checklist as an open, free resource with attribution.
+- **Structured data for the buying guide** (HowTo) in addition to the FAQPage.
+
+---
+
+## 6. Maintenance checklist
+
+### Every 6 months (next due: **2027-01-28**)
+- [ ] Open every URL in `js/links.js` and every `sources` entry in `js/legal.js`; confirm HTTP 200.
+- [ ] Re-verify each `verified` region block against its official source; update `lastVerified`.
+- [ ] Re-attempt every `unverified` block - regional portals do publish more over time.
+- [ ] Confirm the EPC renovation obligation term and fine range.
+- [ ] Confirm the electrical inspection validity and the 18-month correction window.
+- [ ] Confirm the asbestos certificate scope and the 2032 date.
+- [ ] Confirm registration duty rates and the Brussels abattement amount and ceiling.
+- [ ] Confirm the Verzekering Gewaarborgd Wonen conditions and the 1-year window.
+- [ ] Update `LEGAL_META.lastFullReview`, `LEGAL_META.nextReviewDue` and
+      `LEGAL_META.contentVersion` (bumping the version re-shows the freshness banner).
+- [ ] Update `LINKS_META.lastCheck`.
+- [ ] Update `lastmod` in `sitemap.xml`.
+- [ ] Bump the `?v=` cache-busting parameters in `index.html`, `report.html`, `compare.html`.
+
+### On every asset upgrade
+- [ ] Re-download the fonts / Font Awesome, keep the subsets small, re-check `assets/LICENSES.md`.
+
+### Before every release
+
+Run the automated suite first - it covers eight of the points below:
+
+```powershell
+cd house
+powershell -ExecutionPolicy Bypass -File tools\verify.ps1
+# add -SkipLinks for a fast run that does not hit the network
+```
+
+It exits with code 1 if anything fails, so it can gate a commit or a deploy.
+
+- [ ] `tools\verify.ps1` reports **everything passed**.
+- [ ] Load the three pages with the console open: zero errors, zero failed requests.
+- [ ] Switch through all three languages and all six themes.
+- [ ] Test with a share link containing HTML in the notes (XSS regression test).
+- [ ] Check the layout at 320, 768, 1024 and 1440 px for horizontal overflow, and open
+      and close the mobile drawer at 320 px.
+- [ ] Print the report, the question sheet and the blank checklist.
+
+> **Note for browser testing:** CSS transitions do not advance while the tab is in the
+> background, so an automated check reads the *pre-transition* value and reports themes
+> or the mobile drawer as broken when they are fine. Inject
+> `*{transition:none !important;animation:none !important}` before measuring.
