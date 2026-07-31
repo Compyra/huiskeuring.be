@@ -1342,6 +1342,18 @@ body.compact-mode .filter-section .filter-divider {
     font-size: 1rem;
 }
 
+/* Two stacked credit lines: "Made with love by Compyra" and the projects link. */
+.footer-center {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+}
+
+.footer-center .footer-projects {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
 .footer-center i {
     color: #ff0066;
     margin: 0 0.5rem;
@@ -2142,10 +2154,12 @@ body.modal-open {
     --header-bg: #ffffff;
     --border-color: #e6e8eb;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --current-accent: #1f8a4c;
+    /* Accent/issue tones are darkened enough to clear WCAG AA (4.5:1) as text
+       on the white card background - they are used for links and status text. */
+    --current-accent: #1a7d43;
     --accent-contrast: #ffffff;
-    --issue-color: #c2620a;
-    --ok-color: #1f8a4c;
+    --issue-color: #a85408;
+    --ok-color: #1a7d43;
     --info-color: #1d6fb8;
 }
 
@@ -2158,10 +2172,10 @@ body.modal-open {
     --header-bg: #ffffff;
     --border-color: #e6e8eb;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --current-accent: #1f8a4c;
+    --current-accent: #1a7d43;
     --accent-contrast: #ffffff;
-    --issue-color: #c2620a;
-    --ok-color: #1f8a4c;
+    --issue-color: #a85408;
+    --ok-color: #1a7d43;
     --info-color: #1d6fb8;
 }
 

@@ -220,6 +220,97 @@ if ($SkipLinks) {
 }
 
 # ----------------------------------------------------------------
+# 10. Untranslated text in the HTML.
+# Key parity (check 2) cannot see text that has no data-i18n attribute at all.
+# That is exactly how "Made with ... by" stayed English on all three pages.
+Write-Output ''
+Write-Output '10. Untranslated text in HTML'
+# Brand names and the deliberately trilingual <noscript> are not translatable.
+$allowed = @('huiskeuring.be', 'Compyra', 'labidi.eu')
+$hardcoded = @()
+Get-ChildItem '*.html' | ForEach-Object {
+    $name = $_.Name
+    $raw = [System.IO.File]::ReadAllText($_.FullName)
+    if ($raw -notmatch '(?s)<body') { return }
+    $body = ($raw -split '(?s)<body', 2)[1]
+    # drop the remainder of the <body ...> tag itself, else its attributes read as text
+    $body = $body.Substring($body.IndexOf('>') + 1)
+    $body = [regex]::Replace($body, '(?s)<script.*?</script>', ' ')
+    $body = [regex]::Replace($body, '(?s)<style.*?</style>', ' ')
+    $body = [regex]::Replace($body, '(?s)<noscript.*?</noscript>', ' ')
+    $body = [regex]::Replace($body, '(?s)<!--.*?-->', ' ')
+    # drop elements whose text is replaced at runtime
+    $body = [regex]::Replace($body, '(?s)<([a-z0-9]+)[^>]*\sdata-i18n="[^"]*"[^>]*>.*?</\1>', ' ')
+    $text = [regex]::Replace($body, '<[^>]+>', "`n")
+    foreach ($line in ($text -split "`n")) {
+        $s = ($line -replace '&copy;', '' -replace '&amp;', '').Trim()
+        if ($s.Length -gt 2 -and $s -match '[A-Za-z]{3}' -and $allowed -notcontains $s) {
+            $hardcoded += ($name + ': ' + $s.Substring(0, [Math]::Min(70, $s.Length)))
+        }
+    }
+}
+if ($hardcoded.Count -eq 0) { Pass 'no untranslated visible text in the HTML' }
+else { $hardcoded | ForEach-Object { Fail $_ } }
+
+# ----------------------------------------------------------------
+# 11. Parity of the long-form content structures.
+# These are arrays/objects, not flat keys, so check 2 does not cover them.
+Write-Output ''
+Write-Output '11. Long-form content parity (guide, FAQ, help, legal, links)'
+$i18nRaw = [System.IO.File]::ReadAllText('js\i18n.js')
+# $langs holds only the languages compared against English, so spell out all three here.
+$allLangs = @('en', 'nl', 'fr')
+foreach ($v in @('BUYING_GUIDE', 'FAQ_CONTENT')) {
+    $m = [regex]::Match($i18nRaw, ('(?s)const ' + $v + '\s*=\s*\{(.*?)\n\};'))
+    $counts = @{}
+    foreach ($lang in $allLangs) {
+        $lm = [regex]::Match($m.Groups[1].Value, ('(?s)\n    ' + $lang + ':\s*\[(.*?)\n    \]'))
+        $counts[$lang] = ([regex]::Matches($lm.Groups[1].Value, '(?m)^\s{8}\{')).Count
+    }
+    if ($counts['en'] -eq $counts['nl'] -and $counts['en'] -eq $counts['fr'] -and $counts['en'] -gt 0) {
+        Pass ($v + ': ' + $counts['en'] + ' entries in each language')
+    } else {
+        Fail ($v + ' mismatch: en=' + $counts['en'] + ' nl=' + $counts['nl'] + ' fr=' + $counts['fr'])
+    }
+}
+# HELP_CONTENT is an object of objects. Scope the search to that block first -
+# otherwise "en: {" matches the TRANSLATIONS block far earlier in the file.
+$helpStart = $i18nRaw.IndexOf('const HELP_CONTENT')
+$helpBlock = ''
+if ($helpStart -ge 0) {
+    $tail = $i18nRaw.Substring($helpStart)
+    $endIdx = $tail.IndexOf("`n};")
+    if ($endIdx -lt 0) { $endIdx = $tail.Length }
+    $helpBlock = $tail.Substring(0, $endIdx)
+}
+$helpCounts = @{}
+$marks = @()
+foreach ($lang in $allLangs) {
+    $i = $helpBlock.IndexOf("`n    $lang`: {")
+    if ($i -ge 0) { $marks += [pscustomobject]@{ Lang = $lang; Index = $i } }
+}
+$marks = $marks | Sort-Object Index
+for ($k = 0; $k -lt $marks.Count; $k++) {
+    $from = $marks[$k].Index
+    $to = if ($k + 1 -lt $marks.Count) { $marks[$k + 1].Index } else { $helpBlock.Length }
+    $helpCounts[$marks[$k].Lang] = ([regex]::Matches($helpBlock.Substring($from, $to - $from), 'icon:')).Count
+}
+foreach ($lang in $allLangs) { if (-not $helpCounts.ContainsKey($lang)) { $helpCounts[$lang] = 0 } }
+if ($helpCounts['en'] -eq $helpCounts['nl'] -and $helpCounts['en'] -eq $helpCounts['fr'] -and $helpCounts['en'] -gt 0) {
+    Pass ('HELP_CONTENT: ' + $helpCounts['en'] + ' sections in each language')
+} else {
+    Fail ('HELP_CONTENT mismatch: en=' + $helpCounts['en'] + ' nl=' + $helpCounts['nl'] + ' fr=' + $helpCounts['fr'])
+}
+foreach ($f in @('js\legal.js', 'js\links.js')) {
+    $src = [System.IO.File]::ReadAllText($f)
+    $en = ([regex]::Matches($src, "(?<![\w-])en:\s*'")).Count
+    $nl = ([regex]::Matches($src, "(?<![\w-])nl:\s*'")).Count
+    $fr = ([regex]::Matches($src, "(?<![\w-])fr:\s*'")).Count
+    if ($en -eq $nl -and $en -eq $fr) { Pass ($f + ': ' + $en + ' translated strings per language') }
+    else { Fail ($f + ' mismatch: en=' + $en + ' nl=' + $nl + ' fr=' + $fr) }
+}
+
+# ----------------------------------------------------------------
 Write-Output ''
 if ($failures -eq 0) {
     Write-Output 'RESULT: everything passed.'

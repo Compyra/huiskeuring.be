@@ -156,6 +156,10 @@ const TRANSLATIONS = {
         'btn.print': 'Print',
         'resources.lastCheck': 'All links were verified on {date}.',
 
+        'footer.madeWith': 'Made with',
+        'footer.by': 'by',
+        'footer.moreProjects': 'More free projects at',
+
         'status.verified': 'verified',
         'status.unverified': 'not verified',
         'status.notApplicable': 'does not apply here',
@@ -421,6 +425,10 @@ const TRANSLATIONS = {
         'btn.print': 'Afdrukken',
         'resources.lastCheck': 'Alle links werden gecontroleerd op {date}.',
 
+        'footer.madeWith': 'Gemaakt met',
+        'footer.by': 'door',
+        'footer.moreProjects': 'Meer gratis projecten op',
+
         'status.verified': 'geverifieerd',
         'status.unverified': 'niet geverifieerd',
         'status.notApplicable': 'niet van toepassing hier',
@@ -685,6 +693,10 @@ const TRANSLATIONS = {
         'btn.shareReport': 'Partager un lien en lecture seule',
         'btn.print': 'Imprimer',
         'resources.lastCheck': 'Tous les liens ont été vérifiés le {date}.',
+
+        'footer.madeWith': 'Fait avec',
+        'footer.by': 'par',
+        'footer.moreProjects': 'Plus de projets gratuits sur',
 
         'status.verified': 'vérifié',
         'status.unverified': 'non vérifié',

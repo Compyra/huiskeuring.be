@@ -38,7 +38,7 @@
 | `js/app.js` | Checklist page logic | on change |
 | `js/report.js` | Read-only report page logic | on change |
 | `js/compare.js` | Comparison page logic | on change |
-| **`tools/verify.ps1`** | **Automated pre-release verification, 9 checks** | **before every release** |
+| **`tools/verify.ps1`** | **Automated pre-release verification, 11 checks** | **before every release** |
 | `assets/fonts/`, `assets/webfonts/`, `assets/vendor/` | Self-hosted fonts and icons | on version bump |
 | `assets/LICENSES.md` | Third-party licence attribution | on version bump |
 | `site.webmanifest`, `robots.txt`, `sitemap.xml` | PWA + search engine directives | on change |
@@ -49,6 +49,53 @@
 ---
 
 ## 3. Changelog
+
+### 2026-07-30 - Pass 5: footer credit, contrast fix, two new verification checks
+
+#### Bugs found and fixed
+| # | Issue | Impact |
+|---|-------|--------|
+| 1 | **"Made with ♥ by" was hard-coded English on all three pages** | A Dutch or French visitor saw an English footer. The verifier could not see it: check 2 compares *keys*, and this text had no `data-i18n` attribute at all, so there was no key to compare. Now `footer.madeWith` / `footer.by`. |
+| 2 | Light-theme accent `#1f8a4c` failed WCAG AA at **4.38:1** on white | It is the colour of *every link* in the light and paper themes, so this was a site-wide accessibility failure, not a footer detail. Darkened to `#1a7d43` → **5.17:1**. |
+| 3 | Light-theme `--issue-color` `#c2620a` failed AA at **4.16:1** | Used for issue/warning text. Darkened to `#a85408` → **5.33:1**. |
+
+Contrast measured programmatically on the rendered page across all five themes:
+**zero AA failures** now (accent, issue, ok, info, body text, secondary text, and
+both footer lines, each against its real computed background).
+
+#### Added
+- **Footer projects link**: "More free projects at **labidi.eu**", translated
+  (`footer.moreProjects`), on all three pages, `rel="noopener noreferrer"`,
+  stacked under the Compyra credit and verified not to overflow at 320 px.
+- **Check 10 - untranslated text in HTML.** Strips scripts, styles, comments, the
+  trilingual `<noscript>` and every element carrying `data-i18n`, then flags any
+  visible text left over. Brand names (`huiskeuring.be`, `Compyra`, `labidi.eu`)
+  are whitelisted. **This is the check that would have caught bug 1.**
+- **Check 11 - long-form content parity.** `BUYING_GUIDE` (6), `FAQ_CONTENT` (12)
+  and `HELP_CONTENT` (33 sections) must have equal counts per language, and
+  `legal.js` / `links.js` must have equal `en:` / `nl:` / `fr:` string counts
+  (149 and 144). Check 2 only covers the flat `TRANSLATIONS` keys, so none of
+  this was verified before.
+
+#### Verified
+All **11** checks pass, 75/75 external links HTTP 200, 233 i18n keys in parity,
+230/230 items translated. Footer confirmed in en/nl/fr on all three pages, 0
+console errors, 0 horizontal overflow at 320/360/768/1440 px, XSS regression
+still blocked, help modal renders all 7 panels.
+
+Check 10 was **proved** by re-introducing the exact bug it was written for:
+it failed with `index.html: Made with`, then passed again after restoring.
+
+> **Two traps worth remembering.** (1) `[System.IO.File]::ReadAllText('rel\path')`
+> resolves against .NET's current directory, *not* PowerShell's `Set-Location`, so
+> an inline test silently read a different file and made a broken check look like
+> it passed. Use absolute paths in ad-hoc checks. `tools/verify.ps1` is unaffected
+> because a child `powershell -File` process starts with both in sync.
+> (2) When measuring contrast, walk up to the first non-transparent ancestor
+> background - comparing against `--bg-color` reported a false 1.2:1 for a footer
+> that actually sits on a white card.
+
+---
 
 ### 2026-07-28 - Pass 4: rainwater law, drought damage, 2026 rule changes
 
@@ -370,7 +417,7 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
 
 ### Before every release
 
-Run the automated suite first - it covers eight of the points below:
+Run the automated suite first - it covers ten of the points below:
 
 ```powershell
 cd house
