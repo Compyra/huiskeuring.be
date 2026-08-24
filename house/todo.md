@@ -27,10 +27,11 @@
 | `index.html` | Checklist app, SEO metadata, structured data, static help content | on change |
 | `report.html` | Shareable **read-only** report page | on change |
 | `compare.html` | **Side-by-side property comparison** | on change |
+| `lookup/` | **Address-driven links to official registries** (`index.html` + `lookup.js`) | on change |
 | `style.css` | All styling, 6 themes, responsive rules, print stylesheets | on change |
 | `js/i18n.js` | UI strings EN/NL/FR, buying guide, FAQ, language detection | on change |
 | **`js/legal.js`** | **Legal facts, deadlines and amounts per region + `lastVerified`** | **every 6 months** |
-| **`js/links.js`** | **Every external URL in the project** | **every 6 months** |
+| **`js/links.js`** | **Every external URL in the project, incl. `LOOKUP_TOOLS`** | **every 6 months** |
 | `js/checklist.js` | Checklist items (English source) + `why` explanations | on change |
 | `js/checklist.nl.js` | Dutch item translations, keyed by item id | on change |
 | `js/checklist.fr.js` | French item translations, keyed by item id | on change |
@@ -49,6 +50,57 @@
 ---
 
 ## 3. Changelog
+
+### 2026-08-24 - Pass 6: "Official lookups" address page (lookup/)
+
+Type the address once, open every official map and registry for that address.
+
+#### What it does
+- **One address field** (example placeholder: `Ramstraat 1, 8370 Blankenberge`).
+  The 4-digit postal code auto-selects the region (`regionFromPostalCode`), a
+  select allows overriding, and the tool list re-renders per region.
+- **Two kinds of tools.** `auto` tools receive the address in the URL
+  (Google Maps via the documented Maps URLs API, OpenStreetMap, and the heritage
+  inventory - the latter with a street-only query because full addresses return
+  nothing there). All other government viewers cannot take an address in a link,
+  so they carry a "paste yourself" badge and there is one **Copy address** button
+  (Clipboard API with an `execCommand` fallback for denied permissions).
+- **Prefill**: `?address=` URL parameter first, else the address already typed in
+  the checklist (`houseInspectionState.propertyInfo.address`).
+- **15 tools, 6 groups** (maps, parcel/ownership, water, soil, planning/heritage,
+  environment): Google Maps, OpenStreetMap, CadGIS, MyMinfin, Waterinfo,
+  Brussels flood maps, DOV (plastische gronden), BDES, Brussels soil inventory,
+  Geopunt, Omgevingsloket publiek, heritage inventory, WalOnMap, BruGIS,
+  IRCEL-CELINE. A Flanders address shows 10 cards, Wallonia 7, Brussels 8.
+
+#### Where things live
+- The page lives in its **own folder**: `lookup/index.html` + `lookup/lookup.js`,
+  served as `https://huiskeuring.be/lookup/`. Shared runtime stays at the root
+  (`../style.css`, `../js/...`).
+- Tool data = `LOOKUP_TOOLS` in **`js/links.js`** - the "URLs only in legal.js
+  and links.js" rule still holds, and the 6-month link review covers them.
+- UI strings = 18 new keys ×3 in `js/i18n.js` (233 → 251); styles = `.lookup-*`
+  block in `style.css`.
+- `lookup/` is **indexable** (canonical + hreflang in `sitemap.xml`),
+  unlike report/compare which stay noindex.
+- Nav button on the checklist header (`btn.lookup`); back-link reuses
+  `compare.backToChecklist`. Cache-busting bumped to `?v15`.
+- `tools/verify.ps1`: every file-enumerating check now also scans `lookup\`,
+  check 6 pairs `lookup\index.html` ↔ `lookup\lookup.js`, and check 7 resolves
+  relative asset paths against each HTML file's own folder (needed for `../`).
+
+#### Verified
+- All 15 tool URLs (and the two URL-template prefixes, exactly as they appear in
+  the source) return HTTP 200 with the verifier's own method - the first Brusoil
+  candidate 404'd and was replaced by the stable explainer page.
+- All icon classes exist in the bundled Font Awesome subset (checked before use).
+- Browser: `Ramstraat 1, 8370 Blankenberge` → flanders, correctly encoded
+  hrefs; Namur → wallonia; Bruxelles → brussels. NL/FR fully translated, zero
+  console errors, zero horizontal overflow at 320/360/768 px. An address of
+  `"><img onerror=...>` is inert: URL-encoded in hrefs, escaped in HTML.
+- `verify.ps1`: all 11 checks pass (251 keys, 90 external links).
+
+---
 
 ### 2026-07-30 - Pass 5: footer credit, contrast fix, two new verification checks
 

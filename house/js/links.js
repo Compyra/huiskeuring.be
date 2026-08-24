@@ -521,3 +521,240 @@ const LINK_GROUPS = [
         ]
     }
 ];
+
+/* ---------------------------------------------------------------------
+ * Address lookup tools (lookup.html)
+ * ---------------------------------------------------------------------
+ * One entry per official viewer or registry a buyer should check for a
+ * specific address. `auto: true` means the address can be appended to
+ * `url` (already URL-encoded by the page); otherwise the tool has no
+ * address parameter and the user pastes the address in its own search
+ * box - that is what the copy button on the page is for.
+ * `query: 'street'` strips house number and postal code first (used
+ * where a full address returns nothing, e.g. the heritage inventory).
+ * ------------------------------------------------------------------- */
+const LOOKUP_TOOLS = [
+
+    /* ---- Maps ---- */
+    {
+        id: 'gmaps',
+        group: 'maps',
+        icon: 'fa-map-location-dot',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        url: 'https://www.google.com/maps/search/?api=1&query=',
+        label: { en: 'Google Maps', nl: 'Google Maps', fr: 'Google Maps' },
+        note: {
+            en: 'Aerial view, Street View and the surroundings. Walk the street virtually before you drive there.',
+            nl: 'Luchtfoto, Street View en de omgeving. Wandel virtueel door de straat vóór u erheen rijdt.',
+            fr: 'Vue aérienne, Street View et les environs. Parcourez la rue virtuellement avant de vous déplacer.'
+        }
+    },
+    {
+        id: 'osm',
+        group: 'maps',
+        icon: 'fa-map',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        url: 'https://www.openstreetmap.org/search?query=',
+        label: { en: 'OpenStreetMap', nl: 'OpenStreetMap', fr: 'OpenStreetMap' },
+        note: {
+            en: 'Community map that often shows footpaths, land use and building outlines Google omits.',
+            nl: 'Gemeenschapskaart die vaak voetwegen, landgebruik en gebouwcontouren toont die Google weglaat.',
+            fr: 'Carte communautaire montrant souvent sentiers, usage du sol et contours de bâtiments absents de Google.'
+        }
+    },
+
+    /* ---- Parcel & ownership ---- */
+    {
+        id: 'cadgis',
+        group: 'property',
+        icon: 'fa-border-all',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://eservices.minfin.fgov.be/ecad-web/#/',
+        label: { en: 'CadGIS - federal cadastre', nl: 'CadGIS - federaal kadaster', fr: 'CadGIS - cadastre fédéral' },
+        note: {
+            en: 'Official parcel boundaries and cadastral plan. Check that the garden you are shown is actually part of the parcel.',
+            nl: 'Officiële perceelsgrenzen en kadastraal plan. Controleer of de tuin die men u toont echt bij het perceel hoort.',
+            fr: 'Limites parcellaires officielles et plan cadastral. Vérifiez que le jardin qu\'on vous montre appartient bien à la parcelle.'
+        }
+    },
+    {
+        id: 'myminfin',
+        group: 'property',
+        icon: 'fa-file-signature',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://eservices.minfin.fgov.be/myminfin-web/',
+        label: { en: 'MyMinfin', nl: 'MyMinfin', fr: 'MyMinfin' },
+        note: {
+            en: 'Request a cadastral extract and consult registered deeds (login with itsme or eID).',
+            nl: 'Vraag een kadastraal uittreksel op en raadpleeg geregistreerde akten (aanmelden met itsme of eID).',
+            fr: 'Demandez un extrait cadastral et consultez les actes enregistrés (connexion itsme ou eID).'
+        }
+    },
+
+    /* ---- Water & flood ---- */
+    {
+        id: 'waterinfo',
+        group: 'water',
+        icon: 'fa-house-flood-water',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.waterinfo.be/kaarten',
+        label: { en: 'Waterinfo.be flood maps', nl: 'Waterinfo.be overstromingskaarten', fr: 'Cartes d\'inondation Waterinfo.be' },
+        note: {
+            en: 'The official Flemish flood maps behind the P-score and G-score the seller must disclose.',
+            nl: 'De officiële Vlaamse overstromingskaarten achter de P-score en G-score die de verkoper moet meedelen.',
+            fr: 'Les cartes officielles flamandes derrière les scores P et G que le vendeur doit communiquer.'
+        }
+    },
+    {
+        id: 'bruflood',
+        group: 'water',
+        icon: 'fa-house-flood-water',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://environnement.brussels/citoyen/documentation-et-outils/cartes/cartes-relatives-aux-inondations-pour-la-region-bruxelloise',
+        label: { en: 'Brussels flood maps', nl: 'Brusselse overstromingskaarten', fr: 'Cartes d\'inondation bruxelloises' },
+        note: {
+            en: 'Flood-hazard and runoff maps for the Brussels-Capital Region.',
+            nl: 'Kaarten met overstromingsgevaar en afstroming voor het Brussels Hoofdstedelijk Gewest.',
+            fr: 'Cartes d\'aléa d\'inondation et de ruissellement pour la Région de Bruxelles-Capitale.'
+        }
+    },
+
+    /* ---- Soil & subsoil ---- */
+    {
+        id: 'dov',
+        group: 'soil',
+        icon: 'fa-layer-group',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.dov.vlaanderen.be/',
+        label: { en: 'DOV - Flemish subsoil database', nl: 'DOV - Databank Ondergrond Vlaanderen', fr: 'DOV - base de données du sous-sol flamand' },
+        note: {
+            en: 'Subsoil viewer with the swelling-clay map (plastische gronden), groundwater levels and virtual borings - the drought-crack risk check.',
+            nl: 'Ondergrondverkenner met de kaart plastische gronden, grondwaterstanden en virtuele boringen - dé controle op droogtescheurrisico.',
+            fr: 'Visionneuse du sous-sol avec la carte des argiles gonflantes, les nappes et les forages virtuels - le contrôle du risque de fissures de sécheresse.'
+        }
+    },
+    {
+        id: 'bdes',
+        group: 'soil',
+        icon: 'fa-flask-vial',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://bdes.wallonie.be/',
+        label: { en: 'BDES - Walloon soil-state database', nl: 'BDES - Waalse bodemdatabank', fr: 'BDES - Banque de données de l\'état des sols' },
+        note: {
+            en: 'Whether the parcel is listed as polluted or potentially polluted, and what obligations follow.',
+            nl: 'Of het perceel als verontreinigd of mogelijk verontreinigd geregistreerd staat, en welke verplichtingen daaruit volgen.',
+            fr: 'Si la parcelle est reprise comme polluée ou potentiellement polluée, et les obligations qui en découlent.'
+        }
+    },
+    {
+        id: 'brusoil',
+        group: 'soil',
+        icon: 'fa-flask-vial',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://environnement.brussels/citoyen/agir-pour-lenvironnement/renover-et-construire/votre-sol-est-il-pollue-consultez-la-carte-de-linventaire-de-letat-du-sol',
+        label: { en: 'Brussels soil-state inventory', nl: 'Brusselse inventaris van de bodemtoestand', fr: 'Inventaire de l\'état du sol bruxellois' },
+        note: {
+            en: 'The soil-state map and the Brusoil platform: pollution category of the parcel and soil certificates.',
+            nl: 'De bodemtoestandskaart en het Brusoil-platform: verontreinigingscategorie van het perceel en bodemattesten.',
+            fr: 'La carte de l\'état du sol et la plateforme Brusoil : catégorie de pollution de la parcelle et attestations du sol.'
+        }
+    },
+
+    /* ---- Zoning, permits & heritage ---- */
+    {
+        id: 'geopunt',
+        group: 'planning',
+        icon: 'fa-map-pin',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.geopunt.be/',
+        label: { en: 'Geopunt Vlaanderen', nl: 'Geopunt Vlaanderen', fr: 'Geopunt Flandre' },
+        note: {
+            en: 'The Flemish geoportal: zoning plans, aerial photos through the years, sewer zoning and dozens of other layers.',
+            nl: 'Het Vlaamse geoportaal: bestemmingsplannen, luchtfoto\'s door de jaren heen, rioleringszonering en tientallen andere lagen.',
+            fr: 'Le géoportail flamand : plans d\'affectation, photos aériennes au fil des ans, zonage d\'égouttage et des dizaines d\'autres couches.'
+        }
+    },
+    {
+        id: 'omgevingsloket',
+        group: 'planning',
+        icon: 'fa-file-circle-check',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://omgevingsloketpubliek.omgeving.vlaanderen.be/',
+        label: { en: 'Omgevingsloket - public permit viewer', nl: 'Omgevingsloket - publieke vergunningen', fr: 'Omgevingsloket - permis publics' },
+        note: {
+            en: 'Permits granted and pending around the address - see what the neighbours are about to build.',
+            nl: 'Afgeleverde en lopende vergunningen rond het adres - zie wat de buren van plan zijn te bouwen.',
+            fr: 'Permis délivrés et en cours autour de l\'adresse - voyez ce que les voisins s\'apprêtent à construire.'
+        }
+    },
+    {
+        id: 'erfgoed',
+        group: 'planning',
+        icon: 'fa-landmark',
+        regions: ['flanders'],
+        auto: true,
+        query: 'street',
+        url: 'https://inventaris.onroerenderfgoed.be/erfgoedobjecten?tekst=',
+        label: { en: 'Heritage inventory', nl: 'Inventaris onroerend erfgoed', fr: 'Inventaire du patrimoine immobilier' },
+        note: {
+            en: 'Searches the street for listed or inventoried buildings - protection limits what you may renovate.',
+            nl: 'Doorzoekt de straat op beschermde of geïnventariseerde gebouwen - bescherming beperkt wat u mag verbouwen.',
+            fr: 'Recherche dans la rue les bâtiments classés ou inventoriés - une protection limite ce que vous pouvez rénover.'
+        }
+    },
+    {
+        id: 'walonmap',
+        group: 'planning',
+        icon: 'fa-map-pin',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://geoportail.wallonie.be/walonmap',
+        label: { en: 'WalOnMap', nl: 'WalOnMap', fr: 'WalOnMap' },
+        note: {
+            en: 'The Walloon geoportal: zoning (plan de secteur), flood hazard (aléa d\'inondation), aerial photos and heritage layers.',
+            nl: 'Het Waalse geoportaal: bestemming (plan de secteur), overstromingsgevaar (aléa d\'inondation), luchtfoto\'s en erfgoedlagen.',
+            fr: 'Le géoportail wallon : plan de secteur, aléa d\'inondation, photos aériennes et couches patrimoine.'
+        }
+    },
+    {
+        id: 'brugis',
+        group: 'planning',
+        icon: 'fa-map-pin',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://mybrugis.irisnet.be/',
+        label: { en: 'BruGIS', nl: 'BruGIS', fr: 'BruGIS' },
+        note: {
+            en: 'The Brussels geoportal: PRAS zoning, permits, heritage and aerial photos.',
+            nl: 'Het Brusselse geoportaal: GBP-bestemming, vergunningen, erfgoed en luchtfoto\'s.',
+            fr: 'Le géoportail bruxellois : affectation PRAS, permis, patrimoine et photos aériennes.'
+        }
+    },
+
+    /* ---- Environment ---- */
+    {
+        id: 'irceline',
+        group: 'environment',
+        icon: 'fa-wind',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.irceline.be/nl',
+        label: { en: 'IRCEL-CELINE air quality', nl: 'IRCEL-CELINE luchtkwaliteit', fr: 'Qualité de l\'air IRCEL-CELINE' },
+        note: {
+            en: 'Official Belgian air-quality maps down to street level - worth a look next to a busy road.',
+            nl: 'Officiële Belgische luchtkwaliteitskaarten tot op straatniveau - het bekijken waard bij een drukke weg.',
+            fr: 'Cartes officielles belges de la qualité de l\'air jusqu\'au niveau de la rue - utile près d\'un axe fréquenté.'
+        }
+    }
+];

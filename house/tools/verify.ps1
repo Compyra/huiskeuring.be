@@ -39,7 +39,7 @@ function Pass([string]$message) { Write-Output ('  ok    ' + $message) }
 Write-Output '1. Encoding'
 $strict = New-Object System.Text.UTF8Encoding($false, $true)
 $encodingOk = $true
-Get-ChildItem 'js\*.js', '*.html', 'style.css', 'todo.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
+Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'style.css', 'todo.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
     $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
     try {
         $text = $strict.GetString($bytes)
@@ -83,7 +83,7 @@ if ($parityOk) { Pass ('en/nl/fr all have the same ' + $en.Count + ' keys') }
 Write-Output ''
 Write-Output '3. data-i18n attributes resolve'
 $attrMissing = @()
-Get-ChildItem '*.html' | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
     $raw = [System.IO.File]::ReadAllText($_.FullName)
     foreach ($m in [regex]::Matches($raw, 'data-i18n(?:-ph|-title|-aria)?="([^"]+)"')) {
         if ($en -notcontains $m.Groups[1].Value) { $attrMissing += ($_.Name + ' -> ' + $m.Groups[1].Value) }
@@ -138,7 +138,8 @@ $runtimeIds = @('deedDate', 'drawdownDate')
 $pairs = @(
     @('index.html', 'js\app.js'),
     @('report.html', 'js\report.js'),
-    @('compare.html', 'js\compare.js')
+    @('compare.html', 'js\compare.js'),
+    @('lookup\index.html', 'lookup\lookup.js')
 )
 $idMissing = @()
 foreach ($pair in $pairs) {
@@ -156,13 +157,15 @@ else { $idMissing | Sort-Object -Unique | ForEach-Object { Fail $_ } }
 Write-Output ''
 Write-Output '7. Local asset references'
 $assetMissing = @()
-Get-ChildItem '*.html' | ForEach-Object {
-    $name = $_.Name
+Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
+    $name = $_.FullName.Substring((Get-Location).Path.Length + 1)
+    $dir = $_.DirectoryName
     foreach ($m in [regex]::Matches([System.IO.File]::ReadAllText($_.FullName), '(?:src|href)="(?!https?:|mailto:|#)([^"]+)"')) {
         $rel = $m.Groups[1].Value -replace '\?.*$', ''
-        $rel = $rel -replace '^\./', ''
-        $rel = $rel -replace '^/', ''
-        if ($rel -and -not (Test-Path $rel)) { $assetMissing += ($name + ' -> ' + $rel) }
+        if (-not $rel) { continue }
+        # root-absolute paths resolve from the site root, everything else from the file's own folder
+        $target = if ($rel -match '^/') { Join-Path (Get-Location).Path $rel.TrimStart('/') } else { Join-Path $dir ($rel -replace '^\./', '') }
+        if (-not (Test-Path $target)) { $assetMissing += ($name + ' -> ' + $rel) }
     }
 }
 if ($assetMissing.Count -eq 0) { Pass 'every local asset resolves' }
@@ -189,7 +192,7 @@ if ($SkipLinks) {
 } else {
     Write-Output '9. External links (this takes a minute)'
     $urls = New-Object System.Collections.Generic.HashSet[string]
-    Get-ChildItem 'js\*.js', '*.html' | ForEach-Object {
+    Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js' | ForEach-Object {
         foreach ($m in [regex]::Matches([System.IO.File]::ReadAllText($_.FullName), 'https://[^\s"''\)<>]+')) {
             $u = $m.Value.TrimEnd('.', ',', ';')
             if ($u -notmatch 'schema\.org|huiskeuring\.be|w3\.org|sitemaps\.org') { [void]$urls.Add($u) }
@@ -228,7 +231,7 @@ Write-Output '10. Untranslated text in HTML'
 # Brand names and the deliberately trilingual <noscript> are not translatable.
 $allowed = @('huiskeuring.be', 'Compyra', 'labidi.eu')
 $hardcoded = @()
-Get-ChildItem '*.html' | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
     $name = $_.Name
     $raw = [System.IO.File]::ReadAllText($_.FullName)
     if ($raw -notmatch '(?s)<body') { return }
