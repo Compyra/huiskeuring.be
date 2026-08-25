@@ -151,10 +151,14 @@ function photoStripMarkup(photos) {
 function photoPaintItem(itemKey, photos) {
     const root = document.querySelector(`.item-photos[data-photos="${CSS.escape(itemKey)}"]`);
     if (root) root.innerHTML = photoStripMarkup(photos);
-    const count = document.querySelector(`.photo-btn[data-photo-add="${CSS.escape(itemKey)}"] .photo-count`);
-    if (count) {
+    const button = document.querySelector(`.photo-btn[data-photo-add="${CSS.escape(itemKey)}"]`);
+    if (button) {
+        const count = button.querySelector('.photo-count');
         count.textContent = photos.length ? String(photos.length) : '';
         count.hidden = !photos.length;
+        const label = photos.length ? `${t('photo.add')} (${photos.length})` : t('photo.add');
+        button.setAttribute('aria-label', label);
+        button.setAttribute('title', label);
     }
 }
 

@@ -3046,20 +3046,31 @@ html.readable em, html.readable i:not(.fas) { font-style: normal; }
     z-index: 900;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    /* visibility keeps the hidden rail out of the tab order */
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
 }
 
 .side-rail.visible {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
     transform: translateY(-50%) translateX(0);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
 }
 
 /* Never over a modal, never on print, only on screens wide enough */
-body.modal-open .side-rail { opacity: 0; pointer-events: none; }
+body.modal-open .side-rail { opacity: 0; pointer-events: none; visibility: hidden; }
 
 @media (min-width: 1200px) {
     .side-rail { display: flex; }
+    /* compact mode is always full-width, so always reserve room for the rail */
+    body.compact-mode .main-content .container { padding-right: 84px; }
+}
+
+/* In normal mode the container only reaches the rail on mid-size screens */
+@media (min-width: 1200px) and (max-width: 1560px) {
+    .main-content .container { padding-right: 84px; }
 }
 
 .side-rail-btn {
@@ -3102,6 +3113,19 @@ body.modal-open .side-rail { opacity: 0; pointer-events: none; }
 }
 
 .item-photo-row[hidden] { display: none; }
+
+/* Compact mode stays compact: smaller camera button, smaller thumbs */
+body.compact-mode .item-photo-row { margin-top: 4px; }
+
+body.compact-mode .photo-btn {
+    padding: 2px 8px;
+    font-size: 0.78rem;
+}
+
+body.compact-mode .item-photo-thumb {
+    width: 34px;
+    height: 34px;
+}
 
 .photo-btn {
     background: transparent;

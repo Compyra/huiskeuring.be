@@ -1744,7 +1744,9 @@ function applyDeepLinkParams() {
 }
 
 function focusDeepLinkTarget() {
-    const hash = decodeURIComponent(window.location.hash || '').replace(/^#/, '');
+    let hash = '';
+    try { hash = decodeURIComponent(window.location.hash || '').replace(/^#/, ''); }
+    catch (e) { return; /* malformed percent-encoding in the hash */ }
     if (!hash) return;
     let target = null;
     if (hash.startsWith('cat-')) {
@@ -1759,11 +1761,32 @@ function focusDeepLinkTarget() {
         }
     }
     if (!target) return;
+    deepLinkEnsureVisible(target);
     window.setTimeout(() => {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         target.classList.add('deep-link-flash');
         window.setTimeout(() => target.classList.remove('deep-link-flash'), 2600);
     }, 200);
+}
+
+/** A persisted category filter or "show unchecked" can hide the linked
+ *  target - reset those filters so the deep link actually lands. */
+function deepLinkEnsureVisible(target) {
+    const group = target.closest('.category-group');
+    const itemHidden = target.classList.contains('checklist-item') && target.style.display === 'none';
+    const groupHidden = !!group && group.classList.contains('hidden');
+    if (!itemHidden && !groupHidden) return;
+    state.currentFilter = 'all';
+    state.showUncheckedOnly = false;
+    activeIssueFilter = null;
+    saveState();
+    syncCategoryFilterButtons();
+    updateShowUncheckedButton();
+    document.querySelectorAll('.issue-filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+    });
+    applyFilters();
 }
 
 /* ------------------------------------------------------------------ *
@@ -1900,11 +1923,13 @@ async function exportPdf() {
                 line(`${t('photo.title')} (${photos.length})`, 13, 'bold', 2);
                 for (const photo of photos) {
                     if (!captions.has(photo.itemKey)) continue;
-                    line(captions.get(photo.itemKey), 9, 'italic', 1);
                     const ratio = photo.h / photo.w;
                     let wMm = Math.min(90, maxW);
                     let hMm = wMm * ratio;
                     if (hMm > 90) { hMm = 90; wMm = hMm / ratio; }
+                    // keep the caption on the same page as its image
+                    if (y + 10 + hMm > 282) { doc.addPage(); y = margin; }
+                    line(captions.get(photo.itemKey), 9, 'italic', 1);
                     if (y + hMm > 282) { doc.addPage(); y = margin; }
                     doc.addImage(photo.dataUrl, 'JPEG', margin, y, wMm, hMm);
                     y += hMm + 5;

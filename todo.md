@@ -55,6 +55,32 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 11: bughunt on the pass-10 features
+
+Seven issues found by code audit + browser verification, all fixed:
+
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | Deep link to an item hidden by a **persisted category filter** landed nowhere (target had `display:none`) | `deepLinkEnsureVisible()` resets the category/issue filters when the target is hidden |
+| 2 | Same with **"Show unchecked"** active and a checked target item | same fix, `showUncheckedOnly` cleared and button synced |
+| 3 | Malformed hash (`#item-%`) threw `URIError` from `decodeURIComponent` | try/catch, deep link ignored |
+| 4 | **Hidden rail was keyboard-focusable** (`opacity:0` + `pointer-events:none` don't remove tab stops) - invisible focus for keyboard/AT users, also while a modal was open | `visibility: hidden` with a transition-delay, matching the scroll-to-top pattern |
+| 5 | Rail **overlapped the content edge** on 1200-1560 px screens (and always in compact mode, which is full-width) | reserve `padding-right: 84px` on `.main-content .container` in exactly those ranges |
+| 6 | **Compact mode wasn't compact**: the photo row kept full-size buttons/thumbs while tags and notes collapse | compact-specific sizes (34 px thumbs, smaller button) |
+| 7 | PDF: a photo **caption could orphan** at a page bottom with its image on the next page | page-break pre-check keeps caption + image together |
+
+Also: the photo **count is now in the button's accessible name**
+("Add photo (2)" / "Foto toevoegen (2)" / "Ajouter une photo (2)"), not just a
+visual badge.
+
+Verified in the browser: deep link beats persisted filter + show-unchecked
+(filter buttons re-synced), malformed hash loads clean, rail unfocusable when
+hidden / focusable when shown, content clear of the rail at 1536 px in both
+modes, compact thumbs 34px, PDF 7 pages / 53 KB with pagination pre-check,
+NL aria labels correct, 0 console errors. All verifier checks pass.
+
+---
+
 ### 2026-08-25 - Pass 10: photos, quick-action rail, deep links, clearer page, more lookups
 
 Cache version bumped **v18 → v19** in all four HTML pages *and* `sw.js`
