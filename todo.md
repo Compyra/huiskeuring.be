@@ -501,7 +501,7 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
 
 ## 6. Maintenance checklist
 
-### Every 6 months (next due: **2027-01-28**)
+### Every 6 months (next due: **2027-02-25**)
 - [ ] Open every URL in `js/links.js` and every `sources` entry in `js/legal.js`; confirm HTTP 200.
 - [ ] Re-verify each `verified` region block against its official source; update `lastVerified`.
 - [ ] Re-attempt every `unverified` block - regional portals do publish more over time.
