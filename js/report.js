@@ -89,6 +89,18 @@ function renderReport() {
         </div>`;
 
     html += reportList(t('report.documents'), 'fa-file-alt', documents);
+
+    const findings = lookupFindings(sharedState);
+    if (findings.length) {
+        html += `
+        <div class="report-section">
+            <h3><i class="fas fa-magnifying-glass-location" aria-hidden="true"></i> ${escapeHTML(t('report.research'))} (${findings.length})</h3>
+            <ul>
+                ${findings.map(f => `<li><strong>${escapeHTML(pick(f.tool.label))}:</strong> ${escapeHTML(f.note)}</li>`).join('')}
+            </ul>
+        </div>`;
+    }
+
     html += reportList(t('report.issues'), 'fa-exclamation-triangle', issues, 'report-issue');
     html += reportList(t('report.ok'), 'fa-check-circle', ok);
     html += reportList(t('report.unchecked'), 'fa-times-circle', unchecked);

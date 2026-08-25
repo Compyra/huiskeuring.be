@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v19';
+const VERSION = 'v20';
 const CACHE = 'huiskeuring-' + VERSION;
 
 const SHELL = [
@@ -17,6 +17,7 @@ const SHELL = [
     '/index.html',
     '/report.html',
     '/compare.html',
+    '/404.html',
     '/lookup/',
     '/lookup/index.html',
     '/style.css?' + VERSION,

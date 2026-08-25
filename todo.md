@@ -55,6 +55,140 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 14: complete pre-release bughunt - GO for publication
+
+Full-surface audit before going public. Two release gaps found and fixed,
+everything else verified clean.
+
+#### Fixed
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | **No 404 page** (GitHub Pages serves its own otherwise) | New `404.html`: JS-free by design, trilingual inline, themed pre-paint, links back to checklist & lookups, `noindex`, added to the SW shell, exempted from verifier check 10 like `<noscript>` |
+| 2 | **compare.html sat in the sitemap while being `noindex`** - the classic Search Console complaint | removed from `sitemap.xml` (page stays linked & crawlable-but-noindex) |
+
+#### Verified end-to-end in the browser (0 console errors throughout)
+- **Fresh-user journey**: first-visit help → address `4000 Liège` → region
+  auto-detect (wallonia) → card auto-collapses to address bar with lookup
+  link → OK/issue/note/doc-request ticks → photo attach → all 5 menu modals
+  open → readable + compact toggles from the menu.
+- **Findings loop**: lookup (region followed the state) → BDES finding →
+  report modal shows all 8 sections in order (documents, address research,
+  issues, unchecked, notes, photos) → PDF 6 pages/51 KB with photo →
+  negotiation 1 row → 537-char share link → report.html shows research +
+  issues → library save → compare table renders.
+- **Data safety**: JSON export/import round-trip preserves notes, findings
+  and address; second opinion finds the 1 planted difference; .ics valid
+  with 1 event.
+- **Print**: exactly 1 modal visible, research section included, rail +
+  header hidden.
+- **UI matrix**: quick mode 34 items; FR menu sections/labels; all 7 fixed
+  themes paint header menu tokens; 0 px overflow at 320/360/768/1024/1280
+  on index + lookup; `#cat-electrical` deep link flashes.
+- **Offline**: all 33 SW shell entries fetch OK at v20.
+- **Hygiene**: no console.log/TODO/FIXME in shipped JS; robots.txt +
+  sitemap consistent; report noindex,nofollow; canonicals correct;
+  all 135 external links HTTP 200; 326 i18n keys ×3; legal facts verified
+  2026-08-25, next review 2027-02-25.
+
+**Verdict: ready to publish.** Deploy = commit + push; then test SW
+installability once on the live HTTPS domain (the embedded test browser
+cannot complete `serviceWorker.register()`).
+
+---
+
+### 2026-08-25 - Pass 13: every remaining source - 19 new lookup tools (53 total)
+
+Systematic sweep for anything a buyer can still consult about an address;
+every URL verified HTTP 200 with the plain client before inclusion. New
+**Prices & market** group added (`lookup.group.prices` ×3).
+
+| Tool | Regions | Group |
+|---|---|---|
+| Google Earth (auto, time slider!) · Mapillary | all | maps |
+| **Statbel property prices** · **Notary barometer** · **Biddit auctions** | all | *new:* prices & market |
+| Walloon flood portal (inondations.wallonie.be) | WAL | water |
+| Aquafin sewer works | VL | water |
+| OpenPermits · Brussels heritage inventory | BXL | planning |
+| Walloon heritage agency (AWaP) | WAL | planning |
+| Flemish energy map · BIPT antenna-site map | VL / all | environment |
+| Fluvius · ORES · Sibelga (grid operators) | VL / WAL / BXL | neighbourhood |
+| Provinces-in-figures · WalStat (official stats) | VL / WAL | neighbourhood |
+| FR-community school directory · Kind en Gezin childcare | WAL+BXL / VL | neighbourhood |
+
+Rejected this pass: `lampspw.wallonie.be` heritage inventory and
+`census2021.be` (plain-client blocked; AWaP resp. Statbel cover the need).
+Card counts per region: **VL 34 · WAL 28 · BXL 28**; every card keeps its
+finding input feeding the report's Address-research section.
+
+Verified: 53 unique tool ids, 0 duplicate ids, all groups valid, Google
+Earth auto-URL builds correctly with the address, NL group titles render,
+0 overflow at 320 px, 0 console errors, all **135 external links 200**,
+i18n **326 keys/language**, links.js **250 strings/language**.
+(Correction: the pass-12 entry said "23 total" - that was the Flemish card
+count; the tool total then was 34.)
+
+---
+
+### 2026-08-25 - Pass 12: header menu, self-collapsing property card, 12 new lookups, findings in the report
+
+Cache version bumped **v19 → v20** in all four HTML pages and `sw.js`.
+
+#### Header menu
+Secondary actions moved under one **Menu** button with four labelled
+sections: *During the visit* (Questions, Reminders), *Your data* (Backup,
+Compare, Reset), *Lookups & information* (Official lookups, Resources, Help)
+and *Display* (Easy reading, Compact). **Report and Share stay primary**;
+language and theme selects stay visible. Dropdown on desktop (outside click,
+Escape and item-click close it; caret rotates; `aria-haspopup`/`aria-expanded`),
+expands **in place inside the mobile drawer** (`position: static`), and the
+menu button is excluded from the drawer's close-on-click list so it can toggle
+its own panel.
+
+#### Self-collapsing property card
+Once an address is filled in and focus leaves the form, the property card
+collapses to a single bar: **the address plus a jump-to-lookups link**
+(`lookup/?address=…`). Also collapses on load whenever an address exists
+(unless the user explicitly expanded before - stored `'false'` wins).
+Re-expanding by hand disables auto-collapse for the rest of the visit.
+
+#### Official lookups: 12 new tools (34 total)
+| Tool | Regions | Group |
+|---|---|---|
+| Bing Maps · Apple Maps (auto) | all | maps - independent aerial imagery |
+| NGI topographic viewer | all | maps - relief & runoff |
+| SPGE (PASH sewage zoning) | WAL | water |
+| Vivaqua (water & sewers) | BXL | water |
+| Solar map (zonnekaart) | VL | environment |
+| Fiberklaar · Wyre | VL | neighbourhood - fixed networks |
+| Unifiber | WAL | neighbourhood - fibre |
+| GIPOD roadworks | VL | neighbourhood - works in the street |
+| Osiris roadworks | BXL | neighbourhood |
+| Trafiroutes | WAL | neighbourhood |
+
+Dropped during verification: **Cartesius** (serves a *revoked TLS
+certificate* - recorded in FEATURES.md for re-checking), solarclick.be and
+deep vmm.be paths (bot-blocked). All **119 external links verify 200**.
+
+#### Findings → report ("add a location to collect this info")
+Every lookup card now has a **one-line finding input** ("P-score C…"). Values
+live in the shared state (`state.lookupNotes`, keyed by tool id - stable
+across schema bumps), survive re-renders and language switches, and appear as
+a new **Address research (official lookups)** section in the report modal,
+the **PDF export**, and **shared report links** (encoded as `l`).
+
+#### Verified in the browser
+Menu: 4 sections (2/3/3/2 buttons), opens/closes via button, outside click,
+Escape and item-click; Escape priority order menu → modal → drawer; mobile
+drawer expands inline, closes both layers on item click · property card
+auto-collapses on focus-out with address bar + working lookup deep link,
+manual expand sticks · findings: typed on lookup → localStorage → report
+modal section (2 items) → PDF (7 pages) → shared report.html section (2
+items, after v20 bump) → still shown back on the lookup page · 0 page
+overflow at 320 px on index and lookup · 0 console errors.
+i18n: **325 keys/language**; links.js **212 strings/language**.
+
+---
+
 ### 2026-08-25 - Pass 11: bughunt on the pass-10 features
 
 Seven issues found by code audit + browser verification, all fixed:

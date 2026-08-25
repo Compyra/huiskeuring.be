@@ -10,9 +10,21 @@
 
 'use strict';
 
-const GROUP_ORDER = ['maps', 'property', 'water', 'soil', 'planning', 'environment', 'living'];
+const GROUP_ORDER = ['maps', 'property', 'prices', 'water', 'soil', 'planning', 'environment', 'living'];
 
 let region = 'flanders';
+/* The full inspection state: findings typed here appear in the report. */
+let appState = null;
+
+function loadAppState() {
+    appState = normaliseState(readJSON(STORAGE_KEYS.state, null));
+}
+
+function saveAppState() {
+    if (!writeStorage(STORAGE_KEYS.state, JSON.stringify(appState))) {
+        showToast(t('storage.failed'), 'error');
+    }
+}
 
 function currentAddress() {
     return byId('lookupAddress').value.trim();
@@ -82,6 +94,10 @@ function renderTools() {
                                 <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
                                 ${escapeHTML(t('lookup.open'))}
                             </a>
+                            <input type="text" class="lookup-finding" data-tool="${escapeHTML(tool.id)}"
+                                   value="${escapeHTML(appState.lookupNotes[tool.id] || '')}"
+                                   placeholder="${escapeHTML(t('lookup.finding.ph'))}"
+                                   aria-label="${escapeHTML(t('lookup.findingLabel'))}">
                         </article>`).join('')}
                 </div>
             </section>`;
@@ -148,6 +164,7 @@ function init() {
     currentLanguage = resolveInitialLanguage();
     initTheme(null);
     buildLanguageSelect(byId('languageSelect'));
+    loadAppState();
 
     const address = initialAddress();
     byId('lookupAddress').value = address;
@@ -156,6 +173,13 @@ function init() {
     applyTranslations();
     buildRegionSelect();
     renderTools();
+
+    byId('lookupGroups').addEventListener('input', (e) => {
+        const input = e.target.closest('.lookup-finding');
+        if (!input) return;
+        appState.lookupNotes[input.dataset.tool] = input.value;
+        saveAppState();
+    });
 
     byId('languageSelect').addEventListener('change', (e) => {
         currentLanguage = e.target.value;

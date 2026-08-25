@@ -13,7 +13,10 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
   switchable with the full checklist, position-stable item ids
 - ✅ Regional legal deadlines (VL/WAL/BXL) with official sources, verified per
   half-year — see [FACTCHECK.md](FACTCHECK.md)
-- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`), with **access badges** (OSINT · free vs eID / itsme) per tool and **22+ official tools** across 7 groups (maps, parcel, water, soil, planning, environment, neighbourhood)
+- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`), with **access badges** (OSINT · free vs eID / itsme) per tool and **53 official/free tools** across 8 groups (maps incl. Bing/Apple/Earth-history/Mapillary/topo, parcel, **prices & market** (Statbel, notary barometer, Biddit), water & sewage incl. operators, soil, planning & heritage in all 3 regions, environment incl. solar/energy/radon/Seveso/antennas, neighbourhood incl. fibre, grid operators, roadworks, stats, schools & childcare)
+- ✅ **Per-tool findings** on the lookup page - one line per source ("P-score C"), stored in the state, listed as **Address research** in the report, the PDF and shared report links
+- ✅ **Header menu** - secondary actions grouped under one Menu button in four labelled sections (visit / data / lookups & info / display); Report and Share stay primary
+- ✅ **Self-collapsing property card** - once the address is filled in and focus leaves the form, only an address bar with a jump-to-lookups link remains
 - ✅ **Photo attachments per item** — stored in IndexedDB on-device, thumbnails + lightbox, included in print & PDF, honest "not in share links" hint (`js/photos.js`)
 - ✅ **Deep links** — `?lang` `?type` `?region` `?view=quick`, `#cat-<category>`, `#item-<id>`, `lookup/?address=&region=` — see [OUTREACH.md](OUTREACH.md) for how to use them
 - ✅ **Floating quick-action rail** on large screens (top, progress, report, share, save, help)
@@ -31,6 +34,21 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
   side-by-side comparison **with saved history per address**, JSON backup
 - ✅ 8 themes incl. high-contrast; zero tracking; everything client-side
 - ✅ SEO: FAQPage + **HowTo** structured data, hreflang, canonical, font preloads
+
+## More lookup sources to add when they verify
+
+The link checker only admits URLs that answer HTTP 200 to a plain client;
+these are useful but currently bot-blocked or unstable - retry each review:
+
+- 🔜 **Solarclick / Brussels solar map** (`solarclick.be` blocks plain clients)
+- 🔜 **Cartesius historical maps** (`cartesius.be` currently serves a **revoked TLS certificate** - re-check at the next review; NGI's topo viewer covers part of the value)
+- 🔜 **VMM sewer & rainwater pages** (deep vmm.be paths intermittently refuse)
+- 🔜 **Hinder in Kaart** (Flemish roadworks portal; GIPOD covers it meanwhile)
+- 🔜 **Crime statistics** (`stat.police.be` unreachable to plain clients)
+- 💡 **Walloon solar map layer** (WalOnMap has one - needs a stable deep link)
+- 💡 **Noise maps per region** (environment agencies publish Lden/Lnight maps)
+- 💡 **Mobility score** (public-transport reach per address, e.g. De Lijn/STIB/TEC stop finders - all bot-block today)
+- 💡 **Immo price statistics** (Statbel publishes median sale prices per municipality - CSV, could ship as a local dataset)
 
 ## Top requests, highest value first
 

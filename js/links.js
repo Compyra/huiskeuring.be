@@ -564,6 +564,120 @@ const LOOKUP_TOOLS = [
             fr: 'Carte communautaire montrant souvent sentiers, usage du sol et contours de bâtiments absents de Google.'
         }
     },
+    {
+        id: 'bingmaps',
+        group: 'maps',
+        icon: 'fa-map-location-dot',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        url: 'https://www.bing.com/maps?q=',
+        label: { en: 'Bing Maps', nl: 'Bing Maps', fr: 'Bing Maps' },
+        note: {
+            en: 'Different aerial photo flights than Google - a second sky view sometimes reveals a pool, extension or shed the other one missed.',
+            nl: 'Andere luchtfotovluchten dan Google - een tweede luchtbeeld onthult soms een zwembad, aanbouw of tuinhuis dat het andere miste.',
+            fr: 'Des prises de vue aériennes différentes de Google - une seconde vue du ciel révèle parfois une piscine, une annexe ou un abri manqué par l\'autre.'
+        }
+    },
+    {
+        id: 'applemaps',
+        group: 'maps',
+        icon: 'fa-map-location-dot',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        url: 'https://maps.apple.com/?q=',
+        label: { en: 'Apple Maps', nl: 'Apple Maps', fr: 'Apple Maps' },
+        note: {
+            en: 'A third set of aerial imagery and Look Around street views, taken in different years than Google\'s.',
+            nl: 'Een derde reeks luchtbeelden en Look Around-straatbeelden, gemaakt in andere jaren dan die van Google.',
+            fr: 'Une troisième série d\'images aériennes et de vues Look Around, prises d\'autres années que celles de Google.'
+        }
+    },
+    {
+        id: 'ngi',
+        group: 'maps',
+        icon: 'fa-mountain-sun',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://topomapviewer.ngi.be/',
+        label: { en: 'NGI topographic viewer', nl: 'NGI topografische kaart', fr: 'Visionneuse topographique IGN' },
+        note: {
+            en: 'The official Belgian topographic maps: terrain height, slopes and watercourses around the plot - useful to judge runoff towards the house.',
+            nl: 'De officiële Belgische topografische kaarten: terreinhoogte, hellingen en waterlopen rond het perceel - handig om afstromend water richting de woning in te schatten.',
+            fr: 'Les cartes topographiques officielles belges : relief, pentes et cours d\'eau autour du terrain - utile pour juger le ruissellement vers la maison.'
+        }
+    },
+    {
+        id: 'googleearth',
+        group: 'maps',
+        icon: 'fa-earth-europe',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        url: 'https://earth.google.com/web/search/',
+        label: { en: 'Google Earth', nl: 'Google Earth', fr: 'Google Earth' },
+        note: {
+            en: '3D view and the time slider with decades of aerial images: watch extensions, pools and garden buildings appear over the years - and check whether they were permitted.',
+            nl: '3D-beeld en de tijdschuif met tientallen jaren luchtfoto\'s: zie aanbouwen, zwembaden en tuingebouwen door de jaren verschijnen - en controleer of ze vergund zijn.',
+            fr: 'Vue 3D et curseur temporel avec des décennies d\'images aériennes : voyez apparaître annexes, piscines et abris au fil des ans - et vérifiez s\'ils sont autorisés.'
+        }
+    },
+    {
+        id: 'mapillary',
+        group: 'maps',
+        icon: 'fa-street-view',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.mapillary.com/app',
+        label: { en: 'Mapillary street photos', nl: 'Mapillary straatfoto\'s', fr: 'Photos de rue Mapillary' },
+        note: {
+            en: 'Crowdsourced street imagery taken in other months and years than Street View - handy to compare the facade over time or after works.',
+            nl: 'Straatbeelden door vrijwilligers, gemaakt in andere maanden en jaren dan Street View - handig om de gevel door de tijd of na werken te vergelijken.',
+            fr: 'Images de rue participatives prises à d\'autres moments que Street View - pratique pour comparer la façade dans le temps ou après travaux.'
+        }
+    },
+
+    /* ---- Prices & market ---- */
+    {
+        id: 'statprices',
+        group: 'prices',
+        icon: 'fa-chart-line',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://statbel.fgov.be/nl/themas/bouwen-wonen/vastgoedprijzen',
+        label: { en: 'Statbel property prices', nl: 'Statbel vastgoedprijzen', fr: 'Prix immobiliers Statbel' },
+        note: {
+            en: 'The official median sale prices per municipality and property type - the neutral baseline to judge whether the asking price is sane.',
+            nl: 'De officiële mediaanverkoopprijzen per gemeente en woningtype - dé neutrale basis om te oordelen of de vraagprijs redelijk is.',
+            fr: 'Les prix de vente médians officiels par commune et type de bien - la base neutre pour juger si le prix demandé est raisonnable.'
+        }
+    },
+    {
+        id: 'notarisbarometer',
+        group: 'prices',
+        icon: 'fa-euro-sign',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.notaris.be/',
+        label: { en: 'Notary barometer', nl: 'Notarisbarometer', fr: 'Baromètre des notaires' },
+        note: {
+            en: 'The notaries\' quarterly market barometer: price trends per province and free legal guidance on buying (compromis, fees, deadlines).',
+            nl: 'De driemaandelijkse marktbarometer van de notarissen: prijstrends per provincie en gratis juridische uitleg over kopen (compromis, kosten, termijnen).',
+            fr: 'Le baromètre trimestriel des notaires : tendances de prix par province et explications juridiques gratuites sur l\'achat (compromis, frais, délais).'
+        }
+    },
+    {
+        id: 'biddit',
+        group: 'prices',
+        icon: 'fa-gavel',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.biddit.be/',
+        label: { en: 'Biddit notary auctions', nl: 'Biddit notarisveilingen', fr: 'Ventes notariales Biddit' },
+        note: {
+            en: 'Public online notary sales: follow real bids on comparable houses nearby - actual transaction levels, not asking prices.',
+            nl: 'Openbare onlineverkopen bij de notaris: volg echte biedingen op vergelijkbare woningen in de buurt - werkelijke transactieniveaus, geen vraagprijzen.',
+            fr: 'Ventes notariales publiques en ligne : suivez les enchères réelles sur des maisons comparables à proximité - des niveaux de transaction réels, pas des prix demandés.'
+        }
+    },
 
     /* ---- Parcel & ownership ---- */
     {
@@ -624,6 +738,62 @@ const LOOKUP_TOOLS = [
             en: 'The official Flemish flood maps behind the P-score and G-score the seller must disclose.',
             nl: 'De officiële Vlaamse overstromingskaarten achter de P-score en G-score die de verkoper moet meedelen.',
             fr: 'Les cartes officielles flamandes derrière les scores P et G que le vendeur doit communiquer.'
+        }
+    },
+    {
+        id: 'spge',
+        group: 'water',
+        icon: 'fa-arrow-up-from-ground-water',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://www.spge.be/',
+        label: { en: 'SPGE - Walloon sewage plans', nl: 'SPGE - Waalse saneringsplannen', fr: 'SPGE - plans d\'assainissement (PASH)' },
+        note: {
+            en: 'The PASH sewage zoning: collective or individual treatment for the address. Individual zones mean you pay for your own treatment unit.',
+            nl: 'De PASH-saneringszonering: collectieve of individuele zuivering voor het adres. In individuele zones betaalt u zelf de zuiveringsinstallatie.',
+            fr: 'Le zonage PASH : assainissement collectif ou autonome pour l\'adresse. En zone autonome, l\'unité d\'épuration est à votre charge.'
+        }
+    },
+    {
+        id: 'vivaqua',
+        group: 'water',
+        icon: 'fa-faucet-drip',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://www.vivaqua.be/',
+        label: { en: 'Vivaqua - water & sewers Brussels', nl: 'Vivaqua - water & riolering Brussel', fr: 'Vivaqua - eau & égouts Bruxelles' },
+        note: {
+            en: 'The Brussels water and sewer operator: connection info and who to ask about the state of the street sewer before you buy.',
+            nl: 'De Brusselse water- en rioolbeheerder: aansluitingsinfo en hét aanspreekpunt over de staat van de straatriolering vóór u koopt.',
+            fr: 'L\'opérateur bruxellois de l\'eau et des égouts : infos de raccordement et interlocuteur sur l\'état de l\'égout de rue avant d\'acheter.'
+        }
+    },
+    {
+        id: 'inondations',
+        group: 'water',
+        icon: 'fa-water',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://inondations.wallonie.be/',
+        label: { en: 'Walloon flood portal', nl: 'Waals overstromingsportaal', fr: 'Portail inondations wallon' },
+        note: {
+            en: 'The official Walloon flood portal: hazard maps, past floods and what the aléa d\'inondation class means for insurance and works.',
+            nl: 'Het officiële Waalse overstromingsportaal: gevarenkaarten, eerdere overstromingen en wat de klasse aléa d\'inondation betekent voor verzekering en werken.',
+            fr: 'Le portail officiel des inondations en Wallonie : cartes d\'aléa, inondations passées et conséquences de la classe d\'aléa pour l\'assurance et les travaux.'
+        }
+    },
+    {
+        id: 'aquafin',
+        group: 'water',
+        icon: 'fa-arrow-up-from-ground-water',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.aquafin.be/',
+        label: { en: 'Aquafin - sewer works', nl: 'Aquafin - rioleringswerken', fr: 'Aquafin - travaux d\'égouttage (Flandre)' },
+        note: {
+            en: 'The Flemish waste-water company: planned sewer works in the street and whether the house must connect or separate rainwater during them.',
+            nl: 'Het Vlaamse afvalwaterbedrijf: geplande rioleringswerken in de straat en of de woning dan moet aansluiten of hemelwater moet afkoppelen.',
+            fr: 'La société flamande des eaux usées : travaux d\'égouttage prévus dans la rue et obligation éventuelle de raccorder ou de séparer les eaux de pluie.'
         }
     },
     {
@@ -757,6 +927,48 @@ const LOOKUP_TOOLS = [
             fr: 'Le géoportail bruxellois : affectation PRAS, permis, patrimoine et photos aériennes.'
         }
     },
+    {
+        id: 'openpermits',
+        group: 'planning',
+        icon: 'fa-file-circle-check',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://openpermits.brussels/',
+        label: { en: 'OpenPermits Brussels', nl: 'OpenPermits Brussel', fr: 'OpenPermits Bruxelles' },
+        note: {
+            en: 'All Brussels planning-permit applications and decisions on a map - see what was permitted at the address and what the neighbours plan.',
+            nl: 'Alle Brusselse stedenbouwkundige vergunningsaanvragen en beslissingen op kaart - zie wat vergund is op het adres en wat de buren van plan zijn.',
+            fr: 'Toutes les demandes et décisions de permis d\'urbanisme bruxellois sur carte - voyez ce qui est autorisé à l\'adresse et les projets des voisins.'
+        }
+    },
+    {
+        id: 'bruheritage',
+        group: 'planning',
+        icon: 'fa-landmark-dome',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://monument.heritage.brussels/',
+        label: { en: 'Brussels heritage inventory', nl: 'Brusselse erfgoedinventaris', fr: 'Inventaire du patrimoine bruxellois' },
+        note: {
+            en: 'The official inventory of protected and listed Brussels buildings - protection restricts renovation and changes the premium landscape.',
+            nl: 'De officiële inventaris van beschermd en geïnventariseerd Brussels erfgoed - bescherming beperkt renovatie en verandert het premielandschap.',
+            fr: 'L\'inventaire officiel du patrimoine bruxellois protégé et inscrit - une protection limite la rénovation et modifie le paysage des primes.'
+        }
+    },
+    {
+        id: 'walheritage',
+        group: 'planning',
+        icon: 'fa-landmark-dome',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://agencewallonnedupatrimoine.be/',
+        label: { en: 'Walloon heritage agency (AWaP)', nl: 'Waals erfgoedagentschap (AWaP)', fr: 'Agence wallonne du patrimoine (AWaP)' },
+        note: {
+            en: 'The Walloon heritage agency: check whether the building is classified or inventoried and which obligations and subsidies follow.',
+            nl: 'Het Waalse erfgoedagentschap: kijk of het gebouw geklasseerd of geïnventariseerd is en welke verplichtingen en subsidies daaruit volgen.',
+            fr: 'L\'agence wallonne du patrimoine : vérifiez si le bâtiment est classé ou inventorié et les obligations et subsides qui en découlent.'
+        }
+    },
 
     /* ---- Environment ---- */
     {
@@ -801,6 +1013,48 @@ const LOOKUP_TOOLS = [
             fr: 'Le registre officiel des sites Seveso (industrie dangereuse). Vérifiez s\'il y en a un près de l\'adresse et quelles sont les zones d\'urgence.'
         }
     },
+    {
+        id: 'zonnekaart',
+        group: 'environment',
+        icon: 'fa-solar-panel',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.energiesparen.be/zonnekaart',
+        label: { en: 'Solar map (zonnekaart)', nl: 'Zonnekaart', fr: 'Carte solaire flamande' },
+        note: {
+            en: 'The official Flemish solar map: how suitable this exact roof is for solar panels and what it would yield - useful for the renovation budget.',
+            nl: 'De officiële Vlaamse zonnekaart: hoe geschikt precies dit dak is voor zonnepanelen en wat het zou opbrengen - nuttig voor het renovatiebudget.',
+            fr: 'La carte solaire officielle flamande : l\'aptitude exacte de cette toiture aux panneaux solaires et son rendement estimé - utile pour le budget rénovation.'
+        }
+    },
+    {
+        id: 'energiekaart',
+        group: 'environment',
+        icon: 'fa-gauge-high',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://apps.energiesparen.be/energiekaart',
+        label: { en: 'Flemish energy map', nl: 'Energiekaart Vlaanderen', fr: 'Carte énergie flamande' },
+        note: {
+            en: 'Official maps of EPC labels, renovation rates and heating types per neighbourhood - see how the street scores before you commit.',
+            nl: 'Officiële kaarten met EPC-labels, renovatiegraad en verwarmingstypes per buurt - zie hoe de straat scoort vóór u zich vastlegt.',
+            fr: 'Cartes officielles des labels PEB, taux de rénovation et types de chauffage par quartier - voyez le score de la rue avant de vous engager.'
+        }
+    },
+    {
+        id: 'biptsites',
+        group: 'environment',
+        icon: 'fa-tower-cell',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://sites.bipt.be/',
+        label: { en: 'Antenna sites map (BIPT)', nl: 'Zendantennekaart (BIPT)', fr: 'Carte des antennes (IBPT)' },
+        note: {
+            en: 'The official register of broadcast and mobile antennas: see which masts stand near the house and which operators use them.',
+            nl: 'Het officiële register van zend- en gsm-antennes: zie welke masten in de buurt van de woning staan en welke operatoren ze gebruiken.',
+            fr: 'Le registre officiel des antennes émettrices et mobiles : voyez quels pylônes se trouvent près de la maison et quels opérateurs les utilisent.'
+        }
+    },
 
     /* ---- Neighbourhood & daily life ---- */
     {
@@ -815,6 +1069,188 @@ const LOOKUP_TOOLS = [
             en: 'The telecom regulator\'s coverage atlas: which fixed internet speeds and mobile networks actually reach the address - essential for home workers.',
             nl: 'De dekkingsatlas van de telecomregulator: welke vaste internetsnelheden en mobiele netwerken het adres echt halen - essentieel voor thuiswerkers.',
             fr: 'L\'atlas de couverture du régulateur télécom : quels débits fixes et réseaux mobiles atteignent réellement l\'adresse - essentiel pour le télétravail.'
+        }
+    },
+    {
+        id: 'fiberklaar',
+        group: 'living',
+        icon: 'fa-network-wired',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://fiberklaar.be/',
+        label: { en: 'Fiberklaar - fibre rollout', nl: 'Fiberklaar - glasvezeluitrol', fr: 'Fiberklaar - déploiement fibre (Flandre)' },
+        note: {
+            en: 'Check whether fibre is available, planned or absent at the address - it affects home-office value and future works in the street.',
+            nl: 'Kijk of glasvezel beschikbaar, gepland of afwezig is op het adres - dat beïnvloedt de thuiswerkwaarde en toekomstige werken in de straat.',
+            fr: 'Vérifiez si la fibre est disponible, prévue ou absente à l\'adresse - cela influence la valeur télétravail et les futurs chantiers dans la rue.'
+        }
+    },
+    {
+        id: 'wyre',
+        group: 'living',
+        icon: 'fa-network-wired',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.wyre.be/',
+        label: { en: 'Wyre - cable network', nl: 'Wyre - kabelnetwerk', fr: 'Wyre - réseau câblé (Flandre)' },
+        note: {
+            en: 'The Flemish cable/fibre network company (Telenet-Fluvius): the second fixed network available at most Flemish addresses.',
+            nl: 'Het Vlaamse kabel-/glasvezelnetwerkbedrijf (Telenet-Fluvius): het tweede vaste netwerk dat op de meeste Vlaamse adressen beschikbaar is.',
+            fr: 'La société flamande de réseau câblé/fibre (Telenet-Fluvius) : le second réseau fixe disponible à la plupart des adresses flamandes.'
+        }
+    },
+    {
+        id: 'unifiber',
+        group: 'living',
+        icon: 'fa-network-wired',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://www.unifiber.be/',
+        label: { en: 'Unifiber - fibre rollout', nl: 'Unifiber - glasvezeluitrol', fr: 'Unifiber - déploiement fibre (Wallonie)' },
+        note: {
+            en: 'The Walloon fibre rollout: check whether the street is covered, planned or not on the map yet.',
+            nl: 'De Waalse glasvezeluitrol: kijk of de straat gedekt, gepland of nog niet op de kaart is.',
+            fr: 'Le déploiement de la fibre en Wallonie : vérifiez si la rue est couverte, prévue ou pas encore cartographiée.'
+        }
+    },
+    {
+        id: 'gipod',
+        group: 'living',
+        icon: 'fa-person-digging',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://gipod.vlaanderen.be/',
+        label: { en: 'GIPOD - roadworks Flanders', nl: 'GIPOD - werken op de weg', fr: 'GIPOD - chantiers en Flandre' },
+        note: {
+            en: 'The official register of roadworks and events on Flemish public land: see which works are planned in the street before you buy.',
+            nl: 'Het officiële register van werken en evenementen op het Vlaamse openbaar domein: zie welke werken gepland zijn in de straat vóór u koopt.',
+            fr: 'Le registre officiel des chantiers et événements sur le domaine public flamand : voyez quels travaux sont prévus dans la rue avant d\'acheter.'
+        }
+    },
+    {
+        id: 'osiris',
+        group: 'living',
+        icon: 'fa-person-digging',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://www.osiris.brussels/',
+        label: { en: 'Osiris - roadworks Brussels', nl: 'Osiris - werven in Brussel', fr: 'Osiris - chantiers à Bruxelles' },
+        note: {
+            en: 'The official coordination platform for construction sites on Brussels roads - planned works, durations and detours around the address.',
+            nl: 'Het officiële coördinatieplatform voor werven op de Brusselse wegen - geplande werken, duurtijden en omleidingen rond het adres.',
+            fr: 'La plateforme officielle de coordination des chantiers en voirie bruxelloise - travaux prévus, durées et déviations autour de l\'adresse.'
+        }
+    },
+    {
+        id: 'trafiroutes',
+        group: 'living',
+        icon: 'fa-road-barrier',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://trafiroutes.wallonie.be/',
+        label: { en: 'Trafiroutes - Walloon road info', nl: 'Trafiroutes - Waalse wegeninfo', fr: 'Trafiroutes - info routes wallonnes' },
+        note: {
+            en: 'Live traffic, works and incidents on the Walloon road network - test the commute and see structural bottlenecks near the address.',
+            nl: 'Live verkeer, werken en incidenten op het Waalse wegennet - test het pendeltraject en zie structurele knelpunten nabij het adres.',
+            fr: 'Trafic en direct, chantiers et incidents sur le réseau routier wallon - testez le trajet et repérez les goulots structurels près de l\'adresse.'
+        }
+    },
+    {
+        id: 'fluvius',
+        group: 'living',
+        icon: 'fa-plug',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.fluvius.be/',
+        label: { en: 'Fluvius - grid operator', nl: 'Fluvius - netbeheerder', fr: 'Fluvius - gestionnaire de réseau (Flandre)' },
+        note: {
+            en: 'The Flemish electricity and gas grid operator: connection status, EAN numbers, digital meter, planned grid works - ask before you buy an unrenovated house.',
+            nl: 'De Vlaamse netbeheerder voor elektriciteit en gas: aansluitstatus, EAN-nummers, digitale meter en geplande netwerken - vraag na vóór u een niet-gerenoveerde woning koopt.',
+            fr: 'Le gestionnaire flamand des réseaux électricité et gaz : statut de raccordement, numéros EAN, compteur numérique et travaux prévus - à vérifier avant d\'acheter une maison non rénovée.'
+        }
+    },
+    {
+        id: 'ores',
+        group: 'living',
+        icon: 'fa-plug',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://www.ores.be/',
+        label: { en: 'ORES - grid operator', nl: 'ORES - netbeheerder', fr: 'ORES - gestionnaire de réseau' },
+        note: {
+            en: 'The main Walloon electricity and gas grid operator: connections, meter changes and works in the street.',
+            nl: 'De belangrijkste Waalse netbeheerder voor elektriciteit en gas: aansluitingen, meterwissels en werken in de straat.',
+            fr: 'Le principal gestionnaire wallon des réseaux électricité et gaz : raccordements, remplacements de compteur et travaux en voirie.'
+        }
+    },
+    {
+        id: 'sibelga',
+        group: 'living',
+        icon: 'fa-plug',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://www.sibelga.be/',
+        label: { en: 'Sibelga - grid operator', nl: 'Sibelga - netbeheerder', fr: 'Sibelga - gestionnaire de réseau' },
+        note: {
+            en: 'The Brussels electricity and gas grid operator: connection capacity, meters and planned works - relevant for heat-pump or EV plans.',
+            nl: 'De Brusselse netbeheerder voor elektriciteit en gas: aansluitcapaciteit, meters en geplande werken - relevant voor warmtepomp- of EV-plannen.',
+            fr: 'Le gestionnaire bruxellois des réseaux électricité et gaz : capacité de raccordement, compteurs et travaux prévus - pertinent pour une pompe à chaleur ou une voiture électrique.'
+        }
+    },
+    {
+        id: 'provstats',
+        group: 'living',
+        icon: 'fa-chart-column',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://provincies.incijfers.be/',
+        label: { en: 'Provinces in figures', nl: 'Provincies in cijfers', fr: 'Provinces en chiffres (Flandre)' },
+        note: {
+            en: 'Official statistics down to neighbourhood level for all Flemish municipalities: demographics, income, housing stock, green space.',
+            nl: 'Officiële statistieken tot op buurtniveau voor alle Vlaamse gemeenten: demografie, inkomen, woningbestand, groen.',
+            fr: 'Statistiques officielles jusqu\'au niveau du quartier pour toutes les communes flamandes : démographie, revenus, parc de logements, espaces verts.'
+        }
+    },
+    {
+        id: 'walstat',
+        group: 'living',
+        icon: 'fa-chart-column',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://walstat.iweps.be/',
+        label: { en: 'WalStat - Walloon statistics', nl: 'WalStat - Waalse statistiek', fr: 'WalStat - statistiques wallonnes' },
+        note: {
+            en: 'The official Walloon statistics portal (IWEPS): population, income, housing and land use per municipality.',
+            nl: 'Het officiële Waalse statistiekportaal (IWEPS): bevolking, inkomen, wonen en landgebruik per gemeente.',
+            fr: 'Le portail statistique officiel wallon (IWEPS) : population, revenus, logement et occupation du sol par commune.'
+        }
+    },
+    {
+        id: 'enseignement',
+        group: 'living',
+        icon: 'fa-school',
+        regions: ['wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.enseignement.be/',
+        label: { en: 'School directory (FR community)', nl: 'Scholengids (Franse Gemeenschap)', fr: 'Annuaire des écoles (FWB)' },
+        note: {
+            en: 'The official education portal of the French Community: find recognised schools per municipality in Wallonia and Brussels.',
+            nl: 'Het officiële onderwijsportaal van de Franse Gemeenschap: vind erkende scholen per gemeente in Wallonië en Brussel.',
+            fr: 'Le portail officiel de la Fédération Wallonie-Bruxelles : trouvez les écoles reconnues par commune en Wallonie et à Bruxelles.'
+        }
+    },
+    {
+        id: 'kindengezin',
+        group: 'living',
+        icon: 'fa-baby',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.kindengezin.be/',
+        label: { en: 'Childcare finder (Kind en Gezin)', nl: 'Kinderopvang zoeken (Kind en Gezin)', fr: 'Accueil d\'enfants (Kind en Gezin)' },
+        note: {
+            en: 'The official Flemish agency for young families: search licensed childcare near the address - waiting lists differ hugely per municipality.',
+            nl: 'Het officiële Vlaamse agentschap voor jonge gezinnen: zoek vergunde kinderopvang nabij het adres - wachtlijsten verschillen enorm per gemeente.',
+            fr: 'L\'agence flamande officielle pour les jeunes familles : cherchez un accueil agréé près de l\'adresse - les listes d\'attente varient fortement par commune.'
         }
     },
     {

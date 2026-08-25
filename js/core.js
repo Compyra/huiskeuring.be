@@ -243,6 +243,7 @@ function defaultState() {
         renovationNeeded: {},
         documentRequests: {},
         notes: {},
+        lookupNotes: {},
         globalNotes: '',
         currentFilter: 'all',
         propertyType: 'house',
@@ -287,6 +288,8 @@ function normaliseState(raw) {
         renovationNeeded: compatible ? plainMap(raw.renovationNeeded) : {},
         documentRequests: compatible ? plainMap(raw.documentRequests) : {},
         notes: compatible ? plainMap(raw.notes) : {},
+        /* keyed by lookup-tool id, not by item id - schema changes don't affect it */
+        lookupNotes: plainMap(raw.lookupNotes),
         globalNotes: typeof raw.globalNotes === 'string' ? raw.globalNotes : '',
         currentFilter: typeof raw.currentFilter === 'string' ? raw.currentFilter : 'all',
         propertyType: raw.propertyType === 'apartment' ? 'apartment' : 'house',
@@ -350,6 +353,14 @@ function lookupTopic(key) {
     return null;
 }
 
+/** Non-empty lookup findings paired with their tool, in LOOKUP_TOOLS order. */
+function lookupFindings(st) {
+    if (!st || !st.lookupNotes) return [];
+    return LOOKUP_TOOLS
+        .map(tool => ({ tool: tool, note: String(st.lookupNotes[tool.id] || '').trim() }))
+        .filter(entry => entry.note);
+}
+
 /* ------------------------------------------------------------------ *
  * Share links (state lives in the URL, never on a server)
  * ------------------------------------------------------------------ */
@@ -369,6 +380,7 @@ function encodeState(state) {
         r: state.renovationNeeded,
         d: state.documentRequests,
         n: state.notes,
+        l: state.lookupNotes,
         g: state.globalNotes,
         f: state.currentFilter !== 'all' ? state.currentFilter : undefined,
         t: state.propertyType !== 'house' ? state.propertyType : undefined,
@@ -396,6 +408,7 @@ function decodeState(encoded) {
             renovationNeeded: compact.r,
             documentRequests: compact.d,
             notes: compact.n,
+            lookupNotes: compact.l,
             globalNotes: compact.g,
             currentFilter: compact.f,
             propertyType: compact.t,

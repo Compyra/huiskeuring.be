@@ -230,9 +230,11 @@ if ($SkipLinks) {
 Write-Output ''
 Write-Output '10. Untranslated text in HTML'
 # Brand names and the deliberately trilingual <noscript> are not translatable.
+# 404.html is JS-free by design (must render without the i18n runtime), so it
+# carries its three languages inline - like <noscript> it is exempt here.
 $allowed = @('huiskeuring.be', 'Compyra', 'labidi.eu')
 $hardcoded = @()
-Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html' | Where-Object { $_.Name -ne '404.html' } | ForEach-Object {
     $name = $_.Name
     $raw = [System.IO.File]::ReadAllText($_.FullName)
     if ($raw -notmatch '(?s)<body') { return }

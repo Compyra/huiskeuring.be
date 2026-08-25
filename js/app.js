@@ -797,6 +797,18 @@ function buildReportHTML() {
         </div>`;
 
     html += reportListHTML(t('report.documents'), 'fa-file-alt', groups.documents);
+
+    const findings = lookupFindings(state);
+    if (findings.length) {
+        html += `
+        <div class="report-section">
+            <h3><i class="fas fa-magnifying-glass-location" aria-hidden="true"></i> ${escapeHTML(t('report.research'))} (${findings.length})</h3>
+            <ul>
+                ${findings.map(f => `<li><strong>${escapeHTML(pick(f.tool.label))}:</strong> ${escapeHTML(f.note)}</li>`).join('')}
+            </ul>
+        </div>`;
+    }
+
     html += reportListHTML(t('report.issues'), 'fa-exclamation-triangle', groups.issues, 'report-issue');
     html += reportListHTML(t('report.ok'), 'fa-check-circle', groups.ok);
     html += reportListHTML(t('report.unchecked'), 'fa-times-circle', groups.unchecked);
@@ -1343,21 +1355,49 @@ function togglePropertyInfo() {
     const collapsed = propertyInfoCard.classList.toggle('collapsed');
     togglePropertyBtn.setAttribute('aria-expanded', String(!collapsed));
     writeStorage(STORAGE_KEYS.propertyInfoCollapsed, String(collapsed));
+    if (!collapsed) propertyInfoUserExpanded = true; // don't auto-collapse again this visit
     updatePropertyAddressPreview();
 }
 
 function updatePropertyAddressPreview() {
     const address = propertyAddressInput.value.trim();
-    propertyAddressPreview.textContent =
-        (address && propertyInfoCard.classList.contains('collapsed')) ? address : '';
+    if (address && propertyInfoCard.classList.contains('collapsed')) {
+        const href = 'lookup/?address=' + encodeURIComponent(address);
+        propertyAddressPreview.innerHTML = `
+            ${escapeHTML(address)}
+            <a class="preview-lookup-link" href="${escapeHTML(href)}"
+               title="${escapeHTML(t('prop.lookupLink'))}" aria-label="${escapeHTML(t('prop.lookupLink'))}">
+                <i class="fas fa-magnifying-glass-location" aria-hidden="true"></i>
+            </a>`;
+    } else {
+        propertyAddressPreview.textContent = '';
+    }
 }
 
+let propertyInfoUserExpanded = false;
+
 function loadPropertyInfoState() {
-    if (readStorage(STORAGE_KEYS.propertyInfoCollapsed) === 'true') {
+    const stored = readStorage(STORAGE_KEYS.propertyInfoCollapsed);
+    const address = (state.propertyInfo.address || '').trim();
+    // Filled-in info gets out of the way: only an address bar remains.
+    if (stored === 'true' || (address && stored !== 'false')) {
         propertyInfoCard.classList.add('collapsed');
         togglePropertyBtn.setAttribute('aria-expanded', 'false');
         updatePropertyAddressPreview();
     }
+}
+
+/** Collapse the card once focus leaves it with an address filled in. */
+function autoCollapsePropertyInfo(e) {
+    if (propertyInfoUserExpanded) return;
+    if (propertyInfoCard.classList.contains('collapsed')) return;
+    if (!propertyAddressInput.value.trim()) return;
+    const next = e.relatedTarget;
+    if (next && propertyInfoCard.contains(next)) return; // still inside the card
+    propertyInfoCard.classList.add('collapsed');
+    togglePropertyBtn.setAttribute('aria-expanded', 'false');
+    writeStorage(STORAGE_KEYS.propertyInfoCollapsed, 'true');
+    updatePropertyAddressPreview();
 }
 
 let scrollTicking = false;
@@ -1461,8 +1501,28 @@ function setupEventListeners() {
             document.body.classList.toggle('menu-open', open);
         });
         overlay.addEventListener('click', closeMobileMenu);
-        headerActions.querySelectorAll('.btn').forEach(btn => btn.addEventListener('click', closeMobileMenu));
+        // #menuBtn only toggles its own panel - it must not close the drawer
+        headerActions.querySelectorAll('.btn:not(#menuBtn)').forEach(btn => btn.addEventListener('click', closeMobileMenu));
     }
+
+    /* Header menu (grouped secondary actions) */
+    const menuBtn = byId('menuBtn');
+    const headerMenu = byId('headerMenu');
+    const closeHeaderMenu = () => {
+        if (headerMenu.hidden) return;
+        headerMenu.hidden = true;
+        menuBtn.setAttribute('aria-expanded', 'false');
+    };
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = headerMenu.hidden;
+        headerMenu.hidden = !open;
+        menuBtn.setAttribute('aria-expanded', String(open));
+    });
+    headerMenu.querySelectorAll('.btn').forEach(btn => btn.addEventListener('click', closeHeaderMenu));
+    document.addEventListener('click', (e) => {
+        if (!headerMenu.hidden && !e.target.closest('.header-menu-wrap')) closeHeaderMenu();
+    });
 
     byId('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
     byId('themeSelect').addEventListener('change', (e) => setThemeMode(e.target.value));
@@ -1593,8 +1653,15 @@ function setupEventListeners() {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (document.querySelector('.modal.show')) closeTopModal();
-            else closeMobileMenu();
+            const menu = byId('headerMenu');
+            if (menu && !menu.hidden) {
+                menu.hidden = true;
+                byId('menuBtn').setAttribute('aria-expanded', 'false');
+            } else if (document.querySelector('.modal.show')) {
+                closeTopModal();
+            } else {
+                closeMobileMenu();
+            }
         }
         trapFocus(e);
     });
@@ -1636,6 +1703,7 @@ function setupEventListeners() {
     toggleAllBtn.addEventListener('click', toggleAllCategories);
     byId('showUncheckedBtn').addEventListener('click', toggleShowUnchecked);
     togglePropertyBtn.addEventListener('click', togglePropertyInfo);
+    byId('propertyInfoGrid').addEventListener('focusout', autoCollapsePropertyInfo);
     compactModeBtn.addEventListener('click', toggleCompactMode);
 
     scrollToTopBtn.addEventListener('click', (e) => {
@@ -1906,6 +1974,14 @@ async function exportPdf() {
         };
 
         section(t('report.documents'), groups.documents, '[>]');
+
+        const findings = lookupFindings(state);
+        if (findings.length) {
+            line(`${t('report.research')} (${findings.length})`, 13, 'bold', 2);
+            findings.forEach(f => line(`[i] ${pick(f.tool.label)}: ${f.note}`, 10, 'normal', 0.5));
+            y += 3;
+        }
+
         section(t('report.issues'), groups.issues, '[!]');
         section(t('report.withNotes'), groups.notes.filter(n => !groups.issues.some(i => i.id === n.id)), '[~]');
         section(t('report.unchecked'), groups.unchecked, '[ ]');

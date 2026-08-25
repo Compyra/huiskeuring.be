@@ -41,15 +41,15 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
-    <link rel="stylesheet" href="style.css?v19">
+    <link rel="stylesheet" href="style.css?v20">
     <!-- Self-hosted fonts and icons: no third-party requests, nothing leaks to a CDN.
          Montserrat (SIL OFL 1.1), Roboto (Apache 2.0), Font Awesome Free (OFL 1.1 / CC BY 4.0 / MIT).
          See assets/LICENSES.md. -->
     <link rel="preload" href="assets/fonts/roboto-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/montserrat-700-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/vendor/fonts.css?v19">
-    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v19">
-    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v19">
+    <link rel="stylesheet" href="assets/vendor/fonts.css?v20">
+    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v20">
+    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v20">
 
     <!-- Apply the stored / system theme before first paint to avoid a flash of the wrong theme -->
     <script>
@@ -230,24 +230,55 @@
                         <button class="btn btn-primary" id="shareUrlBtn" data-i18n-title="btn.share" title="Create a shareable URL with your current data">
                             <i class="fas fa-share-alt" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.share">Share URL</span>
                         </button>
-                        <button class="btn btn-info" id="questionsBtn" data-i18n-title="btn.questions" title="Questions for the seller">
-                            <i class="fas fa-comments" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.questions">Questions</span>
-                        </button>
-                        <button class="btn btn-info" id="remindersBtn" data-i18n-title="btn.reminders" title="Deadline reminders">
-                            <i class="fas fa-calendar-check" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reminders">Reminders</span>
-                        </button>
-                        <button class="btn btn-info" id="toolsBtn" data-i18n-title="btn.tools" title="Backup and library">
-                            <i class="fas fa-box-archive" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.tools">Backup</span>
-                        </button>
-                        <a class="btn btn-info" id="compareLink" href="compare.html" data-i18n-title="btn.compare" title="Compare properties">
-                            <i class="fas fa-scale-unbalanced" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compare">Compare</span>
-                        </a>
-                        <a class="btn btn-info" id="lookupLink" href="lookup/" data-i18n-title="btn.lookup" title="Official lookups">
-                            <i class="fas fa-magnifying-glass-location" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.lookup">Official lookups</span>
-                        </a>
-                        <button class="btn btn-info" id="resourcesBtn" data-i18n-title="resources.title" title="Official resources">
-                            <i class="fas fa-landmark" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.resources">Resources</span>
-                        </button>
+                        <div class="header-menu-wrap">
+                            <button class="btn btn-info" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="headerMenu">
+                                <i class="fas fa-bars" aria-hidden="true"></i> <span class="btn-text" data-i18n="menu.btn">Menu</span> <i class="fas fa-chevron-down menu-caret" aria-hidden="true"></i>
+                            </button>
+                            <div class="header-menu" id="headerMenu" hidden>
+                                <div class="header-menu-section">
+                                    <h3 data-i18n="menu.visit">During the visit</h3>
+                                    <button class="btn btn-info" id="questionsBtn" data-i18n-title="btn.questions" title="Questions for the seller">
+                                        <i class="fas fa-comments" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.questions">Questions</span>
+                                    </button>
+                                    <button class="btn btn-info" id="remindersBtn" data-i18n-title="btn.reminders" title="Deadline reminders">
+                                        <i class="fas fa-calendar-check" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reminders">Reminders</span>
+                                    </button>
+                                </div>
+                                <div class="header-menu-section">
+                                    <h3 data-i18n="menu.data">Your data</h3>
+                                    <button class="btn btn-info" id="toolsBtn" data-i18n-title="btn.tools" title="Backup and library">
+                                        <i class="fas fa-box-archive" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.tools">Backup</span>
+                                    </button>
+                                    <a class="btn btn-info" id="compareLink" href="compare.html" data-i18n-title="btn.compare" title="Compare properties">
+                                        <i class="fas fa-scale-unbalanced" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compare">Compare</span>
+                                    </a>
+                                    <button class="btn btn-secondary" id="resetBtn">
+                                        <i class="fas fa-undo" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reset">Reset All</span>
+                                    </button>
+                                </div>
+                                <div class="header-menu-section">
+                                    <h3 data-i18n="menu.info">Lookups &amp; information</h3>
+                                    <a class="btn btn-info" id="lookupLink" href="lookup/" data-i18n-title="btn.lookup" title="Official lookups">
+                                        <i class="fas fa-magnifying-glass-location" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.lookup">Official lookups</span>
+                                    </a>
+                                    <button class="btn btn-info" id="resourcesBtn" data-i18n-title="resources.title" title="Official resources">
+                                        <i class="fas fa-landmark" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.resources">Resources</span>
+                                    </button>
+                                    <button class="btn btn-info" id="helpBtnHeader" data-i18n-title="help.title" title="Help &amp; information">
+                                        <i class="fas fa-question-circle" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.help">Help</span>
+                                    </button>
+                                </div>
+                                <div class="header-menu-section">
+                                    <h3 data-i18n="menu.display">Display</h3>
+                                    <button class="btn btn-secondary readable-btn" data-i18n-title="btn.readable" title="Easy reading" aria-pressed="false">
+                                        <i class="fas fa-glasses" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.readable">Easy reading</span>
+                                    </button>
+                                    <button class="btn btn-secondary" id="compactModeBtn" data-i18n-title="btn.compact" title="Toggle compact view">
+                                        <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compact">Compact</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="header-group-divider" aria-hidden="true"></div>
                     <div class="header-group" role="group" aria-label="Display &amp; language" data-i18n-aria="group.view">
@@ -265,21 +296,6 @@
                                 <option value="dark" data-i18n="theme.dark">Dark</option>
                             </select>
                         </div>
-                        <button class="btn btn-secondary readable-btn" data-i18n-title="btn.readable" title="Easy reading" aria-pressed="false">
-                            <i class="fas fa-glasses" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.readable">Easy reading</span>
-                        </button>
-                        <button class="btn btn-secondary" id="compactModeBtn" data-i18n-title="btn.compact" title="Toggle compact view">
-                            <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compact">Compact</span>
-                        </button>
-                    </div>
-                    <div class="header-group-divider" aria-hidden="true"></div>
-                    <div class="header-group">
-                        <button class="btn btn-secondary" id="resetBtn">
-                            <i class="fas fa-undo" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reset">Reset All</span>
-                        </button>
-                        <button class="btn btn-info" id="helpBtnHeader" data-i18n-title="help.title" title="Help &amp; information">
-                            <i class="fas fa-question-circle" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.help">Help</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -760,15 +776,15 @@
         </div>
     </div>
 
-    <script src="js/i18n.js?v19"></script>
-    <script src="js/legal.js?v19"></script>
-    <script src="js/links.js?v19"></script>
-    <script src="js/checklist.js?v19"></script>
-    <script src="js/checklist.nl.js?v19"></script>
-    <script src="js/checklist.fr.js?v19"></script>
-    <script src="js/core.js?v19"></script>
-    <script src="js/photos.js?v19"></script>
-    <script src="js/app.js?v19"></script>
+    <script src="js/i18n.js?v20"></script>
+    <script src="js/legal.js?v20"></script>
+    <script src="js/links.js?v20"></script>
+    <script src="js/checklist.js?v20"></script>
+    <script src="js/checklist.nl.js?v20"></script>
+    <script src="js/checklist.fr.js?v20"></script>
+    <script src="js/core.js?v20"></script>
+    <script src="js/photos.js?v20"></script>
+    <script src="js/app.js?v20"></script>
 </body>
 </html>
 
