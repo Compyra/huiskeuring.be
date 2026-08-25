@@ -586,6 +586,7 @@ const LOOKUP_TOOLS = [
         icon: 'fa-file-signature',
         regions: ['flanders', 'wallonia', 'brussels'],
         auto: false,
+        access: 'login',
         url: 'https://eservices.minfin.fgov.be/myminfin-web/',
         label: { en: 'MyMinfin', nl: 'MyMinfin', fr: 'MyMinfin' },
         note: {

@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v17';
+const VERSION = 'v18';
 const CACHE = 'huiskeuring-' + VERSION;
 
 const SHELL = [

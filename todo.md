@@ -55,6 +55,49 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 9: help-modal overflow, compact full width, lookup access badges
+
+Cache version bumped **v17 → v18** in all four HTML pages *and* `sw.js`.
+
+#### Help modal - no horizontal scrolling at any width
+| Root cause | Fix |
+|---|---|
+| Desktop tab bar (`.help-tabs`) had no `flex-wrap`; at 1280 px the 8 tabs overflowed the 800 px modal by 193 px | `flex-wrap: wrap` + tighter gap |
+| Long modal titles pushed the close button outside (h2 default `min-width: auto`) | `.modal-header h2` gets `flex: 1 1 auto; min-width: 0; flex-wrap: wrap`, `.close-btn` gets `flex: 0 0 auto` |
+| Mobile tabs overflowed 6 px at 320 px | smaller tab padding + `min-width: 0` in the mobile media block |
+| Sub-pixel/border artifacts (`border-left: 3px` on active items) still reported ~3 px scroll width | `.help-modal-content { overflow-x: hidden }` - chrome may never scroll horizontally; wide content scrolls inside `.modal-body` |
+| Header chrome too large below 320 px | new `@media (max-width: 340px)` block shrinks header/body/footer padding |
+
+Verified in the browser at **300, 320, 360, 414, 768, 1024, 1280 and 1600 px**
+via the real first-visit flow (`localStorage.clear()` → modal auto-opens):
+0 px clipped, close button and all tabs inside the card, 0 page scroll, 0
+console errors at every width.
+
+#### Compact view now uses the whole screen
+`body.compact-mode .container` was `98%` wide but still capped at the normal
+`max-width`. Now `width: 100%; max-width: none; padding: 0 10px`. Verified at
+1920 px: container 1375 px (normal, capped) → **1528 px = full viewport** with
+compact on, zero overflow.
+
+#### Lookup page - access badges on every tool
+Every card on `/lookup/` now shows **two** badges: an access badge
+(**"OSINT · free"**, green outline - or **"eID / itsme"**, blue outline, for
+login-gated tools) plus the existing auto/manual badge. Data lives in
+`LOOKUP_TOOLS` (`js/links.js`) as `access: 'login'`; only MyMinfin is
+login-gated today, everything else defaults to free. Strings
+`lookup.freeBadge` / `lookup.loginBadge` added ×3 languages (i18n now **300
+keys/language**). Verified on NL: 11 cards = 10 free + 1 login, 0 overflow at
+320 px.
+
+> **Testing traps (embedded browser, documented for the future):** the SW's
+> `ignoreSearch` fallback serves stale CSS on `127.0.0.1` during dev
+> iteration and `serviceWorker.register()`/`unregister()` never settle - test
+> fresh CSS on `http://localhost:<port>` (different origin, no SW).
+
+All 11 verifier checks pass, including all 102 external links.
+
+---
+
 ### 2026-08-25 - Pass 8: quick check, offline, PDF, negotiation and easy reading
 
 Everything below shipped in one pass; all 11 verifier checks pass and each

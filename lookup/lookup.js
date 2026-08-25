@@ -73,6 +73,7 @@ function renderTools() {
                             <div class="lookup-card-head">
                                 <i class="fas ${escapeHTML(tool.icon)}" aria-hidden="true"></i>
                                 <h3>${escapeHTML(pick(tool.label))}</h3>
+                                <span class="lookup-badge ${tool.access === 'login' ? 'login' : 'free'}">${escapeHTML(t(tool.access === 'login' ? 'lookup.loginBadge' : 'lookup.freeBadge'))}</span>
                                 <span class="lookup-badge ${tool.auto ? 'auto' : 'manual'}">${escapeHTML(t(tool.auto ? 'lookup.auto' : 'lookup.manual'))}</span>
                             </div>
                             <p class="lookup-card-note">${escapeHTML(pick(tool.note))}</p>

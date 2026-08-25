@@ -13,7 +13,7 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
   switchable with the full checklist, position-stable item ids
 - ✅ Regional legal deadlines (VL/WAL/BXL) with official sources, verified per
   half-year — see [FACTCHECK.md](FACTCHECK.md)
-- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`)
+- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`), with **access badges** (OSINT · free vs eID / itsme) per tool
 - ✅ **Offline PWA** — service worker precaches the whole shell (`sw.js`)
 - ✅ **PDF export** — vendored jsPDF, lazy-loaded on first use
 - ✅ **Renovation cost estimator + negotiation summary** — indicative bands per

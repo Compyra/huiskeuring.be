@@ -991,8 +991,9 @@ body.compact-mode .property-info-section {
 }
 
 body.compact-mode .container {
-    width: 98%;
-    padding: 0 5px;
+    width: 100%;
+    max-width: none;
+    padding: 0 10px;
 }
 
 body.compact-mode .property-info-card.collapsed {
@@ -1200,6 +1201,10 @@ body.compact-mode .filter-section .filter-divider {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
+    /* must be allowed to shrink, or a long title pushes the close button out */
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .close-btn {
@@ -1209,6 +1214,7 @@ body.compact-mode .filter-section .filter-divider {
     cursor: pointer;
     color: var(--text-color);
     transition: var(--transition);
+    flex: 0 0 auto;
 }
 
 .close-btn:hover {
@@ -1387,6 +1393,18 @@ body.compact-mode .filter-section .filter-divider {
 .help-modal-content {
     max-width: 800px;
     max-height: 85vh;
+    /* modal chrome (header, tab bar) must never produce a horizontal scrollbar;
+       genuinely wide content scrolls inside .modal-body instead */
+    overflow-x: hidden;
+}
+
+/* Ultra-narrow screens (split screen, feature phones): shrink the modal chrome */
+@media (max-width: 340px) {
+    .modal-header { padding: 14px 12px; }
+    .modal-header h2 { font-size: 1.2rem; gap: 8px; }
+    .modal-body { padding: 16px 12px; }
+    .modal-footer { padding: 12px; gap: 8px; }
+    .close-btn { font-size: 1.4rem; }
 }
 
 .help-modal-body {
@@ -1396,7 +1414,8 @@ body.compact-mode .filter-section .filter-divider {
 
 .help-tabs {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
     margin-bottom: 2rem;
     border-bottom: 2px solid var(--border-color);
 }
@@ -1540,6 +1559,9 @@ body.compact-mode .filter-section .filter-divider {
     .help-tab {
         border-bottom: 1px solid var(--border-color);
         border-left: 3px solid transparent;
+        padding: 0.85rem 1rem;
+        min-width: 0;
+        text-align: left;
     }
     
     .help-tab.active {
@@ -2621,6 +2643,18 @@ body.modal-open {
     background: var(--bg-color);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
+}
+
+.lookup-badge.free {
+    background: transparent;
+    color: var(--ok-color);
+    border: 1px solid var(--ok-color);
+}
+
+.lookup-badge.login {
+    background: transparent;
+    color: var(--info-color);
+    border: 1px solid var(--info-color);
 }
 
 .lookup-card-note {
