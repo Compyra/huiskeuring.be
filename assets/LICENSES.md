@@ -37,6 +37,14 @@ Only the **solid** style is bundled, because that is the only style the interfac
 uses. If a future change needs the regular or brands style, download the matching
 CSS and `.woff2` into the same folders.
 
+## PDF generation (`assets/vendor/jspdf.umd.min.js`)
+
+jsPDF 2.5.2 - <https://github.com/parallax/jsPDF> - MIT License,
+copyright (c) 2010-2021 James Hall and the jsPDF contributors.
+
+Loaded lazily, only when the user clicks "Download PDF"; it is never fetched from
+a CDN. The MIT licence permits redistribution with this notice.
+
 ## Refreshing these assets
 
 Both sets were fetched with a small script that pins the exact version, keeps only

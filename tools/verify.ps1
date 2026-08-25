@@ -39,7 +39,7 @@ function Pass([string]$message) { Write-Output ('  ok    ' + $message) }
 Write-Output '1. Encoding'
 $strict = New-Object System.Text.UTF8Encoding($false, $true)
 $encodingOk = $true
-Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'style.css', 'todo.md', 'FACTCHECK.md', 'FEATURES.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
+Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'sw.js', 'style.css', 'todo.md', 'FACTCHECK.md', 'FEATURES.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
     $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
     try {
         $text = $strict.GetString($bytes)

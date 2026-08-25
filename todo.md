@@ -42,6 +42,7 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 | `js/app.js` | Checklist page logic | on change |
 | `js/report.js` | Read-only report page logic | on change |
 | `js/compare.js` | Comparison page logic | on change |
+| `sw.js` | Offline service worker - `VERSION` must match `?v` | on every release |
 | **`tools/verify.ps1`** | **Automated pre-release verification, 11 checks** | **before every release** |
 | `assets/fonts/`, `assets/webfonts/`, `assets/vendor/` | Self-hosted fonts and icons | on version bump |
 | `assets/LICENSES.md` | Third-party licence attribution | on version bump |
@@ -53,6 +54,59 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 ---
 
 ## 3. Changelog
+
+### 2026-08-25 - Pass 8: quick check, offline, PDF, negotiation and easy reading
+
+Everything below shipped in one pass; all 11 verifier checks pass and each
+feature was exercised in the browser (results in the table at the end).
+
+#### Quick check ↔ full checklist
+`QUICK_CHECK_IDS` in `js/checklist.js` marks the 37 highest-impact points
+(34 visible for a house, apartment red flags included for flats). The toggle
+above the property-type buttons filters **rendering only** - item ids stay
+position-based, ticks made in one mode survive in the other, and the progress
+bar counts the visible subset. `state.viewMode` persists locally but is not
+encoded into share links.
+
+#### New features
+| Feature | Where | Notes |
+|---|---|---|
+| **Offline PWA** | `sw.js` + registration in `core.js` | Precaches the 32-entry shell, cache-first, stale-`?v` fallback via `ignoreSearch`, navigation fallback to `index.html`. **Bump `VERSION` in `sw.js` together with `?v` at every release.** |
+| **PDF export** | report modal → `exportPdf()` in `app.js` | jsPDF 2.5.2 vendored (`assets/vendor/`, MIT, in LICENSES.md), lazy-loaded on first click; text-based A4 report with page numbers. Verified: 6 pages, 49 KB for a filled inspection. |
+| **Negotiation summary** | report modal → `showNegotiation()` | Issues grouped per cost area × `COST_BANDS` (new, in `js/legal.js` - amounts stay in the 6-month-review file), counted once per area, indicative total + printable one-pager with disclaimer. |
+| **Second opinion** | tools modal | Paste the other viewer's share link → decodes their state and lists every item where the verdicts differ, with their notes. Invalid links rejected. |
+| **Paste-from-listing** | tools modal | Client-side regex over pasted listing text: address (+ region auto-detect), asking price, EPC label. Rejects bare URLs honestly - no server, no scraping. |
+| **Municipality enrichment** | lookup page | New auto tool searches the official website of the commune extracted from the address (`query: 'city'`). |
+| **Seasonal hints** | banner on index | Month → season, what shows/hides now, per-season dismissal. |
+| **Easy reading mode** | header toggle (index + lookup) | Dyslexia-friendly typography: 1.8 line-height, wider tracking, 68ch measures, no italics; applied pre-paint on every page, persisted. |
+
+#### Fixes
+| # | Issue | Fix |
+|---|-------|-----|
+| 1 | Open issue: re-saving a property overwrote the library entry with the same address | `saveToLibrary` now always keeps history; the compare picker shows the saved date per entry so versions are distinguishable. |
+| 2 | **Print printed every populated hidden modal**, not just the open one (`.modal { display:block }` in print) | Print now hides `.modal` and shows only `.modal.show`. Verified with print-media emulation: exactly one modal visible. |
+
+#### SEO
+HowTo structured data for the six-step buying guide (next to the existing
+FAQPage), sitemap lastmod bumped. hreflang, canonical, og and font preloads
+were already in place; the service worker now also improves repeat-visit CWV.
+
+#### Verified in the browser
+Quick 214→34 items with persistence and correct progress · seasonal hint
+renders and dismisses · readable mode toggles, persists, pre-paints ·
+negotiation modal: 2 areas, totals, asking price, disclaimer · second opinion:
+2 differences found incl. their note, invalid link handled · import: address +
+price + EPC + region from Dutch listing text · PDF: 6 pages / 49 KB via the
+real code path · print: only the open modal · library: 2 entries same address ·
+sw.js compiles, all 32 shell URLs reachable · NL/FR zero leakage · 0 console
+errors · 0 overflow at 320 px.
+
+> The embedded test browser cannot complete `serviceWorker.register()` (the
+> promise never settles) - registration, compilation and the precache list were
+> verified separately; test installability on the live HTTPS domain after
+> deploying.
+
+---
 
 ### 2026-08-25 - Pass 7: repo move, zero unverified facts, two professional themes
 
@@ -435,8 +489,6 @@ modals; non-keyboard-operable category headers; unthrottled scroll listener;
 stack overflow on `btoa` for large inspections; `bodematttest` typo.
 
 ### Known open issues
-- The comparison page compares saved snapshots, so re-saving a property overwrites the
-  entry with the same address rather than keeping a history.
 - `compare.html` and `report.html` are `noindex`; if the read-only report should ever be
   indexable, it needs its own canonical strategy.
 - The `apartment` category has 16 items, so the visible total is 214 for a house and 204
@@ -446,9 +498,8 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
   version ("Check muren (walls)..."), because that is the wording that appears on Belgian
   documents. The NL and FR versions do not need the bracket and do not have it. This is
   intentional, not an inconsistency.
-- The repo move to the root was done outside git: the working tree shows the old
-  `house/` and `old/` paths as deletions plus the new root files as untracked. The
-  owner should commit the move in one commit so history stays readable.
+- The embedded test browser cannot complete `serviceWorker.register()`; offline
+  installability still needs one manual check on the live HTTPS domain.
 
 ---
 
@@ -461,13 +512,7 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
 
 1. **Photo attachments per issue.** Store in IndexedDB, thumbnail in the report, include
    in the JSON export. Most requested thing for a viewing on a phone.
-2. **PWA / offline mode.** A service worker caching the shell and assets. The app is
-   already fully client-side and now has no external requests, so this is mostly caching
-   plus an install prompt. Essential for inspecting a cellar with no signal.
-3. **Proper PDF export** instead of relying on the browser print dialog.
-4. **Renovation cost estimator.** Attach an indicative price range per issue, total the
-   ticked issues into a negotiation figure, and index it to ABEX with a yearly update.
-5. **German translation** for the Eastern Cantons. The engine is ready: add a `de` block
+2. **German translation** for the Eastern Cantons. The engine is ready: add a `de` block
    to `TRANSLATIONS`, `HELP_CONTENT`, `BUYING_GUIDE` and `FAQ_CONTENT`, a
    `js/checklist.de.js`, a `de` entry in `SUPPORTED_LANGUAGES`, `de` fields in the
    `legal.js` and `links.js` bundles, and an `hreflang` link in the three HTML pages.
@@ -514,7 +559,9 @@ stack overflow on `btoa` for large inspections; `bodematttest` typo.
       `LEGAL_META.contentVersion` (bumping the version re-shows the freshness banner).
 - [ ] Update `LINKS_META.lastCheck`.
 - [ ] Update `lastmod` in `sitemap.xml`.
-- [ ] Bump the `?v=` cache-busting parameters in `index.html`, `report.html`, `compare.html`.
+- [ ] Bump the `?v=` cache-busting parameters in `index.html`, `report.html`, `compare.html`,
+      `lookup/index.html` **and `VERSION` in `sw.js`** - they must move together, or
+      returning offline users keep the old shell.
 
 ### On every asset upgrade
 - [ ] Re-download the fonts / Font Awesome, keep the subsets small, re-check `assets/LICENSES.md`.

@@ -23,10 +23,24 @@ function streetQuery(address) {
     return address.replace(/\d+[a-zA-Z]?/g, ' ').replace(/[,;]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+/** The municipality: everything after the 4-digit postal code, else the last word. */
+function cityQuery(address) {
+    const match = address.match(/\b\d{4}\b\s*[,]?\s*([A-Za-z\u00C0-\u017F' -]+)$/);
+    if (match) return match[1].trim();
+    const words = streetQuery(address).split(' ');
+    return words.length ? words[words.length - 1] : '';
+}
+
 function toolHref(tool, address) {
     const base = safeUrl(tool.url);
     if (!tool.auto || !address) return base;
-    const query = tool.query === 'street' ? streetQuery(address) : address;
+    let query = address;
+    if (tool.query === 'street') query = streetQuery(address);
+    if (tool.query === 'city') {
+        const city = cityQuery(address);
+        if (!city) return base;
+        query = city + ' gemeente commune site officiel officiele website';
+    }
     if (!query) return base;
     return base + encodeURIComponent(query);
 }

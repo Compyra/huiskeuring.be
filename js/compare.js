@@ -32,6 +32,7 @@ function renderPicker(entries) {
                 aria-pressed="${selected.includes(item.entry.id)}">
             <i class="fas ${selected.includes(item.entry.id) ? 'fa-circle-check' : 'fa-circle'}" aria-hidden="true"></i>
             ${escapeHTML(item.entry.label)}
+            <span class="compare-chip-date">${escapeHTML(formatDate(item.entry.savedAt, currentLanguage))}</span>
         </button>`).join('');
 
     picker.querySelectorAll('.compare-chip').forEach(chip => {

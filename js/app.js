@@ -146,9 +146,18 @@ function renderChecklist() {
     checklistContainer.innerHTML = '';
     activeIssueFilter = null;
 
+    const quick = state.viewMode === 'quick';
     const fragment = document.createDocumentFragment();
 
     visibleCategories(state).forEach(category => {
+        /* Quick mode filters the rendered items but keeps the original
+           indexes - item ids are position based and must never shift. */
+        const indexes = [];
+        category.items.forEach((item, index) => {
+            if (!quick || QUICK_SET.has(itemId(category, index))) indexes.push(index);
+        });
+        if (!indexes.length) return;
+
         const group = document.createElement('div');
         group.className = 'category-group';
         group.dataset.category = category.category;
@@ -174,7 +183,7 @@ function renderChecklist() {
         content.setAttribute('role', 'region');
         content.setAttribute('aria-labelledby', headerId);
 
-        category.items.forEach((item, index) => content.appendChild(buildItem(category, item, index)));
+        indexes.forEach(index => content.appendChild(buildItem(category, category.items[index], index)));
 
         const toggle = () => {
             const collapsed = header.classList.toggle('collapsed');
@@ -500,7 +509,7 @@ function handleCompactNoteEdit(e) {
  * Progress
  * ------------------------------------------------------------------ */
 function updateProgress() {
-    const summary = summariseState(state);
+    const summary = state.viewMode === 'quick' ? summariseQuick(state) : summariseState(state);
     progressFill.style.width = `${summary.percent}%`;
     if (progressBar) progressBar.setAttribute('aria-valuenow', String(summary.percent));
     checkedCount.textContent = summary.ok;
@@ -508,6 +517,23 @@ function updateProgress() {
     requestCount.textContent = summary.requests;
     totalCount.textContent = summary.total;
     percentComplete.textContent = `${summary.percent}%`;
+}
+
+/** Progress over the quick-check subset only. */
+function summariseQuick(state) {
+    let total = 0, ok = 0, issues = 0, requests = 0;
+    visibleCategories(state).forEach(category => {
+        category.items.forEach((item, index) => {
+            const id = itemId(category, index);
+            if (!QUICK_SET.has(id)) return;
+            total += 1;
+            if (state.renovationNeeded[id]) issues += 1;
+            else if (state.checklist[id]) ok += 1;
+            if (state.documentRequests[id]) requests += 1;
+        });
+    });
+    const checked = ok + issues;
+    return { total, ok, issues, requests, checked, percent: total ? Math.round((checked / total) * 100) : 0 };
 }
 
 /* ------------------------------------------------------------------ *
@@ -1334,11 +1360,13 @@ function setLanguage(lang) {
     updateProgress();
     updateToggleButtonState();
     updateShowUncheckedButton();
+    syncViewModeButtons();
     renderResources();
     renderGuide();
     renderFaq();
     renderHelpContent();
     renderFreshnessBanner();
+    renderSeasonHint();
 }
 
 /* ------------------------------------------------------------------ *
@@ -1416,6 +1444,16 @@ function setupEventListeners() {
     byId('generateReportBtn').addEventListener('click', generateReport);
     byId('resetBtn').addEventListener('click', resetChecklist);
     byId('printReport').addEventListener('click', () => window.print());
+    byId('downloadPdfBtn').addEventListener('click', exportPdf);
+    byId('negotiationBtn').addEventListener('click', showNegotiation);
+    byId('printNegotiation').addEventListener('click', () => window.print());
+
+    document.querySelectorAll('.view-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => setViewMode(btn.dataset.viewMode));
+    });
+
+    byId('secondOpinionBtn').addEventListener('click', compareSecondOpinion);
+    byId('importListingBtn').addEventListener('click', importFromListing);
 
     byId('copyReport').addEventListener('click', async () => {
         const ok = await copyText(reportContent.innerText);
@@ -1462,7 +1500,7 @@ function setupEventListeners() {
     });
     byId('blankChecklistBtn').addEventListener('click', printBlankChecklist);
 
-    [reportModal, helpModal, resourcesModal, infoModal, toolsModal, questionsModal, remindersModal]
+    [reportModal, helpModal, resourcesModal, infoModal, toolsModal, questionsModal, remindersModal, byId('negotiationModal')]
         .forEach(modal => wireModal(modal));
 
     document.addEventListener('keydown', (e) => {
@@ -1561,6 +1599,333 @@ function checkFirstVisit() {
 }
 
 /* ------------------------------------------------------------------ *
+ * Quick check / full checklist toggle
+ * ------------------------------------------------------------------ */
+const QUICK_SET = new Set(QUICK_CHECK_IDS);
+
+function syncViewModeButtons() {
+    document.querySelectorAll('.view-mode-btn').forEach(btn => {
+        const active = btn.dataset.viewMode === state.viewMode;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+    });
+    const hint = byId('viewModeHint');
+    if (hint) {
+        hint.textContent = state.viewMode === 'quick' ? t('mode.quickHint') : '';
+        hint.hidden = state.viewMode !== 'quick';
+    }
+}
+
+function setViewMode(mode) {
+    state.viewMode = mode === 'quick' ? 'quick' : 'full';
+    saveState();
+    syncViewModeButtons();
+    renderChecklist();
+    applyFilters();
+    updateProgress();
+    updateToggleButtonState();
+}
+
+/* ------------------------------------------------------------------ *
+ * Seasonal hint
+ * ------------------------------------------------------------------ */
+function currentSeason() {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 5) return 'spring';
+    if (month >= 6 && month <= 8) return 'summer';
+    if (month >= 9 && month <= 11) return 'autumn';
+    return 'winter';
+}
+
+function renderSeasonHint() {
+    const box = byId('seasonHint');
+    if (!box) return;
+    const season = currentSeason();
+    if (readStorage(STORAGE_KEYS.seasonDismissed) === season) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = `
+        <i class="fas fa-cloud-sun" aria-hidden="true"></i>
+        <div class="seasonal-text">
+            <strong>${escapeHTML(t('season.title'))}</strong>
+            <p>${escapeHTML(t('season.' + season))}</p>
+        </div>
+        <button type="button" class="seasonal-dismiss" aria-label="${escapeHTML(t('season.dismiss'))}" title="${escapeHTML(t('season.dismiss'))}">
+            <i class="fas fa-times" aria-hidden="true"></i>
+        </button>`;
+    box.querySelector('.seasonal-dismiss').addEventListener('click', () => {
+        writeStorage(STORAGE_KEYS.seasonDismissed, season);
+        box.hidden = true;
+    });
+}
+
+/* ------------------------------------------------------------------ *
+ * PDF export (jsPDF, vendored, loaded only when asked for)
+ * ------------------------------------------------------------------ */
+let jspdfLoading = null;
+function loadJsPdf() {
+    if (window.jspdf) return Promise.resolve();
+    if (jspdfLoading) return jspdfLoading;
+    jspdfLoading = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'assets/vendor/jspdf.umd.min.js';
+        script.onload = resolve;
+        script.onerror = () => { jspdfLoading = null; reject(new Error('jspdf failed to load')); };
+        document.head.appendChild(script);
+    });
+    return jspdfLoading;
+}
+
+async function exportPdf() {
+    try {
+        await loadJsPdf();
+        const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+        const pageW = 210, margin = 15, maxW = pageW - margin * 2;
+        let y = margin;
+
+        const line = (text, size, style, gap) => {
+            doc.setFontSize(size);
+            doc.setFont('helvetica', style || 'normal');
+            doc.splitTextToSize(text, maxW).forEach(row => {
+                if (y > 282 - 6) { doc.addPage(); y = margin; }
+                doc.text(row, margin, y);
+                y += (size * 0.45);
+            });
+            y += (gap === undefined ? 2 : gap);
+        };
+
+        const info = state.propertyInfo;
+        const summary = summariseState(state);
+        const groups = collectItems();
+
+        line('huiskeuring.be', 20, 'bold', 1);
+        line(t('app.tagline'), 11, 'normal', 4);
+        if (info.address) line(`${t('field.address')}: ${info.address}`, 12, 'bold', 1);
+        if (info.askingPrice) line(`${t('field.price')}: ${info.askingPrice}`, 11, 'normal', 1);
+        line(`${t('report.generated')}: ${formatDate(new Date().toISOString(), currentLanguage)}  |  ${t('field.region')}: ${regionLabel(state.region)}`, 10, 'normal', 2);
+        line(`${t('report.progress')}: ${summary.checked}/${summary.total} (${summary.percent}%)  |  ${t('progress.issues')}: ${summary.issues}  |  ${t('progress.requests')}: ${summary.requests}`, 10, 'normal', 5);
+
+        const section = (title, items, bullet) => {
+            if (!items.length) return;
+            line(`${title} (${items.length})`, 13, 'bold', 2);
+            items.forEach(item => {
+                line(`${bullet} ${item.category}: ${item.text}`, 10, 'normal', 0.5);
+                if (item.note) line(`   ${t('report.note')}: ${item.note}`, 9, 'italic', 0.5);
+            });
+            y += 3;
+        };
+
+        section(t('report.documents'), groups.documents, '[>]');
+        section(t('report.issues'), groups.issues, '[!]');
+        section(t('report.withNotes'), groups.notes.filter(n => !groups.issues.some(i => i.id === n.id)), '[~]');
+        section(t('report.unchecked'), groups.unchecked, '[ ]');
+
+        if (state.globalNotes) {
+            line(t('report.generalNotes'), 13, 'bold', 2);
+            line(state.globalNotes, 10, 'normal', 3);
+        }
+        line(t('report.disclaimer'), 8, 'italic', 0);
+
+        const pages = doc.getNumberOfPages();
+        for (let p = 1; p <= pages; p++) {
+            doc.setPage(p);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`huiskeuring.be - ${p}/${pages}`, pageW - margin, 291, { align: 'right' });
+        }
+
+        doc.save(`huiskeuring-${slugify(info.address)}-${todayISO()}.pdf`);
+    } catch (e) {
+        showToast(t('pdf.error'), 'error');
+    }
+}
+
+/* ------------------------------------------------------------------ *
+ * Negotiation summary (issues x indicative cost bands)
+ * ------------------------------------------------------------------ */
+function negotiationRows() {
+    const groups = collectItems();
+    const perBand = {};
+    groups.issues.forEach(item => {
+        // The first tag that has a cost band decides the area - counted once per area.
+        const tag = item.tags.find(tg => COST_BANDS[tg]) || item.categorySlug;
+        const band = COST_BANDS[tag] || COST_BANDS.renovation;
+        const key = COST_BANDS[tag] ? tag : 'renovation';
+        if (!perBand[key]) perBand[key] = { band: band, items: [] };
+        perBand[key].items.push(item);
+    });
+    return Object.values(perBand).sort((a, b) => b.band.high - a.band.high);
+}
+
+function euro(n) {
+    return n.toLocaleString(currentLanguage === 'en' ? 'en-GB' : currentLanguage + '-BE') + ' EUR';
+}
+
+function showNegotiation() {
+    const body = byId('negotiationBody');
+    const rows = negotiationRows();
+
+    if (!rows.length) {
+        body.innerHTML = `<p class="nego-empty">${escapeHTML(t('nego.empty'))}</p>`;
+        openModal(byId('negotiationModal'));
+        return;
+    }
+
+    const totalLow = rows.reduce((s, r) => s + r.band.low, 0);
+    const totalHigh = rows.reduce((s, r) => s + r.band.high, 0);
+    const asking = state.propertyInfo.askingPrice;
+
+    body.innerHTML = `
+        <p class="tab-intro">${escapeHTML(t('nego.intro'))}</p>
+        ${asking ? `<p><strong>${escapeHTML(t('nego.asking'))}:</strong> ${escapeHTML(asking)}</p>` : ''}
+        <table class="nego-table">
+            <thead><tr>
+                <th>${escapeHTML(t('nego.area'))}</th>
+                <th>${escapeHTML(t('nego.issues'))}</th>
+                <th>${escapeHTML(t('nego.band'))}</th>
+            </tr></thead>
+            <tbody>
+                ${rows.map(row => `
+                    <tr>
+                        <td><strong>${escapeHTML(pick(row.band.label))}</strong></td>
+                        <td>
+                            <ul class="nego-issues">
+                                ${row.items.map(item => `<li>${escapeHTML(item.text)}${item.note ? ` <em>(${escapeHTML(item.note)})</em>` : ''}</li>`).join('')}
+                            </ul>
+                        </td>
+                        <td class="nego-band">${escapeHTML(euro(row.band.low))} - ${escapeHTML(euro(row.band.high))}</td>
+                    </tr>`).join('')}
+            </tbody>
+            <tfoot><tr>
+                <th colspan="2">${escapeHTML(t('nego.total'))}</th>
+                <th class="nego-band">${escapeHTML(euro(totalLow))} - ${escapeHTML(euro(totalHigh))}</th>
+            </tr></tfoot>
+        </table>
+        <h3 class="nego-points-title">${escapeHTML(t('nego.points'))}</h3>
+        <ul class="nego-points">
+            <li>${escapeHTML(t('nego.point1'))}</li>
+            <li>${escapeHTML(t('nego.point2'))}</li>
+            <li>${escapeHTML(t('nego.point3'))}</li>
+        </ul>
+        <p class="report-disclaimer">${escapeHTML(t('nego.disclaimer'))}</p>`;
+    openModal(byId('negotiationModal'));
+}
+
+/* ------------------------------------------------------------------ *
+ * Second opinion: compare a pasted share link against this inspection
+ * ------------------------------------------------------------------ */
+function itemStatus(st, id) {
+    if (st.renovationNeeded[id]) return 'issue';
+    if (st.checklist[id]) return 'ok';
+    return 'open';
+}
+
+function compareSecondOpinion() {
+    const input = byId('secondOpinionInput');
+    const out = byId('secondOpinionResult');
+    let data = '';
+    try {
+        const url = new URL(input.value.trim());
+        data = url.searchParams.get('data') || '';
+    } catch (e) {
+        data = input.value.trim();
+    }
+    const theirs = data ? decodeState(data) : null;
+    if (!theirs) {
+        out.innerHTML = `<p class="second-invalid">${escapeHTML(t('second.invalid'))}</p>`;
+        return;
+    }
+
+    const diffs = [];
+    visibleCategories(state).forEach(category => {
+        category.items.forEach((item, index) => {
+            const id = itemId(category, index);
+            const mine = itemStatus(state, id);
+            const other = itemStatus(theirs, id);
+            if (mine === 'open' && other === 'open') return;
+            if (mine !== other) {
+                diffs.push({
+                    text: itemText(category, index, item),
+                    category: categoryTitle(category),
+                    mine, other,
+                    myNote: state.notes[id] || '',
+                    theirNote: theirs.notes[id] || ''
+                });
+            }
+        });
+    });
+
+    if (!diffs.length) {
+        out.innerHTML = `<p class="second-agree"><i class="fas fa-circle-check" aria-hidden="true"></i> ${escapeHTML(t('second.agree'))}</p>`;
+        return;
+    }
+
+    const word = (s) => t('second.' + s);
+    out.innerHTML = `
+        <h4>${escapeHTML(t('second.diffs'))} (${diffs.length})</h4>
+        <ul class="second-diffs">
+            ${diffs.map(d => `
+                <li>
+                    <strong>${escapeHTML(d.category)}:</strong> ${escapeHTML(d.text)}
+                    <div class="second-verdicts">
+                        <span class="second-${d.mine}">${escapeHTML(t('second.you'))}: ${escapeHTML(word(d.mine))}</span>
+                        <span class="second-${d.other}">${escapeHTML(t('second.them'))}: ${escapeHTML(word(d.other))}</span>
+                    </div>
+                    ${d.theirNote ? `<div class="report-note">${escapeHTML(t('second.them'))}: ${escapeHTML(d.theirNote)}</div>` : ''}
+                </li>`).join('')}
+        </ul>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Paste-from-listing import (client-side text parsing, nothing is sent)
+ * ------------------------------------------------------------------ */
+function importFromListing() {
+    const raw = byId('listingInput').value;
+    if (!raw.trim() || /^https?:\/\/\S+$/.test(raw.trim())) {
+        showToast(t('import.nothing'), 'error');
+        return;
+    }
+    const found = [];
+
+    const price = raw.match(/(?:€|EUR)\s?([\d.\s]{4,12}\d)/i) || raw.match(/([\d.]{6,12})\s?(?:€|EUR)/i);
+    if (price) {
+        const cleaned = price[1].replace(/[\s.]/g, '');
+        if (Number(cleaned) >= 10000) {
+            state.propertyInfo.askingPrice = Number(cleaned).toLocaleString(currentLanguage === 'en' ? 'en-GB' : currentLanguage + '-BE') + ' EUR';
+            byId('askingPrice').value = state.propertyInfo.askingPrice;
+            found.push(t('field.price'));
+        }
+    }
+
+    const addr = raw.match(/([A-ZÀ-Ž][\w'’.\-]+(?:\s+[\w'’.\-]+){0,4}\s+\d+[a-zA-Z]?)\s*,?\s*(\d{4})\s+([A-ZÀ-Ž][\w'’\-]+(?:[\s-][A-ZÀ-Ž][\w'’\-]+)*)/u);
+    if (addr) {
+        state.propertyInfo.address = `${addr[1]}, ${addr[2]} ${addr[3]}`;
+        byId('propertyAddress').value = state.propertyInfo.address;
+        const detected = regionFromPostalCode(addr[2]);
+        if (detected) { state.region = detected; syncRegionSelect(); renderResources(); }
+        found.push(t('field.address'));
+        updatePropertyAddressPreview();
+    }
+
+    const epc = raw.match(/\b(?:EPC|PEB)[\s:‐-]*(?:label\s*)?([A-G])(?![a-z0-9])/i) || raw.match(/\blabel\s+([A-G])\b/i);
+    if (epc) {
+        const label = 'EPC ' + epc[1].toUpperCase();
+        state.propertyInfo.propertyNotes = state.propertyInfo.propertyNotes
+            ? (state.propertyInfo.propertyNotes.includes(label) ? state.propertyInfo.propertyNotes : state.propertyInfo.propertyNotes + ' | ' + label)
+            : label;
+        byId('propertyNotes').value = state.propertyInfo.propertyNotes;
+        found.push('EPC');
+    }
+
+    if (!found.length) {
+        showToast(t('import.nothing'), 'error');
+        return;
+    }
+    saveState();
+    showToast(`${t('import.done')} ${found.join(', ')}`);
+    byId('listingInput').value = '';
+}
+
+/* ------------------------------------------------------------------ *
  * Bootstrap
  * ------------------------------------------------------------------ */
 function init() {
@@ -1573,6 +1938,7 @@ function init() {
     loadCompactModeState();
     loadPropertyInfoState();
     updateShowUncheckedButton();
+    syncViewModeButtons();
 
     renderChecklist();
     applyFilters();
@@ -1584,6 +1950,7 @@ function init() {
     renderFaq();
     renderHelpContent();
     renderFreshnessBanner();
+    renderSeasonHint();
 
     const yearEl = byId('footerYear');
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());

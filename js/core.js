@@ -22,7 +22,9 @@ const STORAGE_KEYS = {
     region: 'region',
     propertyInfoCollapsed: 'propertyInfoCollapsed',
     seenHelp: 'hasSeenHelpPage',
-    freshnessDismissed: 'freshnessDismissed'
+    freshnessDismissed: 'freshnessDismissed',
+    readable: 'readableMode',
+    seasonDismissed: 'seasonHintDismissed'
 };
 
 /**
@@ -256,7 +258,8 @@ function defaultState() {
         firstCheckboxDate: null,
         lastCheckboxChangeDate: null,
         compactMode: false,
-        showUncheckedOnly: false
+        showUncheckedOnly: false,
+        viewMode: 'full'
     };
 }
 
@@ -292,7 +295,8 @@ function normaliseState(raw) {
         firstCheckboxDate: compatible ? (raw.firstCheckboxDate || null) : null,
         lastCheckboxChangeDate: compatible ? (raw.lastCheckboxChangeDate || null) : null,
         compactMode: !!raw.compactMode,
-        showUncheckedOnly: !!raw.showUncheckedOnly
+        showUncheckedOnly: !!raw.showUncheckedOnly,
+        viewMode: raw.viewMode === 'quick' ? 'quick' : 'full'
     };
 }
 
@@ -469,9 +473,9 @@ function saveToLibrary(state) {
         summary: summariseState(state),
         data: encodeState(state)
     };
-    const existing = list.findIndex(e => e.label === label);
-    if (existing >= 0) list.splice(existing, 1, entry);
-    else list.unshift(entry);
+    // Same address = a new version, not a replacement: keep the history
+    // so two visits to the same property can be compared side by side.
+    list.unshift(entry);
     return saveLibrary(list) ? entry : null;
 }
 
@@ -527,6 +531,40 @@ function showToast(message, tone) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
 }
+
+/* ------------------------------------------------------------------ *
+ * Easy-reading (dyslexia-friendly) mode + offline support
+ * ------------------------------------------------------------------ *
+ * Both apply to every page, so they bootstrap here rather than in the
+ * per-page scripts.
+ * ------------------------------------------------------------------ */
+function isReadable() {
+    return readStorage(STORAGE_KEYS.readable) === '1';
+}
+
+function applyReadable(on) {
+    document.documentElement.classList.toggle('readable', !!on);
+    document.querySelectorAll('.readable-btn').forEach(btn => {
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.classList.toggle('active', !!on);
+    });
+}
+
+function toggleReadable() {
+    const next = !isReadable();
+    writeStorage(STORAGE_KEYS.readable, next ? '1' : '0');
+    applyReadable(next);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    applyReadable(isReadable());
+    document.querySelectorAll('.readable-btn').forEach(btn => btn.addEventListener('click', toggleReadable));
+    const secure = window.location.protocol === 'https:' ||
+        ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if ('serviceWorker' in navigator && secure) {
+        navigator.serviceWorker.register('/sw.js').catch(() => { /* offline support is optional */ });
+    }
+});
 
 /* ------------------------------------------------------------------ *
  * Modals (shared behaviour: Escape, backdrop, focus trap & restore)

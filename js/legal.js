@@ -1246,3 +1246,64 @@ const ADVISORY_TOPICS = {
         }
     }
 };
+
+/* ---------------------------------------------------------------------
+ * Indicative repair cost bands, per issue area (EUR, incl. VAT)
+ * ---------------------------------------------------------------------
+ * Used by the negotiation summary. These are deliberately WIDE bands for
+ * a typical significant problem in that area of an average Belgian home,
+ * counted ONCE per area (three roof issues is still one roof job).
+ * They are estimates, not facts: re-check the order of magnitude against
+ * current market prices at every 6-month review, and index mentally to
+ * ABEX. lastReviewed: 2026-08-25.
+ * ------------------------------------------------------------------- */
+const COST_BANDS = {
+    structural: {
+        low: 5000, high: 40000,
+        label: { en: 'Structure & foundations', nl: 'Structuur & funderingen', fr: 'Structure & fondations' }
+    },
+    exterior: {
+        low: 5000, high: 30000,
+        label: { en: 'Roof & facade', nl: 'Dak & gevel', fr: 'Toiture & façade' }
+    },
+    asbestos: {
+        low: 1500, high: 10000,
+        label: { en: 'Asbestos removal', nl: 'Asbestverwijdering', fr: 'Désamiantage' }
+    },
+    electrical: {
+        low: 2500, high: 12000,
+        label: { en: 'Electrical installation', nl: 'Elektrische installatie', fr: 'Installation électrique' }
+    },
+    plumbing: {
+        low: 2000, high: 12000,
+        label: { en: 'Plumbing & drainage', nl: 'Sanitair & afvoer', fr: 'Plomberie & évacuation' }
+    },
+    hvac: {
+        low: 4000, high: 18000,
+        label: { en: 'Heating & ventilation', nl: 'Verwarming & ventilatie', fr: 'Chauffage & ventilation' }
+    },
+    bathroom: {
+        low: 6000, high: 20000,
+        label: { en: 'Bathroom renovation', nl: 'Badkamerrenovatie', fr: 'Rénovation salle de bain' }
+    },
+    kitchen: {
+        low: 6000, high: 25000,
+        label: { en: 'Kitchen renovation', nl: 'Keukenrenovatie', fr: 'Rénovation cuisine' }
+    },
+    basement: {
+        low: 3000, high: 15000,
+        label: { en: 'Cellar & damp treatment', nl: 'Kelder & vochtbestrijding', fr: 'Cave & traitement humidité' }
+    },
+    attic: {
+        low: 3000, high: 15000,
+        label: { en: 'Roof structure & attic', nl: 'Dakstructuur & zolder', fr: 'Charpente & combles' }
+    },
+    renovation: {
+        low: 2000, high: 15000,
+        label: { en: 'Other renovation works', nl: 'Overige renovatiewerken', fr: 'Autres travaux de rénovation' }
+    },
+    documents: {
+        low: 500, high: 3000,
+        label: { en: 'Missing certificates & inspections', nl: 'Ontbrekende attesten & keuringen', fr: 'Attestations & contrôles manquants' }
+    }
+};

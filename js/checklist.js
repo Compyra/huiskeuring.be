@@ -1328,3 +1328,33 @@ const checklistData = [
         ]
     }
 ];
+
+/* ---------------------------------------------------------------------
+ * Quick-check subset
+ * ---------------------------------------------------------------------
+ * The ids of the items shown in "Quick check" mode: the highest-impact
+ * points a visitor can see or ask about during a first, short viewing.
+ * Ids are position based (see the header of this file), so this list
+ * must be revisited whenever items are added to a category.
+ * ------------------------------------------------------------------- */
+const QUICK_CHECK_IDS = [
+    /* papers you can ask for on the spot */
+    'documents-0', 'documents-2', 'documents-3', 'documents-7',
+    /* visible from the street */
+    'asbestos-0',
+    'exterior-0', 'exterior-1', 'exterior-6', 'exterior-8', 'exterior-9', 'exterior-11',
+    /* two minutes per room */
+    'kitchen-4', 'kitchen-5',
+    'bathroom-1', 'bathroom-5', 'bathroom-10',
+    'bedroom-4',
+    'livingroom-9',
+    'basement-0', 'basement-2',
+    'attic-1', 'attic-2',
+    /* the expensive systems */
+    'plumbing-1', 'plumbing-2', 'plumbing-11',
+    'electrical-1', 'electrical-3', 'electrical-7', 'electrical-11',
+    'structural-0', 'structural-12', 'structural-16',
+    'hvac-0', 'hvac-12',
+    /* apartment red flags */
+    'apartment-2', 'apartment-3', 'apartment-4'
+];

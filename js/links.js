@@ -756,5 +756,22 @@ const LOOKUP_TOOLS = [
             nl: 'Officiële Belgische luchtkwaliteitskaarten tot op straatniveau - het bekijken waard bij een drukke weg.',
             fr: 'Cartes officielles belges de la qualité de l\'air jusqu\'au niveau de la rue - utile près d\'un axe fréquenté.'
         }
+    },
+
+    /* ---- Your municipality ---- */
+    {
+        id: 'communesite',
+        group: 'planning',
+        icon: 'fa-city',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: true,
+        query: 'city',
+        url: 'https://www.google.com/search?q=',
+        label: { en: 'Your municipality\'s website', nl: 'De website van uw gemeente', fr: 'Le site de votre commune' },
+        note: {
+            en: 'Searches for the official site of the municipality in the address - local rules on rainwater, sewers and permits can be stricter than the regional ones.',
+            nl: 'Zoekt de officiële site van de gemeente uit het adres - lokale regels rond hemelwater, riolering en vergunningen kunnen strenger zijn dan de gewestelijke.',
+            fr: 'Recherche le site officiel de la commune de l\'adresse - les règles locales sur l\'eau de pluie, les égouts et les permis peuvent être plus strictes que les règles régionales.'
+        }
     }
 ];
