@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare properties - huiskeuring.be</title>
+    <meta name="description" content="Compare the house inspections you saved with huiskeuring.be side by side: issues, documents still to request and progress per property.">
+    <meta name="robots" content="noindex, follow">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="style.css?v16">
+    <link rel="stylesheet" href="assets/vendor/fonts.css?v16">
+    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v16">
+    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v16">
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('themeMode') || 'auto';
+                var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', stored === 'auto' ? (dark ? 'dark' : 'light') : stored);
+            } catch (e) { /* keep the default */ }
+        })();
+    </script>
+</head>
+<body data-title-key="compare.title">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a class="logo" href="index.html">
+                    <img src="./logo.png" alt="huiskeuring.be logo" class="logo-img" width="48" height="48">
+                    <span class="logo-text">huiskeuring.be</span>
+                </a>
+                <div class="header-actions">
+                    <div class="select-group">
+                        <label class="visually-hidden" for="languageSelect" data-i18n="btn.language">Language</label>
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <select id="languageSelect" class="header-select"></select>
+                    </div>
+                    <button class="btn btn-secondary" id="printBtn"><i class="fas fa-print" aria-hidden="true"></i> <span data-i18n="btn.print">Print</span></button>
+                    <a class="btn btn-primary" href="index.html"><i class="fas fa-list-check" aria-hidden="true"></i> <span data-i18n="compare.backToChecklist">Back to the checklist</span></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="compare-page">
+        <div class="container">
+            <h1 class="section-title" data-i18n="compare.title">Compare properties</h1>
+            <p class="tab-intro" data-i18n="compare.intro"></p>
+
+            <h2 class="section-title" id="pickerTitle" data-i18n="compare.select">Choose properties to compare</h2>
+            <div class="compare-picker" id="comparePicker" role="group" aria-labelledby="pickerTitle"></div>
+
+            <div class="compare-table-wrap" id="compareTableWrap"></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-center">
+                    <p><span data-i18n="footer.madeWith">Made with</span> <i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="footer.by">by</span> <a href="https://compyra.com" target="_blank" rel="noopener noreferrer">Compyra</a></p>
+                    <p class="footer-projects"><span data-i18n="footer.moreProjects">More free projects at</span> <a href="https://labidi.eu" target="_blank" rel="noopener noreferrer">labidi.eu</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="js/i18n.js?v16"></script>
+    <script src="js/legal.js?v16"></script>
+    <script src="js/links.js?v16"></script>
+    <script src="js/checklist.js?v16"></script>
+    <script src="js/checklist.nl.js?v16"></script>
+    <script src="js/checklist.fr.js?v16"></script>
+    <script src="js/core.js?v16"></script>
+    <script src="js/compare.js?v16"></script>
+</body>
+</html>

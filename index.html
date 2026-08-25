@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Huiskeuring.be - Free House Inspection Checklist for Belgium</title>
+    <meta name="description" content="Free, private house inspection checklist for Belgium. 230 checks with plain-language explanations of why each one matters, Belgian deadlines (EPC, asbestos, electrical inspection, rainwater and drainage rules) and verified links to official government sources.">
+    <meta name="keywords" content="huiskeuring, house inspection Belgium, woning keuren, checklist huis kopen, visite maison Belgique, EPC label, asbestattest, keuring elektriciteit, bodemattest, overstromingsgevoelig, verzekering gewaarborgd wonen, hemelwaterverordening, infiltratieput, infiltratiekrat, bezinkput, septische put, keuring privewaterafvoer, droogteschade, plastische gronden, renovatieverplichting">
+    <meta name="author" content="Compyra">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#27ae60" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+    <meta name="color-scheme" content="light dark">
+
+    <link rel="canonical" href="https://huiskeuring.be/">
+    <link rel="alternate" hreflang="en" href="https://huiskeuring.be/?lang=en">
+    <link rel="alternate" hreflang="nl" href="https://huiskeuring.be/?lang=nl">
+    <link rel="alternate" hreflang="fr" href="https://huiskeuring.be/?lang=fr">
+    <link rel="alternate" hreflang="x-default" href="https://huiskeuring.be/">
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="huiskeuring.be">
+    <meta property="og:title" content="Huiskeuring.be - Free House Inspection Checklist for Belgium">
+    <meta property="og:description" content="230 checks with plain-language explanations of why each one matters, Belgian legal deadlines and verified links to official sources. Free, private, no account.">
+    <meta property="og:url" content="https://huiskeuring.be/">
+    <meta property="og:image" content="https://huiskeuring.be/logo.png">
+    <meta property="og:locale" content="en_GB">
+    <meta property="og:locale:alternate" content="nl_BE">
+    <meta property="og:locale:alternate" content="fr_BE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Huiskeuring.be - Free House Inspection Checklist for Belgium">
+    <meta name="twitter:description" content="Know what to look at, and why it matters. Free Belgian house inspection checklist with official sources.">
+    <meta name="twitter:image" content="https://huiskeuring.be/logo.png">
+
+    <!-- Icons & manifest -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link rel="stylesheet" href="style.css?v16">
+    <!-- Self-hosted fonts and icons: no third-party requests, nothing leaks to a CDN.
+         Montserrat (SIL OFL 1.1), Roboto (Apache 2.0), Font Awesome Free (OFL 1.1 / CC BY 4.0 / MIT).
+         See assets/LICENSES.md. -->
+    <link rel="preload" href="assets/fonts/roboto-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/montserrat-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/vendor/fonts.css?v16">
+    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v16">
+    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v16">
+
+    <!-- Apply the stored / system theme before first paint to avoid a flash of the wrong theme -->
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('themeMode') || 'auto';
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var resolved = stored === 'auto' ? (prefersDark ? 'dark' : 'light') : stored;
+                document.documentElement.setAttribute('data-theme', resolved);
+                document.documentElement.setAttribute('data-theme-mode', stored);
+            } catch (e) { /* storage blocked - keep the default light theme */ }
+        })();
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://huiskeuring.be/#app",
+          "name": "huiskeuring.be",
+          "url": "https://huiskeuring.be/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Any (web browser)",
+          "inLanguage": ["en", "nl", "fr"],
+          "description": "Free house inspection checklist for Belgium with explanations of why each check matters, Belgian legal deadlines and links to official government sources. All data stays in the browser.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+          "featureList": [
+            "230 inspection points for houses and apartments",
+            "Explanation of why every check matters",
+            "Belgian legal deadlines (EPC, asbestos, electrical inspection, rainwater and drainage)",
+            "Regional rules for Flanders, Wallonia and Brussels",
+            "Verified links to official Belgian sources",
+            "No account, no tracking, data stays on your device"
+          ],
+          "author": { "@type": "Organization", "name": "Compyra", "url": "https://compyra.com" }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://huiskeuring.be/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Which documents are mandatory when buying a house in Belgium?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "At minimum: the EPC (energy performance certificate), the soil certificate (bodemattest, before the compromis), the electrical inspection report, and in Flanders the asbestos certificate for buildings from before 2001. For an apartment you must also receive the base deed, the rules of co-ownership, the recent general assembly minutes and the financial situation of the co-ownership."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why should I check whether the roof ridge is straight?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A sagging, wavy or twisted ridge means the roof structure is no longer carrying its load as designed. Usual causes are rot or woodworm after a long-standing leak, rafters cut for a dormer or roof window without proper support, spreading or settling walls, or extra weight from heavier tiles, insulation or solar panels. Roof structure repairs cost thousands and slow leaks are usually treated as maintenance rather than an insured event, so a crooked ridge is a reason to make your offer conditional on an expert report."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the Verzekering Gewaarborgd Wonen and why should I apply?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "It is a free insurance from the Flemish government that helps pay your mortgage instalments if you lose your income through involuntary unemployment, incapacity for work or the forced end of self-employment. Cover runs for 10 years, with a 3-month waiting period and support for up to 3 years. You must apply at the Vlaams Woningfonds within one year of the first drawdown of your loan."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What does the renovation obligation for EPC label E or F mean?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Since 1 January 2023 the buyer of a Flemish home with EPC label E or F must renovate it to at least label D. The deadline was extended from 5 to 6 years after the notarial deed and follows the property, so a buyer within that period inherits the remaining time. Non-compliance can lead to an administrative fine of 500 to 5,000 EUR for a residential unit plus a new deadline."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What happens if the Belgian electrical inspection report says non-compliant?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The sale can still proceed, but the buyer has 18 months from the deed to bring the installation into conformity and have it re-inspected. Read the report itself: infractions range from a missing cover plate to a complete rewire, a difference of thousands of euros, which makes it a strong price-negotiation argument."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I check the flood risk of an address in Belgium?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Use the official maps. In Flanders consult waterinfo.be and the Woningpas, where a property receives a P-score for the plot and a G-score for the building from A (not sensitive) to D (very sensitive). Wallonia and Brussels publish equivalent maps on their geoportals. Flood sensitivity affects insurability, value and what you may build."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need an infiltratieput, infiltratiekrat or rainwater tank in Belgium?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "In Flanders the regional rainwater regulation (GSV Hemelwater) has applied since 2 October 2023. It requires a rainwater tank and an infiltration facility - an infiltration well, buried crates or a shallow planted hollow - whenever you build or extend, renovate in a way that changes the drainage, lay a terrace or driveway, install a pool, or add artificial grass or other paving. It also applies to works that are exempt from a permit: if they do not comply, the exemption lapses. In Brussels the rules come through the environmental permit and require a tank of at least 33 litres per square metre of roof plus zero discharge of rainwater to the sewer. Municipalities may impose stricter rules."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "When is the Belgian private drainage inspection (keuring privewaterafvoer) required?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "In Flanders it is compulsory for a new build or rebuild, for a new house connection or an individual treatment plant, when a separate sewer is laid in the street and you must disconnect on your own land unless you already hold a compliant certificate less than 5 years old, and after an infringement at the sewer operator's request. The inspector checks that waste water is correctly connected and that rain and waste water are properly separated on private land."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why are diagonal cracks around windows a warning sign in Belgian houses?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "They are the classic pattern of foundation movement. After a run of dry summers, shrinking clay has become one of the fastest-growing damage causes in Belgium: large parts of the country sit on plastic clay that swells when wet and shrinks when dry. Databank Ondergrond Vlaanderen publishes a free map of sensitive soils, and the Flemish drought damage register only accepts cracks wider than 3 mm, which is a useful severity threshold. Large trees close to the facade make it worse, and underpinning a foundation costs tens of thousands of euros."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is my inspection data stored on a server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. Everything stays in your own browser using localStorage. There is no server, no account, no tracking and no analytics. The Share URL feature encodes the data into the link itself, so it still never touches a server - but anyone with that link can read the inspection."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+    <a class="skip-link" href="#checklistContainer" data-i18n="btn.skip">Skip to checklist</a>
+
+    <noscript>
+        <div class="noscript-warning">
+            <p lang="en"><strong>JavaScript is required.</strong> This checklist runs entirely in your browser and needs JavaScript to build the inspection list and to save your answers on your own device.</p>
+            <p lang="nl"><strong>JavaScript is vereist.</strong> Deze checklist draait volledig in uw browser en heeft JavaScript nodig om de keuringslijst op te bouwen en uw antwoorden op uw eigen toestel te bewaren.</p>
+            <p lang="fr"><strong>JavaScript est requis.</strong> Cette check-list fonctionne entièrement dans votre navigateur et a besoin de JavaScript pour construire la liste et enregistrer vos réponses sur votre appareil.</p>
+        </div>
+    </noscript>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" id="logoContainer">
+                    <img src="./logo.png" alt="huiskeuring.be logo" class="logo-img" width="48" height="48">
+                    <span class="logo-text">huiskeuring.be</span>
+                    <button class="scroll-to-top-btn" id="scrollToTopBtn" data-i18n-title="btn.scrollTop" data-i18n-aria="btn.scrollTop" title="Scroll to top" aria-label="Scroll to top">
+                        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <button class="burger-menu" id="burgerMenu" aria-label="Menu" aria-expanded="false" aria-controls="headerActions" data-i18n-aria="btn.menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="header-actions" id="headerActions">
+                    <div class="select-group">
+                        <label class="visually-hidden" for="languageSelect" data-i18n="btn.language">Language</label>
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <select id="languageSelect" class="header-select"></select>
+                    </div>
+                    <div class="select-group">
+                        <label class="visually-hidden" for="themeSelect" data-i18n="btn.theme">Theme</label>
+                        <i class="fas fa-circle-half-stroke" aria-hidden="true"></i>
+                        <select id="themeSelect" class="header-select">
+                            <option value="auto" data-i18n="theme.auto">System</option>
+                            <option value="light" data-i18n="theme.light">Light</option>
+                            <option value="dark" data-i18n="theme.dark">Dark</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" id="compactModeBtn" data-i18n-title="btn.compact" title="Toggle compact view">
+                        <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compact">Compact</span>
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-undo" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reset">Reset All</span>
+                    </button>
+                    <button class="btn btn-primary" id="generateReportBtn">
+                        <i class="fas fa-file-lines" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.report">Generate Report</span>
+                    </button>
+                    <button class="btn btn-primary" id="shareUrlBtn" data-i18n-title="btn.share" title="Create a shareable URL with your current data">
+                        <i class="fas fa-share-alt" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.share">Share URL</span>
+                    </button>
+                    <button class="btn btn-info" id="questionsBtn" data-i18n-title="btn.questions" title="Questions for the seller">
+                        <i class="fas fa-comments" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.questions">Questions</span>
+                    </button>
+                    <button class="btn btn-info" id="remindersBtn" data-i18n-title="btn.reminders" title="Deadline reminders">
+                        <i class="fas fa-calendar-check" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.reminders">Reminders</span>
+                    </button>
+                    <button class="btn btn-info" id="toolsBtn" data-i18n-title="btn.tools" title="Backup and library">
+                        <i class="fas fa-box-archive" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.tools">Backup</span>
+                    </button>
+                    <a class="btn btn-info" id="compareLink" href="compare.html" data-i18n-title="btn.compare" title="Compare properties">
+                        <i class="fas fa-scale-unbalanced" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.compare">Compare</span>
+                    </a>
+                    <a class="btn btn-info" id="lookupLink" href="lookup/" data-i18n-title="btn.lookup" title="Official lookups">
+                        <i class="fas fa-magnifying-glass-location" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.lookup">Official lookups</span>
+                    </a>
+                    <button class="btn btn-info" id="resourcesBtn" data-i18n-title="resources.title" title="Official resources">
+                        <i class="fas fa-landmark" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.resources">Resources</span>
+                    </button>
+                    <button class="btn btn-info" id="helpBtnHeader" data-i18n-title="help.title" title="Help &amp; information">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.help">Help</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="freshness-banner" id="freshnessBanner" role="status" hidden>
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                <span id="freshnessText"></span>
+                <button type="button" id="freshnessDismiss" class="freshness-dismiss" data-i18n-aria="freshness.dismiss" aria-label="Dismiss">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Property Information Section -->
+            <section class="property-info-section" aria-labelledby="propertyInfoTitle">
+                <div class="property-info-card">
+                    <div class="property-info-header">
+                        <h2 class="section-title" id="propertyInfoTitle"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span data-i18n="section.propertyInfo">Property Information</span></h2>
+                        <div class="property-info-header-right">
+                            <span class="property-address-preview" id="propertyAddressPreview"></span>
+                            <button class="toggle-property-btn" id="togglePropertyBtn" aria-expanded="true" aria-controls="propertyInfoGrid" data-i18n-aria="section.propertyInfo" aria-label="Property Information">
+                                <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="property-info-grid" id="propertyInfoGrid">
+                        <div class="form-group">
+                            <label for="propertyAddress"><i class="fas fa-home" aria-hidden="true"></i> <span data-i18n="field.address">Address</span></label>
+                            <input type="text" id="propertyAddress" autocomplete="street-address" data-i18n-ph="field.address.ph" placeholder="Street, Number, Postal Code, City" />
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPerson"><i class="fas fa-user" aria-hidden="true"></i> <span data-i18n="field.contact">Contact Person</span></label>
+                            <input type="text" id="contactPerson" autocomplete="off" data-i18n-ph="field.contact.ph" placeholder="Name of owner/agent" />
+                        </div>
+                        <div class="form-group">
+                            <label for="inspectionDate"><i class="fas fa-calendar" aria-hidden="true"></i> <span data-i18n="field.date">Inspection Date</span></label>
+                            <input type="date" id="inspectionDate" />
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime"><i class="fas fa-clock" aria-hidden="true"></i> <span data-i18n="field.time">Appointment Time</span></label>
+                            <input type="time" id="appointmentTime" />
+                        </div>
+                        <div class="form-group">
+                            <label for="askingPrice"><i class="fas fa-tag" aria-hidden="true"></i> <span data-i18n="field.price">Asking price</span></label>
+                            <input type="text" id="askingPrice" inputmode="numeric" autocomplete="off" placeholder="350000" />
+                        </div>
+                        <div class="form-group">
+                            <label for="regionSelect"><i class="fas fa-location-dot" aria-hidden="true"></i> <span data-i18n="field.region">Region</span></label>
+                            <select id="regionSelect"></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="propertyNotes"><i class="fas fa-info-circle" aria-hidden="true"></i> <span data-i18n="field.details">Additional Property Details</span></label>
+                            <textarea id="propertyNotes" rows="2" data-i18n-ph="field.details.ph" placeholder="Type of property, special features, etc."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section" aria-labelledby="propertyTypeTitle">
+                <h2 class="section-title" id="propertyTypeTitle" data-i18n="section.propertyType">Property Type</h2>
+                <div class="filter-buttons property-type-buttons" id="propertyTypeButtons" role="group" aria-labelledby="propertyTypeTitle">
+                    <button class="filter-btn property-type-btn active" data-property-type="house" aria-pressed="true">
+                        <i class="fas fa-home" aria-hidden="true"></i> <span data-i18n="type.house">House</span>
+                    </button>
+                    <button class="filter-btn property-type-btn" data-property-type="apartment" aria-pressed="false">
+                        <i class="fas fa-building" aria-hidden="true"></i> <span data-i18n="type.apartment">Apartment</span>
+                    </button>
+                </div>
+                <div class="filter-divider"></div>
+                <h2 class="section-title" id="categoryFilterTitle" data-i18n="section.filterCategory">Filter by Category</h2>
+                <div class="filter-buttons" id="filterButtons" role="group" aria-labelledby="categoryFilterTitle">
+                    <button class="filter-btn active" data-category="all" aria-pressed="true">
+                        <i class="fas fa-th" aria-hidden="true"></i> <span data-i18n="filter.all">All</span>
+                    </button>
+                    <button class="filter-btn" data-category="documents" aria-pressed="false">
+                        <i class="fas fa-file-contract" aria-hidden="true"></i> <span data-i18n="tag.documents">Documents</span>
+                    </button>
+                    <button class="filter-btn" data-category="asbestos" aria-pressed="false">
+                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> <span data-i18n="tag.asbestos">Asbestos</span>
+                    </button>
+                    <button class="filter-btn" data-category="exterior" aria-pressed="false">
+                        <i class="fas fa-building" aria-hidden="true"></i> <span data-i18n="tag.exterior">Exterior</span>
+                    </button>
+                    <button class="filter-btn" data-category="kitchen" aria-pressed="false">
+                        <i class="fas fa-utensils" aria-hidden="true"></i> <span data-i18n="tag.kitchen">Kitchen</span>
+                    </button>
+                    <button class="filter-btn" data-category="bathroom" aria-pressed="false">
+                        <i class="fas fa-bath" aria-hidden="true"></i> <span data-i18n="tag.bathroom">Bathroom</span>
+                    </button>
+                    <button class="filter-btn" data-category="bedroom" aria-pressed="false">
+                        <i class="fas fa-bed" aria-hidden="true"></i> <span data-i18n="tag.bedroom">Bedroom</span>
+                    </button>
+                    <button class="filter-btn" data-category="livingroom" aria-pressed="false">
+                        <i class="fas fa-couch" aria-hidden="true"></i> <span data-i18n="tag.livingroom">Living Room</span>
+                    </button>
+                    <button class="filter-btn" data-category="basement" aria-pressed="false">
+                        <i class="fas fa-dungeon" aria-hidden="true"></i> <span data-i18n="tag.basement">Basement</span>
+                    </button>
+                    <button class="filter-btn" data-category="attic" aria-pressed="false">
+                        <i class="fas fa-house-damage" aria-hidden="true"></i> <span data-i18n="tag.attic">Attic</span>
+                    </button>
+                    <button class="filter-btn" data-category="plumbing" aria-pressed="false">
+                        <i class="fas fa-tint" aria-hidden="true"></i> <span data-i18n="tag.plumbing">Water</span>
+                    </button>
+                    <button class="filter-btn" data-category="electrical" aria-pressed="false">
+                        <i class="fas fa-bolt" aria-hidden="true"></i> <span data-i18n="tag.electrical">Electrical</span>
+                    </button>
+                    <button class="filter-btn" data-category="structural" aria-pressed="false">
+                        <i class="fas fa-hard-hat" aria-hidden="true"></i> <span data-i18n="tag.structural">Structural</span>
+                    </button>
+                    <button class="filter-btn" data-category="hvac" aria-pressed="false">
+                        <i class="fas fa-fan" aria-hidden="true"></i> <span data-i18n="tag.hvac">Heating</span>
+                    </button>
+                    <button class="filter-btn" data-category="renovation" aria-pressed="false">
+                        <i class="fas fa-tools" aria-hidden="true"></i> <span data-i18n="tag.renovation">Renovation</span>
+                    </button>
+                </div>
+                <div class="filter-divider"></div>
+                <h2 class="section-title" id="issueFilterTitle" data-i18n="section.filterIssues">Filter by Toggled Issues</h2>
+                <div class="issue-filter-info">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i> <span data-i18n="filter.issuesHint">Click an issue category below to show only the items where you ticked that issue.</span>
+                </div>
+                <div class="filter-buttons issue-filter-buttons" id="issueFilterButtons" role="group" aria-labelledby="issueFilterTitle">
+                    <!-- Issue filters are generated at runtime -->
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" aria-labelledby="progressTitle">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h3 id="progressTitle" data-i18n="progress.title">Inspection Progress</h3>
+                        <div class="progress-actions">
+                            <button class="toggle-all-btn" id="showUncheckedBtn" aria-pressed="false" data-i18n-title="progress.showUnchecked" title="Show only unchecked items">
+                                <i class="fas fa-filter" aria-hidden="true"></i>
+                                <span class="toggle-text" data-i18n="progress.showUnchecked">Show Unchecked</span>
+                            </button>
+                            <button class="toggle-all-btn" id="toggleAllBtn" data-i18n-title="progress.collapseAll" title="Expand/collapse all">
+                                <i class="fas fa-compress-alt" aria-hidden="true"></i>
+                                <span class="toggle-text" data-i18n="progress.collapseAll">Collapse All</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-stats" aria-live="polite">
+                        <span><strong id="checkedCount">0</strong> <span data-i18n="progress.checked">Checked</span></span>
+                        <span class="issue-stat"><strong id="issueCount">0</strong> <span data-i18n="progress.issues">Issues</span></span>
+                        <span class="request-stat"><strong id="requestCount">0</strong> <span data-i18n="progress.requests">Requests</span></span>
+                        <span><strong id="totalCount">0</strong> <span data-i18n="progress.total">Total</span></span>
+                        <span><strong id="percentComplete">0%</strong> <span data-i18n="progress.complete">Complete</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Checklist Section -->
+            <section class="checklist-section">
+                <div id="checklistContainer" tabindex="-1"></div>
+            </section>
+
+            <!-- Global Notes Section -->
+            <section class="notes-section">
+                <div class="notes-card">
+                    <h3><i class="fas fa-sticky-note" aria-hidden="true"></i> <span data-i18n="notes.title">General Notes</span></h3>
+                    <label class="visually-hidden" for="globalNotes" data-i18n="notes.title">General Notes</label>
+                    <textarea id="globalNotes" data-i18n-ph="notes.ph" placeholder="Add general notes about the property inspection..."></textarea>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Report Modal -->
+    <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="reportModalTitle"><i class="fas fa-file-alt" aria-hidden="true"></i> <span data-i18n="report.title">Inspection Report</span></h2>
+                <button class="close-btn" id="closeModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="reportContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="printReport">
+                    <i class="fas fa-print" aria-hidden="true"></i> <span data-i18n="report.print">Print Report</span>
+                </button>
+                <button class="btn btn-secondary" id="shareReportBtn">
+                    <i class="fas fa-link" aria-hidden="true"></i> <span data-i18n="btn.shareReport">Share read-only link</span>
+                </button>
+                <button class="btn btn-primary" id="copyReport">
+                    <i class="fas fa-copy" aria-hidden="true"></i> <span data-i18n="report.copy">Copy to Clipboard</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <button class="help-btn" id="helpBtn" data-i18n-title="help.title" data-i18n-aria="help.title" title="Help &amp; information" aria-label="Help and information">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="footer-center">
+                    <p><span data-i18n="footer.madeWith">Made with</span> <i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="footer.by">by</span> <a href="https://compyra.com" target="_blank" rel="noopener noreferrer">Compyra</a></p>
+                    <p class="footer-projects"><span data-i18n="footer.moreProjects">More free projects at</span> <a href="https://labidi.eu" target="_blank" rel="noopener noreferrer">labidi.eu</a></p>
+                </div>
+                <div class="footer-right">
+                    <p>&copy; <span id="footerYear">2026</span> huiskeuring.be</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Info modal: legal deadlines per region + advisory topics -->
+    <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2 id="infoModalTitle"></h2>
+                <button class="close-btn" id="closeInfoModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body" id="infoModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Questions for the seller / agent -->
+    <div class="modal" id="questionsModal" role="dialog" aria-modal="true" aria-labelledby="questionsModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2 id="questionsModalTitle"><i class="fas fa-comments" aria-hidden="true"></i> <span data-i18n="questions.title">Questions for the seller or agent</span></h2>
+                <button class="close-btn" id="closeQuestionsModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body" id="questionsContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="printQuestionsBtn"><i class="fas fa-print" aria-hidden="true"></i> <span data-i18n="report.print">Print</span></button>
+                <button class="btn btn-primary" id="copyQuestionsBtn"><i class="fas fa-copy" aria-hidden="true"></i> <span data-i18n="report.copy">Copy</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deadline reminders -->
+    <div class="modal" id="remindersModal" role="dialog" aria-modal="true" aria-labelledby="remindersModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2 id="remindersModalTitle"><i class="fas fa-calendar-check" aria-hidden="true"></i> <span data-i18n="reminders.title">Deadline reminders</span></h2>
+                <button class="close-btn" id="closeRemindersModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body" id="remindersContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="downloadIcsBtn"><i class="fas fa-calendar-plus" aria-hidden="true"></i> <span data-i18n="reminders.download">Download calendar file</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup, import & library -->
+    <div class="modal" id="toolsModal" role="dialog" aria-modal="true" aria-labelledby="toolsModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2 id="toolsModalTitle"><i class="fas fa-box-archive" aria-hidden="true"></i> <span data-i18n="tools.title">Backup, import &amp; saved properties</span></h2>
+                <button class="close-btn" id="closeToolsModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body">
+                <p class="tab-intro" data-i18n="tools.intro"></p>
+                <div class="tool-actions">
+                    <button class="btn btn-primary" id="exportJsonBtn"><i class="fas fa-file-export" aria-hidden="true"></i> <span data-i18n="tools.export">Export as JSON</span></button>
+                    <label class="btn btn-secondary file-button" for="importJsonInput">
+                        <i class="fas fa-file-import" aria-hidden="true"></i> <span data-i18n="tools.import">Import a JSON file</span>
+                    </label>
+                    <input type="file" id="importJsonInput" accept="application/json,.json" class="visually-hidden">
+                    <button class="btn btn-secondary" id="blankChecklistBtn"><i class="fas fa-print" aria-hidden="true"></i> <span data-i18n="btn.blank">Print blank checklist</span></button>
+                </div>
+
+                <div class="help-section">
+                    <h4><i class="fas fa-folder-open" aria-hidden="true"></i> <span data-i18n="library.title">Saved properties</span></h4>
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="saveLibraryBtn"><i class="fas fa-floppy-disk" aria-hidden="true"></i> <span data-i18n="library.save">Save this property</span></button>
+                        <a class="btn btn-secondary" href="compare.html"><i class="fas fa-scale-unbalanced" aria-hidden="true"></i> <span data-i18n="btn.compare">Compare properties</span></a>
+                    </div>
+                    <div id="libraryList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resources Modal -->
+    <div class="modal" id="resourcesModal" role="dialog" aria-modal="true" aria-labelledby="resourcesModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <h2 id="resourcesModalTitle"><i class="fas fa-landmark" aria-hidden="true"></i> <span data-i18n="resources.title">Official Resources &amp; Tools</span></h2>
+                <button class="close-btn" id="closeResourcesModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body">
+                <p class="tab-intro" data-i18n="resources.intro">Verified links to Belgian government sources.</p>
+                <p class="tab-intro" id="resourcesRegionHint"></p>
+                <div id="resourcesContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+        <div class="modal-content help-modal-content">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <img src="./logo.png" alt="" class="help-modal-logo" width="40" height="40">
+                    <h2 id="helpModalTitle"><i class="fas fa-info-circle" aria-hidden="true"></i> <span data-i18n="help.title">Help &amp; Information</span></h2>
+                </div>
+                <button class="close-btn" id="closeHelpModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body help-modal-body">
+                <div class="help-tabs" role="tablist">
+                    <button class="help-tab active" data-tab="about" role="tab" aria-selected="true" aria-controls="about-tab" id="tab-about"><i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="help.tab.about">About</span></button>
+                    <button class="help-tab" data-tab="usage" role="tab" aria-selected="false" aria-controls="usage-tab" id="tab-usage"><i class="fas fa-book-open" aria-hidden="true"></i> <span data-i18n="help.tab.usage">How to Use</span></button>
+                    <button class="help-tab" data-tab="guide" role="tab" aria-selected="false" aria-controls="guide-tab" id="tab-guide"><i class="fas fa-route" aria-hidden="true"></i> <span data-i18n="help.tab.guide">Buying Guide</span></button>
+                    <button class="help-tab" data-tab="faq" role="tab" aria-selected="false" aria-controls="faq-tab" id="tab-faq"><i class="fas fa-circle-question" aria-hidden="true"></i> <span data-i18n="help.tab.faq">FAQ</span></button>
+                    <button class="help-tab" data-tab="roadmap" role="tab" aria-selected="false" aria-controls="roadmap-tab" id="tab-roadmap"><i class="fas fa-road" aria-hidden="true"></i> <span data-i18n="help.tab.roadmap">Roadmap</span></button>
+                    <button class="help-tab" data-tab="gdpr" role="tab" aria-selected="false" aria-controls="gdpr-tab" id="tab-gdpr"><i class="fas fa-shield-alt" aria-hidden="true"></i> <span data-i18n="help.tab.gdpr">GDPR</span></button>
+                    <button class="help-tab" data-tab="privacy" role="tab" aria-selected="false" aria-controls="privacy-tab" id="tab-privacy"><i class="fas fa-lock" aria-hidden="true"></i> <span data-i18n="help.tab.privacy">Privacy Policy</span></button>
+                </div>
+                
+                <div class="help-content">
+                    <!-- All help tab bodies are rendered from HELP_CONTENT in js/i18n.js -->
+                    <div class="help-tab-content active" id="about-tab" role="tabpanel" aria-labelledby="tab-about" tabindex="0"></div>
+                    <div class="help-tab-content" id="usage-tab" role="tabpanel" aria-labelledby="tab-usage" tabindex="0"></div>
+
+                    <div class="help-tab-content" id="guide-tab" role="tabpanel" aria-labelledby="tab-guide" tabindex="0">
+                        <h3 data-i18n="guide.title">Buying a home in Belgium, step by step</h3>
+                        <p class="tab-intro" data-i18n="guide.intro"></p>
+                        <div id="guideContent"></div>
+                    </div>
+
+                    <div class="help-tab-content" id="faq-tab" role="tabpanel" aria-labelledby="tab-faq" tabindex="0">
+                        <h3 data-i18n="faq.title">Frequently asked questions</h3>
+                        <div id="faqContent"></div>
+                    </div>
+
+                    <div class="help-tab-content" id="roadmap-tab" role="tabpanel" aria-labelledby="tab-roadmap" tabindex="0"></div>
+                    <div class="help-tab-content" id="gdpr-tab" role="tabpanel" aria-labelledby="tab-gdpr" tabindex="0"></div>
+                    <div class="help-tab-content" id="privacy-tab" role="tabpanel" aria-labelledby="tab-privacy" tabindex="0"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="js/i18n.js?v16"></script>
+    <script src="js/legal.js?v16"></script>
+    <script src="js/links.js?v16"></script>
+    <script src="js/checklist.js?v16"></script>
+    <script src="js/checklist.nl.js?v16"></script>
+    <script src="js/checklist.fr.js?v16"></script>
+    <script src="js/core.js?v16"></script>
+    <script src="js/app.js?v16"></script>
+</body>
+</html>
+
