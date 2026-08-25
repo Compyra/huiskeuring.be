@@ -21,4 +21,14 @@
         <xhtml:link rel="alternate" hreflang="fr" href="https://huiskeuring.be/lookup/?lang=fr"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://huiskeuring.be/lookup/"/>
     </url>
+    <url>
+        <loc>https://huiskeuring.be/visit/</loc>
+        <lastmod>2026-08-25</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://huiskeuring.be/visit/?lang=en"/>
+        <xhtml:link rel="alternate" hreflang="nl" href="https://huiskeuring.be/visit/?lang=nl"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://huiskeuring.be/visit/?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://huiskeuring.be/visit/"/>
+    </url>
 </urlset>

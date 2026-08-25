@@ -189,6 +189,7 @@ async function photoOpenLightbox(id) {
     let record;
     try { record = await photoGet(Number(id)); } catch (e) { return; }
     if (!record) return;
+    photoExitAnnotation();
     byId('photoLightboxImg').src = record.dataUrl;
     const del = byId('photoLightboxDelete');
     del.dataset.photoId = String(record.id);
@@ -210,3 +211,158 @@ async function photoDeleteFromLightbox() {
     closeModal(byId('photoLightbox'));
     byId('photoLightboxImg').src = '';
 }
+
+/* ------------------------------------------------------------------ *
+ * Annotation: draw pen / arrow / circle on a photo, then flatten the
+ * strokes into the JPEG so report, PDF and thumbnails need no changes.
+ * ------------------------------------------------------------------ */
+let annoTool = 'pen';
+let annoStrokes = [];
+let annoCurrent = null;
+let annoPhotoId = null;
+
+function annoLightbox() { return byId('photoLightbox'); }
+function annoCanvasEl() { return byId('photoAnnoCanvas'); }
+
+function photoStartAnnotation() {
+    const img = byId('photoLightboxImg');
+    if (!img.naturalWidth) return;
+    annoPhotoId = Number(byId('photoLightboxDelete').dataset.photoId);
+    const canvas = annoCanvasEl();
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    annoStrokes = [];
+    annoCurrent = null;
+    annoTool = 'pen';
+    annoSyncToolButtons();
+    annoLightbox().classList.add('annotating');
+    annoRedraw();
+}
+
+function photoExitAnnotation() {
+    annoStrokes = [];
+    annoCurrent = null;
+    annoLightbox().classList.remove('annotating');
+}
+
+function annoSyncToolButtons() {
+    document.querySelectorAll('.anno-tool').forEach(btn => {
+        const active = btn.dataset.annoTool === annoTool;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+    });
+}
+
+function annoPos(e) {
+    const canvas = annoCanvasEl();
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+}
+
+function annoRedraw() {
+    const canvas = annoCanvasEl();
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(byId('photoLightboxImg'), 0, 0, canvas.width, canvas.height);
+    const width = Math.max(3, Math.round(canvas.width / 300));
+    const all = annoCurrent ? annoStrokes.concat([annoCurrent]) : annoStrokes;
+    all.forEach(stroke => annoDrawStroke(ctx, stroke, width));
+}
+
+function annoDrawStroke(ctx, stroke, width) {
+    const p = stroke.points;
+    if (!p.length) return;
+    ctx.save();
+    ctx.strokeStyle = '#e0261a';
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.85)';
+    ctx.shadowBlur = width;
+    ctx.beginPath();
+    if (stroke.tool === 'pen') {
+        ctx.moveTo(p[0].x, p[0].y);
+        for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
+    } else if (p.length > 1 && stroke.tool === 'circle') {
+        const a = p[0], b = p[p.length - 1];
+        ctx.ellipse((a.x + b.x) / 2, (a.y + b.y) / 2,
+            Math.max(width, Math.abs(b.x - a.x) / 2), Math.max(width, Math.abs(b.y - a.y) / 2), 0, 0, Math.PI * 2);
+    } else if (p.length > 1 && stroke.tool === 'arrow') {
+        const a = p[0], b = p[p.length - 1];
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        const angle = Math.atan2(b.y - a.y, b.x - a.x);
+        const head = width * 4;
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - head * Math.cos(angle - 0.5), b.y - head * Math.sin(angle - 0.5));
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - head * Math.cos(angle + 0.5), b.y - head * Math.sin(angle + 0.5));
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+
+async function photoSaveAnnotation() {
+    if (!annoStrokes.length) { photoExitAnnotation(); return; }
+    try {
+        const canvas = annoCanvasEl();
+        annoCurrent = null;
+        annoRedraw();
+        const dataUrl = canvas.toDataURL('image/jpeg', PHOTO_JPEG_QUALITY);
+        const record = await photoGet(annoPhotoId);
+        if (!record) { photoExitAnnotation(); return; }
+        record.dataUrl = dataUrl;
+        record.w = canvas.width;
+        record.h = canvas.height;
+        const store = await photoStore('readwrite');
+        await idbRequest(store.put(record));
+        byId('photoLightboxImg').src = dataUrl;
+        photoRefreshItem(record.itemKey);
+        showToast(t('photo.annoSaved'));
+    } catch (e) {
+        showToast(t('photo.error'), 'error');
+    }
+    photoExitAnnotation();
+}
+
+/* Shared wiring for every page that embeds the photo lightbox. */
+document.addEventListener('DOMContentLoaded', () => {
+    const input = byId('photoInput');
+    if (!input) return;
+    input.addEventListener('change', (e) => {
+        photoHandleFiles(e.target.files);
+        e.target.value = '';
+    });
+    byId('photoLightboxDelete').addEventListener('click', photoDeleteFromLightbox);
+    byId('photoAnnotateBtn').addEventListener('click', photoStartAnnotation);
+    byId('photoAnnoCancel').addEventListener('click', photoExitAnnotation);
+    byId('photoAnnoSave').addEventListener('click', photoSaveAnnotation);
+    byId('photoAnnoUndo').addEventListener('click', () => { annoStrokes.pop(); annoRedraw(); });
+    document.querySelectorAll('.anno-tool').forEach(btn => {
+        btn.addEventListener('click', () => { annoTool = btn.dataset.annoTool; annoSyncToolButtons(); });
+    });
+
+    const canvas = annoCanvasEl();
+    canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        canvas.setPointerCapture(e.pointerId);
+        annoCurrent = { tool: annoTool, points: [annoPos(e)] };
+        annoRedraw();
+    });
+    canvas.addEventListener('pointermove', (e) => {
+        if (!annoCurrent) return;
+        e.preventDefault();
+        const pos = annoPos(e);
+        if (annoCurrent.tool === 'pen') annoCurrent.points.push(pos);
+        else annoCurrent.points[1] = pos;
+        annoRedraw();
+    });
+    canvas.addEventListener('pointerup', () => {
+        if (!annoCurrent) return;
+        if (annoCurrent.points.length > 1) annoStrokes.push(annoCurrent);
+        annoCurrent = null;
+        annoRedraw();
+    });
+});

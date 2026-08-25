@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v20';
+const VERSION = 'v21';
 const CACHE = 'huiskeuring-' + VERSION;
 
 const SHELL = [
@@ -20,6 +20,9 @@ const SHELL = [
     '/404.html',
     '/lookup/',
     '/lookup/index.html',
+    '/visit/',
+    '/visit/index.html',
+    '/visit/visit.js?' + VERSION,
     '/style.css?' + VERSION,
     '/js/i18n.js?' + VERSION,
     '/js/legal.js?' + VERSION,

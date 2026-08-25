@@ -1055,6 +1055,34 @@ const LOOKUP_TOOLS = [
             fr: 'Le registre officiel des antennes émettrices et mobiles : voyez quels pylônes se trouvent près de la maison et quels opérateurs les utilisent.'
         }
     },
+    {
+        id: 'seismo',
+        group: 'environment',
+        icon: 'fa-house-crack',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.seismologie.be/',
+        label: { en: 'Seismology (Royal Observatory)', nl: 'Seismologie (Koninklijke Sterrenwacht)', fr: 'Séismologie (Observatoire royal)' },
+        note: {
+            en: 'Historical earthquakes near the address - relevant in old mining areas and for unexplained cracks in Hainaut, Liège and Limburg.',
+            nl: 'Historische aardbevingen nabij het adres - relevant in oude mijngebieden en bij onverklaarde scheuren in Henegouwen, Luik en Limburg.',
+            fr: 'Séismes historiques près de l\'adresse - pertinent dans les anciennes zones minières et pour des fissures inexpliquées dans le Hainaut, à Liège et au Limbourg.'
+        }
+    },
+    {
+        id: 'meteo',
+        group: 'environment',
+        icon: 'fa-cloud-showers-heavy',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.meteo.be/',
+        label: { en: 'RMI climate statistics', nl: 'KMI-klimaatstatistieken', fr: 'Statistiques climatiques de l\'IRM' },
+        note: {
+            en: 'Official climate normals and precipitation statistics: how wet or dry the area really is - context for rainwater tanks, infiltration and drought risk.',
+            nl: 'Officiële klimaatnormalen en neerslagstatistieken: hoe nat of droog de streek echt is - context voor hemelwaterputten, infiltratie en droogterisico.',
+            fr: 'Normales climatiques et statistiques de précipitations officielles : l\'humidité réelle de la région - contexte pour citernes, infiltration et risque de sécheresse.'
+        }
+    },
 
     /* ---- Neighbourhood & daily life ---- */
     {
@@ -1251,6 +1279,76 @@ const LOOKUP_TOOLS = [
             en: 'The official Flemish agency for young families: search licensed childcare near the address - waiting lists differ hugely per municipality.',
             nl: 'Het officiële Vlaamse agentschap voor jonge gezinnen: zoek vergunde kinderopvang nabij het adres - wachtlijsten verschillen enorm per gemeente.',
             fr: 'L\'agence flamande officielle pour les jeunes familles : cherchez un accueil agréé près de l\'adresse - les listes d\'attente varient fortement par commune.'
+        }
+    },
+    {
+        id: 'klip',
+        group: 'living',
+        icon: 'fa-diagram-project',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://klip.vlaanderen.be/',
+        label: { en: 'KLIP - cables & pipes', nl: 'KLIP - kabels & leidingen', fr: 'KLIP - câbles & conduites (Flandre)' },
+        note: {
+            en: 'The Flemish cable and pipe information portal: what runs under and around the parcel - a must before planning extensions, pools or driveways.',
+            nl: 'Het Vlaamse kabel- en leidinginformatieportaal: wat er onder en rond het perceel loopt - een must vóór plannen voor aanbouw, zwembad of oprit.',
+            fr: 'Le portail flamand d\'information câbles et conduites : ce qui passe sous et autour de la parcelle - indispensable avant d\'envisager annexe, piscine ou allée.'
+        }
+    },
+    {
+        id: 'klim',
+        group: 'living',
+        icon: 'fa-diagram-project',
+        regions: ['wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.klim-cicc.be/',
+        label: { en: 'KLIM-CICC - cables & pipes', nl: 'KLIM-CICC - kabels & leidingen', fr: 'CICC - câbles & canalisations' },
+        note: {
+            en: 'The federal contact point for cables and pipelines: check for gas mains, high-pressure lines and other infrastructure near the plot.',
+            nl: 'Het federale contactpunt voor kabels en leidingen: controleer op gasleidingen, hogedrukleidingen en andere infrastructuur nabij het perceel.',
+            fr: 'Le point de contact fédéral câbles et canalisations : vérifiez la présence de conduites de gaz, lignes haute pression et autres infrastructures près du terrain.'
+        }
+    },
+    {
+        id: 'creg',
+        group: 'living',
+        icon: 'fa-bolt',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.creg.be/',
+        label: { en: 'CREG - energy regulator', nl: 'CREG - energieregulator', fr: 'CREG - régulateur de l\'énergie' },
+        note: {
+            en: 'The federal energy regulator: the CREG Scan compares every electricity and gas contract - estimate the running costs of the house honestly.',
+            nl: 'De federale energieregulator: de CREG Scan vergelijkt elk elektriciteits- en gascontract - schat de energiekosten van de woning eerlijk in.',
+            fr: 'Le régulateur fédéral de l\'énergie : le CREG Scan compare tous les contrats d\'électricité et de gaz - estimez honnêtement les coûts énergétiques.'
+        }
+    },
+    {
+        id: 'brugel',
+        group: 'living',
+        icon: 'fa-bolt',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://www.brugel.brussels/',
+        label: { en: 'Brugel - Brussels energy regulator', nl: 'Brugel - Brusselse energieregulator', fr: 'Brugel - régulateur bruxellois' },
+        note: {
+            en: 'The Brussels energy regulator: tariffs, green-energy premiums and your rights when taking over meters in a purchase.',
+            nl: 'De Brusselse energieregulator: tarieven, groene-energiepremies en uw rechten bij meterovername na aankoop.',
+            fr: 'Le régulateur bruxellois de l\'énergie : tarifs, primes vertes et vos droits lors de la reprise des compteurs après l\'achat.'
+        }
+    },
+    {
+        id: 'cwape',
+        group: 'living',
+        icon: 'fa-bolt',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://www.cwape.be/',
+        label: { en: 'CWaPE - Walloon energy regulator', nl: 'CWaPE - Waalse energieregulator', fr: 'CWaPE - régulateur wallon' },
+        note: {
+            en: 'The Walloon energy regulator: tariffs, solar-panel rules (prosumer fee) and meter take-over guidance after a purchase.',
+            nl: 'De Waalse energieregulator: tarieven, zonnepaneelregels (prosumententarief) en begeleiding bij meterovername na aankoop.',
+            fr: 'Le régulateur wallon de l\'énergie : tarifs, règles photovoltaïques (tarif prosommateur) et reprise des compteurs après achat.'
         }
     },
     {

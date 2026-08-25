@@ -41,15 +41,15 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
-    <link rel="stylesheet" href="style.css?v20">
+    <link rel="stylesheet" href="style.css?v21">
     <!-- Self-hosted fonts and icons: no third-party requests, nothing leaks to a CDN.
          Montserrat (SIL OFL 1.1), Roboto (Apache 2.0), Font Awesome Free (OFL 1.1 / CC BY 4.0 / MIT).
          See assets/LICENSES.md. -->
     <link rel="preload" href="assets/fonts/roboto-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/montserrat-700-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/vendor/fonts.css?v20">
-    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v20">
-    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v20">
+    <link rel="stylesheet" href="assets/vendor/fonts.css?v21">
+    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v21">
+    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v21">
 
     <!-- Apply the stored / system theme before first paint to avoid a flash of the wrong theme -->
     <script>
@@ -237,6 +237,9 @@
                             <div class="header-menu" id="headerMenu" hidden>
                                 <div class="header-menu-section">
                                     <h3 data-i18n="menu.visit">During the visit</h3>
+                                    <a class="btn btn-info" id="visitLink" href="visit/" data-i18n-title="btn.visit" title="Room by room">
+                                        <i class="fas fa-person-walking" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.visit">Room by room</span>
+                                    </a>
                                     <button class="btn btn-info" id="questionsBtn" data-i18n-title="btn.questions" title="Questions for the seller">
                                         <i class="fas fa-comments" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.questions">Questions</span>
                                     </button>
@@ -766,25 +769,39 @@
             </div>
             <div class="modal-body photo-lightbox-body">
                 <img id="photoLightboxImg" src="" alt="">
+                <canvas id="photoAnnoCanvas" width="10" height="10" aria-label="Annotation canvas" data-i18n-aria="photo.annotate"></canvas>
                 <p class="photo-hint" data-i18n="photo.hint">Photos stay on this device: they are included when you print or export a PDF here, but never in share links or JSON backups.</p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer photo-lightbox-footer">
+                <button class="btn btn-secondary" id="photoAnnotateBtn">
+                    <i class="fas fa-pen" aria-hidden="true"></i> <span data-i18n="photo.annotate">Annotate</span>
+                </button>
                 <button class="btn btn-secondary" id="photoLightboxDelete">
                     <i class="fas fa-trash-can" aria-hidden="true"></i> <span data-i18n="photo.delete">Delete photo</span>
                 </button>
+                <div class="anno-controls">
+                    <button class="btn btn-secondary anno-tool active" data-anno-tool="pen" aria-pressed="true" data-i18n-title="photo.pen" data-i18n-aria="photo.pen" title="Pen" aria-label="Pen"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary anno-tool" data-anno-tool="arrow" aria-pressed="false" data-i18n-title="photo.arrow" data-i18n-aria="photo.arrow" title="Arrow" aria-label="Arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary anno-tool" data-anno-tool="circle" aria-pressed="false" data-i18n-title="photo.circle" data-i18n-aria="photo.circle" title="Circle" aria-label="Circle"><i class="fas fa-circle" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary" id="photoAnnoUndo" data-i18n-title="photo.undo" data-i18n-aria="photo.undo" title="Undo" aria-label="Undo"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary" id="photoAnnoCancel"><span data-i18n="photo.annoCancel">Cancel</span></button>
+                    <button class="btn btn-primary" id="photoAnnoSave">
+                        <i class="fas fa-check" aria-hidden="true"></i> <span data-i18n="photo.annoSave">Save annotation</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="js/i18n.js?v20"></script>
-    <script src="js/legal.js?v20"></script>
-    <script src="js/links.js?v20"></script>
-    <script src="js/checklist.js?v20"></script>
-    <script src="js/checklist.nl.js?v20"></script>
-    <script src="js/checklist.fr.js?v20"></script>
-    <script src="js/core.js?v20"></script>
-    <script src="js/photos.js?v20"></script>
-    <script src="js/app.js?v20"></script>
+    <script src="js/i18n.js?v21"></script>
+    <script src="js/legal.js?v21"></script>
+    <script src="js/links.js?v21"></script>
+    <script src="js/checklist.js?v21"></script>
+    <script src="js/checklist.nl.js?v21"></script>
+    <script src="js/checklist.fr.js?v21"></script>
+    <script src="js/core.js?v21"></script>
+    <script src="js/photos.js?v21"></script>
+    <script src="js/app.js?v21"></script>
 </body>
 </html>
 

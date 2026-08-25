@@ -41,6 +41,7 @@ The link checker only admits URLs that answer HTTP 200 to a plain client;
 these are useful but currently bot-blocked or unstable - retry each review:
 
 - 🔜 **Solarclick / Brussels solar map** (`solarclick.be` blocks plain clients)
+- 🔜 **V-test (VREG)** (`vreg.be` blocks plain clients; CREG Scan covers the need federally)
 - 🔜 **Cartesius historical maps** (`cartesius.be` currently serves a **revoked TLS certificate** - re-check at the next review; NGI's topo viewer covers part of the value)
 - 🔜 **VMM sewer & rainwater pages** (deep vmm.be paths intermittently refuse)
 - 🔜 **Hinder in Kaart** (Flemish roadworks portal; GIPOD covers it meanwhile)
@@ -60,10 +61,14 @@ these are useful but currently bot-blocked or unstable - retry each review:
    count of issues.
 3. 💡 **Voice notes** — dictate a note per item with the Web Speech API while
    holding the phone; falls back to typing where unsupported.
-4. 💡 **Photo annotations** — draw an arrow/circle on an attached photo
-   (canvas overlay) to mark the crack you mean.
-5. 💡 **Room-by-room visit mode** — a "next room" wizard that walks the visit
-   in a sensible order with a per-room progress ring, for first-time viewers.
+4. ✅ **Photo annotations** — pen, arrow and circle tools in the lightbox;
+   strokes are flattened into the JPEG so reports, PDFs and thumbnails need
+   no special handling.
+5. ✅ **Room-by-room visit mode** (`/visit/`) — pick the room you are in,
+   tick which installations it has (water, electricity, heating, structure,
+   asbestos) and only the matching checks appear; everything syncs with the
+   main checklist state, including notes and photos. Deep-linkable
+   (`?room=bedroom&features=plumbing,electrical`).
 6. 💡 **Cost-band editor** — let users adjust the indicative renovation bands
    to current quotes; store locally, never claim market accuracy.
 7. 💡 **EPC photo import** — point the camera at the EPC label page and parse

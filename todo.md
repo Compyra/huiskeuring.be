@@ -55,6 +55,56 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 15: room-by-room visit mode, photo annotation, 7 more sources
+
+Cache version bumped **v20 → v21** in all HTML pages and `sw.js` (which now
+also precaches `/visit/`).
+
+#### Room-by-room visit mode (new page `visit/`)
+The requested walk-through flow: pick the room you are standing in
+(7 rooms), tick which installations it has (water, electricity, heating,
+structure, asbestos) and **only the matching checks appear** - e.g.
+*bedroom + water* for a bedroom with a sink shows the bedroom checks plus
+the plumbing checks (verified: 30 items). Everything reads/writes the
+**same inspection state and item ids** as the main checklist: ticks, notes
+and photos made here appear there, in the report and in the PDF instantly
+(verified end-to-end). Full item UI: OK/issue, why-explanations, notes,
+photos incl. annotation. Deep-linkable (`?room=bedroom&features=plumbing`,
+URL kept in sync), translated ×3 (room/feature labels reuse the `tag.*`
+keys), indexed + in the sitemap + SW shell, focus-refresh when returning
+from another tab, 0 overflow at 320/360 px.
+
+#### Photo annotation
+New in the photo lightbox on both index and visit: **pen, arrow and circle**
+tools (red with white glow, stroke width scales with photo size), undo,
+cancel, save. Saving **flattens the strokes into the JPEG** in IndexedDB, so
+thumbnails, report, print and PDF need zero extra handling. Pointer-events
+based (mouse/touch/pen), coordinates scaled canvas↔natural size. Lightbox
+wiring moved from app.js into photos.js so both pages share it.
+
+#### 7 more verified sources (60 tools total)
+| Tool | Regions | Group |
+|---|---|---|
+| KLIP cables & pipes | VL | neighbourhood |
+| KLIM-CICC cables & pipes | WAL+BXL | neighbourhood |
+| CREG (CREG Scan energy contracts) | all | neighbourhood |
+| Brugel · CWaPE (regional energy regulators) | BXL / WAL | neighbourhood |
+| Seismology (Royal Observatory) | all | environment |
+| RMI climate statistics | all | environment |
+
+`vreg.be` (V-test) added to the blocked list in FEATURES.md. Card counts
+now **VL 38 · WAL 32 · BXL 32**; every card keeps its finding input.
+
+Verified in the browser: bedroom+water story, ticks/notes/photos sync to
+index + report, annotation flattens (stored JPEG changes, toast, mode
+exits), deep link + NL labels, room-off clears cleanly, chips at 320/360 px,
+60 unique tool ids, 0 console errors. All **142 external links 200**,
+i18n **342 keys/language**, links.js **264 strings/language**, all 11
+verifier checks pass (visit files registered in every enumeration + byId
+pairs incl. the shared photos.js).
+
+---
+
 ### 2026-08-25 - Pass 14: complete pre-release bughunt - GO for publication
 
 Full-surface audit before going public. Two release gaps found and fixed,

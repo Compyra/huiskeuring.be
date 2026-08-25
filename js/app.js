@@ -1605,14 +1605,7 @@ function setupEventListeners() {
     });
     byId('railHelp').addEventListener('click', () => openModal(helpModal));
 
-    /* Photo attachments */
-    byId('photoInput').addEventListener('change', (e) => {
-        if (typeof photoHandleFiles === 'function') photoHandleFiles(e.target.files);
-        e.target.value = '';
-    });
-    byId('photoLightboxDelete').addEventListener('click', () => {
-        if (typeof photoDeleteFromLightbox === 'function') photoDeleteFromLightbox();
-    });
+    /* Photo input, lightbox and annotation are wired inside js/photos.js */
 
     const howToDismiss = byId('howItWorksDismiss');
     if (howToDismiss) {

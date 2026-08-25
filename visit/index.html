@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room-by-room visit - huiskeuring.be</title>
+    <meta name="description" content="Walk through a Belgian house viewing one room at a time: pick the room you are in, tick what is present (water, electricity, heating) and answer only the checks that matter there. Syncs with the full checklist.">
+    <link rel="canonical" href="https://huiskeuring.be/visit/">
+    <link rel="alternate" hreflang="en" href="https://huiskeuring.be/visit/?lang=en">
+    <link rel="alternate" hreflang="nl" href="https://huiskeuring.be/visit/?lang=nl">
+    <link rel="alternate" hreflang="fr" href="https://huiskeuring.be/visit/?lang=fr">
+    <link rel="alternate" hreflang="x-default" href="https://huiskeuring.be/visit/">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="../style.css?v21">
+    <link rel="stylesheet" href="../assets/vendor/fonts.css?v21">
+    <link rel="stylesheet" href="../assets/vendor/fontawesome.min.css?v21">
+    <link rel="stylesheet" href="../assets/vendor/fa-solid.min.css?v21">
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('themeMode') || 'auto';
+                var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', stored === 'auto' ? (dark ? 'dark' : 'light') : stored);
+                if (localStorage.getItem('readableMode') === '1') document.documentElement.classList.add('readable');
+            } catch (e) { /* keep the default */ }
+        })();
+    </script>
+</head>
+<body data-title-key="visit.title">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a class="logo" href="../index.html">
+                    <img src="../logo.png" alt="huiskeuring.be logo" class="logo-img" width="48" height="48">
+                    <span class="logo-text">huiskeuring.be</span>
+                </a>
+                <div class="header-actions">
+                    <div class="select-group">
+                        <label class="visually-hidden" for="languageSelect" data-i18n="btn.language">Language</label>
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <select id="languageSelect" class="header-select"></select>
+                    </div>
+                    <button class="btn btn-secondary readable-btn" data-i18n-title="btn.readable" title="Easy reading" aria-pressed="false">
+                        <i class="fas fa-glasses" aria-hidden="true"></i> <span data-i18n="btn.readable">Easy reading</span>
+                    </button>
+                    <a class="btn btn-primary" href="../index.html"><i class="fas fa-list-check" aria-hidden="true"></i> <span data-i18n="compare.backToChecklist">Back to the checklist</span></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="visit-page">
+        <div class="container">
+            <h1 class="section-title"><i class="fas fa-person-walking" aria-hidden="true"></i> <span data-i18n="visit.title">Room-by-room visit</span></h1>
+            <p class="tab-intro" data-i18n="visit.intro"></p>
+            <p class="visit-sync-hint"><i class="fas fa-rotate" aria-hidden="true"></i> <span data-i18n="visit.hint"></span></p>
+
+            <section class="filter-section" aria-labelledby="visitRoomTitle">
+                <h2 class="section-title" id="visitRoomTitle" data-i18n="visit.room">Which room are you in?</h2>
+                <div class="filter-buttons" id="visitRooms" role="group" aria-labelledby="visitRoomTitle"></div>
+                <div class="filter-divider"></div>
+                <h2 class="section-title" id="visitFeaturesTitle" data-i18n="visit.features">What is in this room?</h2>
+                <div class="filter-buttons" id="visitFeatures" role="group" aria-labelledby="visitFeaturesTitle"></div>
+            </section>
+
+            <p class="visit-progress" id="visitProgress" role="status" hidden></p>
+            <p class="visit-empty" id="visitEmpty" data-i18n="visit.empty">Pick a room above to see its checks.</p>
+            <div id="visitItems"></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-center">
+                    <p><span data-i18n="footer.madeWith">Made with</span> <i class="fas fa-heart" aria-hidden="true"></i> <span data-i18n="footer.by">by</span> <a href="https://compyra.com" target="_blank" rel="noopener noreferrer">Compyra</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Photo attachments: same module and markup as the main checklist -->
+    <input type="file" id="photoInput" accept="image/*" multiple class="visually-hidden" tabindex="-1" aria-hidden="true">
+
+    <div class="modal" id="photoLightbox" role="dialog" aria-modal="true" aria-labelledby="photoLightboxTitle">
+        <div class="modal-content photo-lightbox-content">
+            <div class="modal-header">
+                <h2 id="photoLightboxTitle"><i class="fas fa-images" aria-hidden="true"></i> <span data-i18n="photo.title">Photos</span></h2>
+                <button class="close-btn" id="closePhotoLightbox" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body photo-lightbox-body">
+                <img id="photoLightboxImg" src="" alt="">
+                <canvas id="photoAnnoCanvas" width="10" height="10" aria-label="Annotation canvas" data-i18n-aria="photo.annotate"></canvas>
+                <p class="photo-hint" data-i18n="photo.hint">Photos stay on this device: they are included when you print or export a PDF here, but never in share links or JSON backups.</p>
+            </div>
+            <div class="modal-footer photo-lightbox-footer">
+                <button class="btn btn-secondary" id="photoAnnotateBtn">
+                    <i class="fas fa-pen" aria-hidden="true"></i> <span data-i18n="photo.annotate">Annotate</span>
+                </button>
+                <button class="btn btn-secondary" id="photoLightboxDelete">
+                    <i class="fas fa-trash-can" aria-hidden="true"></i> <span data-i18n="photo.delete">Delete photo</span>
+                </button>
+                <div class="anno-controls">
+                    <button class="btn btn-secondary anno-tool active" data-anno-tool="pen" aria-pressed="true" data-i18n-title="photo.pen" data-i18n-aria="photo.pen" title="Pen" aria-label="Pen"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary anno-tool" data-anno-tool="arrow" aria-pressed="false" data-i18n-title="photo.arrow" data-i18n-aria="photo.arrow" title="Arrow" aria-label="Arrow"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary anno-tool" data-anno-tool="circle" aria-pressed="false" data-i18n-title="photo.circle" data-i18n-aria="photo.circle" title="Circle" aria-label="Circle"><i class="fas fa-circle" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary" id="photoAnnoUndo" data-i18n-title="photo.undo" data-i18n-aria="photo.undo" title="Undo" aria-label="Undo"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
+                    <button class="btn btn-secondary" id="photoAnnoCancel"><span data-i18n="photo.annoCancel">Cancel</span></button>
+                    <button class="btn btn-primary" id="photoAnnoSave">
+                        <i class="fas fa-check" aria-hidden="true"></i> <span data-i18n="photo.annoSave">Save annotation</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/i18n.js?v21"></script>
+    <script src="../js/legal.js?v21"></script>
+    <script src="../js/links.js?v21"></script>
+    <script src="../js/checklist.js?v21"></script>
+    <script src="../js/checklist.nl.js?v21"></script>
+    <script src="../js/checklist.fr.js?v21"></script>
+    <script src="../js/core.js?v21"></script>
+    <script src="../js/photos.js?v21"></script>
+    <script src="visit.js?v21"></script>
+</body>
+</html>

@@ -39,7 +39,7 @@ function Pass([string]$message) { Write-Output ('  ok    ' + $message) }
 Write-Output '1. Encoding'
 $strict = New-Object System.Text.UTF8Encoding($false, $true)
 $encodingOk = $true
-Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'sw.js', 'style.css', 'todo.md', 'FACTCHECK.md', 'FEATURES.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
+Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'visit\*.html', 'visit\*.js', 'sw.js', 'style.css', 'todo.md', 'FACTCHECK.md', 'FEATURES.md', 'sitemap.xml', 'site.webmanifest' | ForEach-Object {
     $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
     try {
         $text = $strict.GetString($bytes)
@@ -83,7 +83,7 @@ if ($parityOk) { Pass ('en/nl/fr all have the same ' + $en.Count + ' keys') }
 Write-Output ''
 Write-Output '3. data-i18n attributes resolve'
 $attrMissing = @()
-Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html', 'visit\*.html' | ForEach-Object {
     $raw = [System.IO.File]::ReadAllText($_.FullName)
     foreach ($m in [regex]::Matches($raw, 'data-i18n(?:-ph|-title|-aria)?="([^"]+)"')) {
         if ($en -notcontains $m.Groups[1].Value) { $attrMissing += ($_.Name + ' -> ' + $m.Groups[1].Value) }
@@ -138,6 +138,8 @@ $runtimeIds = @('deedDate', 'drawdownDate')
 $pairs = @(
     @('index.html', 'js\app.js'),
     @('index.html', 'js\photos.js'),
+    @('visit\index.html', 'js\photos.js'),
+    @('visit\index.html', 'visit\visit.js'),
     @('report.html', 'js\report.js'),
     @('compare.html', 'js\compare.js'),
     @('lookup\index.html', 'lookup\lookup.js')
@@ -158,7 +160,7 @@ else { $idMissing | Sort-Object -Unique | ForEach-Object { Fail $_ } }
 Write-Output ''
 Write-Output '7. Local asset references'
 $assetMissing = @()
-Get-ChildItem '*.html', 'lookup\*.html' | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html', 'visit\*.html' | ForEach-Object {
     $name = $_.FullName.Substring((Get-Location).Path.Length + 1)
     $dir = $_.DirectoryName
     foreach ($m in [regex]::Matches([System.IO.File]::ReadAllText($_.FullName), '(?:src|href)="(?!https?:|mailto:|#)([^"]+)"')) {
@@ -193,7 +195,7 @@ if ($SkipLinks) {
 } else {
     Write-Output '9. External links (this takes a minute)'
     $urls = New-Object System.Collections.Generic.HashSet[string]
-    Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js' | ForEach-Object {
+    Get-ChildItem 'js\*.js', '*.html', 'lookup\*.html', 'lookup\*.js', 'visit\*.html', 'visit\*.js' | ForEach-Object {
         foreach ($m in [regex]::Matches([System.IO.File]::ReadAllText($_.FullName), 'https://[^\s"''\)<>]+')) {
             $u = $m.Value.TrimEnd('.', ',', ';')
             if ($u -notmatch 'schema\.org|huiskeuring\.be|w3\.org|sitemaps\.org') { [void]$urls.Add($u) }
@@ -234,7 +236,7 @@ Write-Output '10. Untranslated text in HTML'
 # carries its three languages inline - like <noscript> it is exempt here.
 $allowed = @('huiskeuring.be', 'Compyra', 'labidi.eu')
 $hardcoded = @()
-Get-ChildItem '*.html', 'lookup\*.html' | Where-Object { $_.Name -ne '404.html' } | ForEach-Object {
+Get-ChildItem '*.html', 'lookup\*.html', 'visit\*.html' | Where-Object { $_.Name -ne '404.html' } | ForEach-Object {
     $name = $_.Name
     $raw = [System.IO.File]::ReadAllText($_.FullName)
     if ($raw -notmatch '(?s)<body') { return }
