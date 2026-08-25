@@ -10,7 +10,7 @@
 
 'use strict';
 
-const GROUP_ORDER = ['maps', 'property', 'water', 'soil', 'planning', 'environment'];
+const GROUP_ORDER = ['maps', 'property', 'water', 'soil', 'planning', 'environment', 'living'];
 
 let region = 'flanders';
 
@@ -131,6 +131,10 @@ function initialAddress() {
 }
 
 function initialRegion(address) {
+    try {
+        const fromUrl = (new URLSearchParams(window.location.search).get('region') || '').toLowerCase();
+        if (REGIONS.some(r => r.id === fromUrl)) return fromUrl;
+    } catch (e) { /* ignore */ }
     const detected = regionFromPostalCode(address);
     if (detected) return detected;
     const stored = readStorage(STORAGE_KEYS.region);

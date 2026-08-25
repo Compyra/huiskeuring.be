@@ -13,7 +13,11 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
   switchable with the full checklist, position-stable item ids
 - ✅ Regional legal deadlines (VL/WAL/BXL) with official sources, verified per
   half-year — see [FACTCHECK.md](FACTCHECK.md)
-- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`), with **access badges** (OSINT · free vs eID / itsme) per tool
+- ✅ Official lookups page incl. **municipality search** from the address (`lookup/`), with **access badges** (OSINT · free vs eID / itsme) per tool and **22+ official tools** across 7 groups (maps, parcel, water, soil, planning, environment, neighbourhood)
+- ✅ **Photo attachments per item** — stored in IndexedDB on-device, thumbnails + lightbox, included in print & PDF, honest "not in share links" hint (`js/photos.js`)
+- ✅ **Deep links** — `?lang` `?type` `?region` `?view=quick`, `#cat-<category>`, `#item-<id>`, `lookup/?address=&region=` — see [OUTREACH.md](OUTREACH.md) for how to use them
+- ✅ **Floating quick-action rail** on large screens (top, progress, report, share, save, help)
+- ✅ **"How it works" first-steps strip** — dismissible 1-2-3 explainer on the main page
 - ✅ **Offline PWA** — service worker precaches the whole shell (`sw.js`)
 - ✅ **PDF export** — vendored jsPDF, lazy-loaded on first use
 - ✅ **Renovation cost estimator + negotiation summary** — indicative bands per
@@ -30,13 +34,23 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
 
 ## Top requests, highest value first
 
-1. 🔜 **Photo attachments per issue** — the single most requested feature for
-   viewings. Store in IndexedDB, thumbnail in the report, include in the JSON
-   export. Watch the share-link size: photos cannot go in the URL, so the
-   read-only link needs a "without photos" mode.
+1. ✅ **Photo attachments per issue** — shipped: IndexedDB storage, per-item
+   camera button (phones offer camera natively), thumbnails in the report,
+   photos embedded in the PDF export. Share links stay text-only by design.
 2. 💡 **Deal-breaker scoring** — weight items by severity so the report opens
    with the three findings that should worry the buyer most, instead of a flat
    count of issues.
+3. 💡 **Voice notes** — dictate a note per item with the Web Speech API while
+   holding the phone; falls back to typing where unsupported.
+4. 💡 **Photo annotations** — draw an arrow/circle on an attached photo
+   (canvas overlay) to mark the crack you mean.
+5. 💡 **Room-by-room visit mode** — a "next room" wizard that walks the visit
+   in a sensible order with a per-room progress ring, for first-time viewers.
+6. 💡 **Cost-band editor** — let users adjust the indicative renovation bands
+   to current quotes; store locally, never claim market accuracy.
+7. 💡 **EPC photo import** — point the camera at the EPC label page and parse
+   the label + kWh/m² client-side (OCR via WASM tesseract is ~2 MB — weigh
+   against the no-bloat principle).
 
 ## Language & accessibility
 
@@ -49,10 +63,12 @@ Status legend: 💡 idea · 🔜 planned (see [todo.md](todo.md) backlog) · ✅
 
 ## SEO & reach
 
-- 💡 **Backlink outreach** to notary, consumer and housing organisations -
-  the tool is free and unbranded enough to be linkable.
+- ✅ **Backlink outreach plan** — targets, angles, deep links and mail
+  templates in [OUTREACH.md](OUTREACH.md); execution is a human job.
 - 💡 **Per-topic landing pages** (e.g. "renovatieverplichting uitgelegd") that
   deep-link into the checklist - high-intent search traffic.
+- 💡 **Embeddable widget** — a one-line `<iframe>`/`<script>` snippet so
+  housing sites can embed the quick check; every embed is a live backlink.
 
 ## Explicitly rejected (and why)
 

@@ -55,6 +55,90 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 10: photos, quick-action rail, deep links, clearer page, more lookups
+
+Cache version bumped **v18 → v19** in all four HTML pages *and* `sw.js`
+(which also precaches the new `js/photos.js`).
+
+#### Photo attachments (new `js/photos.js`)
+Every checklist item has a camera button. One shared
+`<input type="file" accept="image/*" multiple>` drives it: phones and tablets
+natively offer **camera or gallery**, a PC opens the **file explorer** - no
+user-agent sniffing. Photos are downscaled to 1400 px JPEG (~150-400 KB) and
+stored in **IndexedDB on-device**, max 6 per item. Thumbnails render under the
+item with a lightbox (view + delete). The report modal appends a *Photos*
+section (prints correctly), and the **PDF export embeds the images** scaled to
+the page. Honest limits, stated in the UI: photos are never part of share
+links or JSON backups. *Reset All* wipes them together with the state.
+
+#### Floating quick-action rail
+On screens ≥ 1200 px, scrolling past 400 px slides in a right-hand rail:
+back-to-top, live progress %, generate report, share link, save to library,
+help. Hidden while a modal is open, hidden in print, translated (3 languages),
+`aria-label`led. The share handler was factored into `shareInspectionUrl()`
+and reused by both the header and rail buttons.
+
+#### Clearer standard page
+- **"How it works" strip**: a dismissible 1-2-3 explainer (address → tick &
+  photograph → report/PDF/share) at the top of the checklist; dismissal is
+  persisted (`howItWorksDismissed`).
+- **Header buttons regrouped** into three labelled clusters with dividers:
+  *actions* (Report & Share first, as primary), *display & language*
+  (selects + easy reading + compact), and *reset + help* last - instead of
+  14 controls in one undifferentiated row. In the mobile drawer the groups
+  stack with full-width separators.
+
+#### Deep links
+- `?type=house|apartment`, `?region=<id>`, `?view=quick` presets applied on
+  load (and persisted); `?lang` and `?data` already existed.
+- `#cat-<category>` scrolls to and flashes a category header;
+  `#item-<itemId>` scrolls to a single item - if quick mode hides that item,
+  the view **falls back to the full checklist automatically** (bug found in
+  testing: the target silently did not exist with `viewMode=quick` persisted).
+- The first-visit help modal is skipped when a deep-link hash is present.
+- `lookup/?region=` now overrides postal-code detection (`?address=` existed).
+
+#### Official lookups: 6 new verified tools (22 total)
+| Tool | Regions | Group |
+|---|---|---|
+| **Woningpas** (eID/itsme badge) | VL | parcel & ownership |
+| **Radon risk map** (FANC/AFCN) | all | environment |
+| **Seveso sites register** | all | environment |
+| **BIPT broadband atlas** | all | *new group:* neighbourhood & daily life |
+| **School finder** (onderwijs.vlaanderen) | VL | neighbourhood & daily life |
+| **Brussels neighbourhood monitor** | BXL | neighbourhood & daily life |
+
+`belgiantrain.be` was tried and dropped: NMBS 403-blocks non-browser clients,
+so it can never pass the 6-monthly link verification. `stat.police.be` is
+plain unreachable - crime stats stay out until an official source is linkable.
+
+#### Backlink outreach
+New [OUTREACH.md](OUTREACH.md): tiered target list (housing & consumer
+organisations, media, communities), deep-link table per use case, NL/FR/EN
+mail templates under 120 words, tracking table, and explicit no-paid-links
+rules. FEATURES.md gained new ideas (voice notes, photo annotations,
+room-by-room wizard, embeddable widget, deal-breaker scoring).
+
+#### Verified in the browser (localhost, fresh origin)
+Photos: attach 2 → thumbs + count, lightbox opens (JPEG), report shows
+*Photos (2)* with caption, delete works, PDF = 6 pages / 51 KB **with the
+image embedded**, reset clears IndexedDB · rail: appears >400 px scroll on
+wide screens, hides at top/in modals/print/below 1200 px, progress % syncs,
+all 6 buttons work · deep links: params + both hash forms + quick-mode
+fallback + no first-visit modal over a deep link · header groups: 3 groups +
+2 dividers, column layout in the burger drawer · NL/FR spot checks pass ·
+language switch keeps thumbnails · 0 page overflow at 320/360 px · print
+shows only the open modal incl. photos · 0 console errors throughout.
+i18n: **316 keys/language** (+16), links.js 190 strings/language.
+
+> Test-harness notes: the embedded browser reports CSS px (min-width media
+> queries!) at devicePixelRatio 1.25, freezes rAF + scroll events and smooth
+> scrolling in non-visible tabs, and cannot open native file choosers -
+> stub `requestAnimationFrame`, dispatch `scroll` manually and inject `File`
+> objects straight into the handler instead.
+
+---
+
 ### 2026-08-25 - Pass 9: help-modal overflow, compact full width, lookup access badges
 
 Cache version bumped **v17 → v18** in all four HTML pages *and* `sw.js`.

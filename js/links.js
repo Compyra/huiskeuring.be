@@ -595,6 +595,21 @@ const LOOKUP_TOOLS = [
             fr: 'Demandez un extrait cadastral et consultez les actes enregistrés (connexion itsme ou eID).'
         }
     },
+    {
+        id: 'woningpas',
+        group: 'property',
+        icon: 'fa-passport',
+        regions: ['flanders'],
+        auto: false,
+        access: 'login',
+        url: 'https://woningpas.vlaanderen.be/',
+        label: { en: 'Woningpas', nl: 'Woningpas', fr: 'Woningpas' },
+        note: {
+            en: 'The digital passport of every Flemish dwelling: EPC, soil, permits, renovation obligation and inspections in one dossier. Only the owner can open it - ask the seller for an export.',
+            nl: 'Het digitale paspoort van elke Vlaamse woning: EPC, bodem, vergunningen, renovatieverplichting en keuringen in één dossier. Alleen de eigenaar kan het openen - vraag de verkoper om een export.',
+            fr: 'Le passeport numérique de chaque logement flamand : PEB, sol, permis, obligation de rénovation et contrôles dans un seul dossier. Seul le propriétaire peut l\'ouvrir - demandez un export au vendeur.'
+        }
+    },
 
     /* ---- Water & flood ---- */
     {
@@ -756,6 +771,78 @@ const LOOKUP_TOOLS = [
             en: 'Official Belgian air-quality maps down to street level - worth a look next to a busy road.',
             nl: 'Officiële Belgische luchtkwaliteitskaarten tot op straatniveau - het bekijken waard bij een drukke weg.',
             fr: 'Cartes officielles belges de la qualité de l\'air jusqu\'au niveau de la rue - utile près d\'un axe fréquenté.'
+        }
+    },
+    {
+        id: 'radon',
+        group: 'environment',
+        icon: 'fa-radiation',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://radonactie.be/',
+        label: { en: 'Radon risk map (FANC)', nl: 'Radonrisicokaart (FANC)', fr: 'Carte du risque radon (AFCN)' },
+        note: {
+            en: 'The federal nuclear authority\'s radon map per municipality. Radon seeps out of the subsoil into cellars - a real health factor in the south and east of the country.',
+            nl: 'De radonkaart per gemeente van het federale nucleaire agentschap. Radon sijpelt uit de ondergrond in kelders - een echte gezondheidsfactor in het zuiden en oosten van het land.',
+            fr: 'La carte du radon par commune de l\'agence nucléaire fédérale. Le radon s\'infiltre du sous-sol dans les caves - un vrai facteur de santé dans le sud et l\'est du pays.'
+        }
+    },
+    {
+        id: 'seveso',
+        group: 'environment',
+        icon: 'fa-industry',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.seveso.be/',
+        label: { en: 'Seveso sites', nl: 'Seveso-bedrijven', fr: 'Sites Seveso' },
+        note: {
+            en: 'The official register of Seveso plants (hazardous industry). Check whether one operates near the address and what the emergency zones are.',
+            nl: 'Het officiële register van Seveso-bedrijven (gevaarlijke industrie). Kijk of er een actief is nabij het adres en wat de noodplanningszones zijn.',
+            fr: 'Le registre officiel des sites Seveso (industrie dangereuse). Vérifiez s\'il y en a un près de l\'adresse et quelles sont les zones d\'urgence.'
+        }
+    },
+
+    /* ---- Neighbourhood & daily life ---- */
+    {
+        id: 'bipt',
+        group: 'living',
+        icon: 'fa-wifi',
+        regions: ['flanders', 'wallonia', 'brussels'],
+        auto: false,
+        url: 'https://www.bipt-data.be/nl/projects/atlas',
+        label: { en: 'BIPT broadband atlas', nl: 'BIPT breedbandatlas', fr: 'Atlas haut débit de l\'IBPT' },
+        note: {
+            en: 'The telecom regulator\'s coverage atlas: which fixed internet speeds and mobile networks actually reach the address - essential for home workers.',
+            nl: 'De dekkingsatlas van de telecomregulator: welke vaste internetsnelheden en mobiele netwerken het adres echt halen - essentieel voor thuiswerkers.',
+            fr: 'L\'atlas de couverture du régulateur télécom : quels débits fixes et réseaux mobiles atteignent réellement l\'adresse - essentiel pour le télétravail.'
+        }
+    },
+    {
+        id: 'schools',
+        group: 'living',
+        icon: 'fa-school',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://data-onderwijs.vlaanderen.be/onderwijsaanbod/',
+        label: { en: 'School finder (Flanders)', nl: 'Scholen in de buurt', fr: 'Trouver une école (Flandre)' },
+        note: {
+            en: 'The official register of every recognised school in Flanders, searchable by municipality - check distances before you commit to a location.',
+            nl: 'Het officiële register van elke erkende school in Vlaanderen, doorzoekbaar per gemeente - controleer afstanden vóór u zich vastlegt op een locatie.',
+            fr: 'Le registre officiel de toutes les écoles reconnues en Flandre, consultable par commune - vérifiez les distances avant de vous engager.'
+        }
+    },
+    {
+        id: 'wijkmonitor',
+        group: 'living',
+        icon: 'fa-chart-column',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://wijkmonitoring.brussels/',
+        label: { en: 'Brussels neighbourhood monitor', nl: 'Wijkmonitoring Brussel', fr: 'Monitoring des quartiers bruxellois' },
+        note: {
+            en: 'Official statistics per Brussels neighbourhood: population, income, housing quality, green space and more - know the area before you buy into it.',
+            nl: 'Officiële statistieken per Brusselse wijk: bevolking, inkomen, woningkwaliteit, groen en meer - ken de buurt vóór u er koopt.',
+            fr: 'Statistiques officielles par quartier bruxellois : population, revenus, qualité du logement, espaces verts et plus - connaissez le quartier avant d\'y acheter.'
         }
     },
 

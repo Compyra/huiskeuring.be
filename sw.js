@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v18';
+const VERSION = 'v19';
 const CACHE = 'huiskeuring-' + VERSION;
 
 const SHELL = [
@@ -27,6 +27,7 @@ const SHELL = [
     '/js/checklist.nl.js?' + VERSION,
     '/js/checklist.fr.js?' + VERSION,
     '/js/core.js?' + VERSION,
+    '/js/photos.js?' + VERSION,
     '/js/app.js?' + VERSION,
     '/js/report.js?' + VERSION,
     '/js/compare.js?' + VERSION,

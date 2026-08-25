@@ -212,6 +212,8 @@ function renderChecklist() {
     checklistContainer.querySelectorAll('.item-note-textarea')
         .forEach(area => area.addEventListener('input', handleNoteChange));
 
+    if (typeof photoRefreshAll === 'function') photoRefreshAll();
+
     updateIssueFilters();
 }
 
@@ -272,6 +274,14 @@ function buildItem(category, item, index) {
         ? `<span class="note-text">${escapeHTML(note)}</span> <button class="edit-note-btn" data-key="${safeId}" title="${escapeHTML(t('item.editNote'))}" aria-label="${escapeHTML(t('item.editNote'))}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button>`
         : `<button class="add-note-btn" data-key="${safeId}" title="${escapeHTML(t('item.addNote'))}"><i class="fas fa-plus-circle" aria-hidden="true"></i> ${escapeHTML(t('item.addNote'))}</button>`;
 
+    const photoRow = `
+        <div class="item-photo-row">
+            <button type="button" class="photo-btn" data-photo-add="${safeId}" title="${escapeHTML(t('photo.add'))}" aria-label="${escapeHTML(t('photo.add'))}">
+                <i class="fas fa-camera" aria-hidden="true"></i><span class="photo-count" hidden></span>
+            </button>
+            <div class="item-photos" data-photos="${safeId}"></div>
+        </div>`;
+
     el.innerHTML = `
         <div class="checkbox-container">${checkboxHTML}</div>
         <div class="item-content">
@@ -286,6 +296,7 @@ function buildItem(category, item, index) {
             <div class="item-tags">
                 ${item.tags.map(tag => `<span class="tag">${escapeHTML(tagLabel(tag))}</span>`).join('')}
             </div>
+            ${photoRow}
             <div class="item-notes">
                 <label class="visually-hidden" for="note-${safeId}">${escapeHTML(t('item.notes.ph'))}</label>
                 <textarea id="note-${safeId}" placeholder="${escapeHTML(t('item.notes.ph'))}" data-key="${safeId}" class="item-note-textarea">${escapeHTML(note)}</textarea>
@@ -517,6 +528,8 @@ function updateProgress() {
     requestCount.textContent = summary.requests;
     totalCount.textContent = summary.total;
     percentComplete.textContent = `${summary.percent}%`;
+    const railText = byId('railProgressText');
+    if (railText) railText.textContent = `${summary.percent}%`;
 }
 
 /** Progress over the quick-check subset only. */
@@ -803,7 +816,52 @@ function buildReportHTML() {
 
 function generateReport() {
     reportContent.innerHTML = buildReportHTML();
+    appendReportPhotos();
     openModal(reportModal);
+}
+
+/** Item id -> "Category: item text" for photo captions. */
+function itemTextMap() {
+    const map = new Map();
+    visibleCategories(state).forEach(category => {
+        category.items.forEach((item, index) => {
+            map.set(itemId(category, index), `${categoryTitle(category)}: ${itemText(category, index, item)}`);
+        });
+    });
+    return map;
+}
+
+/** Photos live in IndexedDB, so they are appended after the sync render. */
+async function appendReportPhotos() {
+    if (typeof photoList !== 'function' || !photosSupported()) return;
+    let photos;
+    try { photos = await photoList(); } catch (e) { return; }
+    if (!photos.length) return;
+
+    const captions = itemTextMap();
+    const grouped = {};
+    photos.forEach(photo => { (grouped[photo.itemKey] = grouped[photo.itemKey] || []).push(photo); });
+
+    const blocks = Object.keys(grouped)
+        .filter(key => captions.has(key))
+        .map(key => `
+            <div class="report-photo-group">
+                <p><strong>${escapeHTML(captions.get(key))}</strong></p>
+                <div class="report-photos">
+                    ${grouped[key].map(photo => `<img src="${photo.dataUrl}" alt="" loading="lazy">`).join('')}
+                </div>
+            </div>`);
+    if (!blocks.length) return;
+
+    const section = document.createElement('div');
+    section.className = 'report-section';
+    section.innerHTML = `
+        <h3><i class="fas fa-images" aria-hidden="true"></i> ${escapeHTML(t('photo.title'))} (${photos.length})</h3>
+        ${blocks.join('')}
+        <p class="report-note">${escapeHTML(t('photo.hint'))}</p>`;
+    const container = reportContent.querySelector('.report-container');
+    const disclaimer = container ? container.querySelector('.report-disclaimer') : null;
+    if (container) container.insertBefore(section, disclaimer);
 }
 
 /* ------------------------------------------------------------------ *
@@ -1307,7 +1365,10 @@ function handleScroll() {
     if (scrollTicking) return;
     scrollTicking = true;
     window.requestAnimationFrame(() => {
-        scrollToTopBtn.classList.toggle('visible', window.scrollY > 300);
+        const scrolled = window.scrollY > 300;
+        scrollToTopBtn.classList.toggle('visible', scrolled);
+        const rail = byId('sideRail');
+        if (rail) rail.classList.toggle('visible', window.scrollY > 400);
         scrollTicking = false;
     });
 }
@@ -1317,6 +1378,8 @@ function resetChecklist() {
     const compact = state.compactMode;
     const type = state.propertyType;
     const region = state.region;
+
+    if (typeof photoClearAll === 'function') photoClearAll();
 
     state = defaultState();
     state.compactMode = compact;
@@ -1467,12 +1530,37 @@ function setupEventListeners() {
         else window.prompt(t('share.failed'), url);
     });
 
-    byId('shareUrlBtn').addEventListener('click', async () => {
-        const url = buildShareUrl(state, 'index.html');
-        const ok = await copyText(url);
-        if (ok) showToast(t('share.copied'));
-        else window.prompt(t('share.failed'), url);
+    byId('shareUrlBtn').addEventListener('click', shareInspectionUrl);
+
+    /* Floating quick-action rail (large screens, appears on scroll) */
+    byId('railTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    byId('railProgress').addEventListener('click', () => {
+        document.querySelector('.progress-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
+    byId('railReport').addEventListener('click', generateReport);
+    byId('railShare').addEventListener('click', shareInspectionUrl);
+    byId('railSave').addEventListener('click', () => {
+        const entry = saveToLibrary(state);
+        showToast(entry ? t('library.saved') : t('storage.failed'), entry ? '' : 'error');
+    });
+    byId('railHelp').addEventListener('click', () => openModal(helpModal));
+
+    /* Photo attachments */
+    byId('photoInput').addEventListener('change', (e) => {
+        if (typeof photoHandleFiles === 'function') photoHandleFiles(e.target.files);
+        e.target.value = '';
+    });
+    byId('photoLightboxDelete').addEventListener('click', () => {
+        if (typeof photoDeleteFromLightbox === 'function') photoDeleteFromLightbox();
+    });
+
+    const howToDismiss = byId('howItWorksDismiss');
+    if (howToDismiss) {
+        howToDismiss.addEventListener('click', () => {
+            writeStorage(STORAGE_KEYS.howto, '1');
+            byId('howItWorks').hidden = true;
+        });
+    }
 
     byId('helpBtn').addEventListener('click', () => openModal(helpModal));
     byId('helpBtnHeader').addEventListener('click', () => openModal(helpModal));
@@ -1500,7 +1588,7 @@ function setupEventListeners() {
     });
     byId('blankChecklistBtn').addEventListener('click', printBlankChecklist);
 
-    [reportModal, helpModal, resourcesModal, infoModal, toolsModal, questionsModal, remindersModal, byId('negotiationModal')]
+    [reportModal, helpModal, resourcesModal, infoModal, toolsModal, questionsModal, remindersModal, byId('negotiationModal'), byId('photoLightbox')]
         .forEach(modal => wireModal(modal));
 
     document.addEventListener('keydown', (e) => {
@@ -1588,14 +1676,94 @@ function setupEventListeners() {
         }
         const noteBtn = e.target.closest('.add-note-btn, .edit-note-btn');
         if (noteBtn && state.compactMode) handleCompactNoteEdit(e);
+
+        const photoBtn = e.target.closest('.photo-btn');
+        if (photoBtn && typeof photoPickFor === 'function') {
+            photoPickFor(photoBtn.dataset.photoAdd);
+            return;
+        }
+        const thumb = e.target.closest('.item-photo-thumb');
+        if (thumb && typeof photoOpenLightbox === 'function') photoOpenLightbox(thumb.dataset.photoId);
     });
 }
 
 function checkFirstVisit() {
     if (readStorage(STORAGE_KEYS.seenHelp)) return;
     if (new URLSearchParams(window.location.search).get('data')) return;
+    if (window.location.hash) return; // a deep link should land on its target, not under a modal
     openModal(helpModal);
     writeStorage(STORAGE_KEYS.seenHelp, 'true');
+}
+
+async function shareInspectionUrl() {
+    const url = buildShareUrl(state, 'index.html');
+    const ok = await copyText(url);
+    if (ok) showToast(t('share.copied'));
+    else window.prompt(t('share.failed'), url);
+}
+
+function renderHowItWorks() {
+    const box = byId('howItWorks');
+    if (!box) return;
+    box.hidden = readStorage(STORAGE_KEYS.howto) === '1';
+}
+
+/* ------------------------------------------------------------------ *
+ * Deep links
+ * ------------------------------------------------------------------ *
+ * ?type=house|apartment  ?region=flanders|wallonia|brussels  ?view=quick
+ * #cat-<category>        scrolls to a category header
+ * #item-<itemId>         scrolls to a single checklist item
+ * (?lang= is handled in resolveInitialLanguage, ?data= in loadState.)
+ * ------------------------------------------------------------------ */
+function applyDeepLinkParams() {
+    let changed = false;
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get('type');
+        if ((type === 'house' || type === 'apartment') && type !== state.propertyType) {
+            state.propertyType = type;
+            changed = true;
+        }
+        const region = (params.get('region') || '').toLowerCase();
+        if (REGIONS.some(r => r.id === region) && region !== state.region) {
+            state.region = region;
+            changed = true;
+        }
+        if (params.get('view') === 'quick' && state.viewMode !== 'quick') {
+            state.viewMode = 'quick';
+            changed = true;
+        }
+    } catch (e) { /* ignore malformed URLs */ }
+    if (changed) {
+        saveState();
+        syncPropertyTypeButtons();
+        syncRegionSelect();
+        syncViewModeButtons();
+    }
+}
+
+function focusDeepLinkTarget() {
+    const hash = decodeURIComponent(window.location.hash || '').replace(/^#/, '');
+    if (!hash) return;
+    let target = null;
+    if (hash.startsWith('cat-')) {
+        target = byId('cat-header-' + hash.slice(4)) || byId(hash);
+    } else if (hash.startsWith('item-')) {
+        const key = hash.slice(5);
+        target = checklistContainer.querySelector(`[data-key="${CSS.escape(key)}"]`);
+        if (!target && state.viewMode === 'quick') {
+            // The linked item is filtered out by quick mode - show it anyway.
+            setViewMode('full');
+            target = checklistContainer.querySelector(`[data-key="${CSS.escape(key)}"]`);
+        }
+    }
+    if (!target) return;
+    window.setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('deep-link-flash');
+        window.setTimeout(() => target.classList.remove('deep-link-flash'), 2600);
+    }, 200);
 }
 
 /* ------------------------------------------------------------------ *
@@ -1723,6 +1891,28 @@ async function exportPdf() {
             line(t('report.generalNotes'), 13, 'bold', 2);
             line(state.globalNotes, 10, 'normal', 3);
         }
+
+        if (typeof photoList === 'function' && photosSupported()) {
+            let photos = [];
+            try { photos = await photoList(); } catch (e) { /* skip photos */ }
+            if (photos.length) {
+                const captions = itemTextMap();
+                line(`${t('photo.title')} (${photos.length})`, 13, 'bold', 2);
+                for (const photo of photos) {
+                    if (!captions.has(photo.itemKey)) continue;
+                    line(captions.get(photo.itemKey), 9, 'italic', 1);
+                    const ratio = photo.h / photo.w;
+                    let wMm = Math.min(90, maxW);
+                    let hMm = wMm * ratio;
+                    if (hMm > 90) { hMm = 90; wMm = hMm / ratio; }
+                    if (y + hMm > 282) { doc.addPage(); y = margin; }
+                    doc.addImage(photo.dataUrl, 'JPEG', margin, y, wMm, hMm);
+                    y += hMm + 5;
+                }
+                y += 2;
+            }
+        }
+
         line(t('report.disclaimer'), 8, 'italic', 0);
 
         const pages = doc.getNumberOfPages();
@@ -1935,6 +2125,7 @@ function init() {
     applyTranslations();
 
     loadState();
+    applyDeepLinkParams();
     loadCompactModeState();
     loadPropertyInfoState();
     updateShowUncheckedButton();
@@ -1951,12 +2142,14 @@ function init() {
     renderHelpContent();
     renderFreshnessBanner();
     renderSeasonHint();
+    renderHowItWorks();
 
     const yearEl = byId('footerYear');
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
     setupEventListeners();
     checkFirstVisit();
+    focusDeepLinkTarget();
 }
 
 document.addEventListener('DOMContentLoaded', init);

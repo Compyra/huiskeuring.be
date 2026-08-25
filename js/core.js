@@ -24,7 +24,8 @@ const STORAGE_KEYS = {
     seenHelp: 'hasSeenHelpPage',
     freshnessDismissed: 'freshnessDismissed',
     readable: 'readableMode',
-    seasonDismissed: 'seasonHintDismissed'
+    seasonDismissed: 'seasonHintDismissed',
+    howto: 'howItWorksDismissed'
 };
 
 /**

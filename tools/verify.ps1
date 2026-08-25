@@ -137,6 +137,7 @@ Write-Output '6. Element ids referenced from JS'
 $runtimeIds = @('deedDate', 'drawdownDate')
 $pairs = @(
     @('index.html', 'js\app.js'),
+    @('index.html', 'js\photos.js'),
     @('report.html', 'js\report.js'),
     @('compare.html', 'js\compare.js'),
     @('lookup\index.html', 'lookup\lookup.js')
