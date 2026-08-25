@@ -1420,6 +1420,10 @@ function resetChecklist() {
     const region = state.region;
 
     if (typeof photoClearAll === 'function') photoClearAll();
+    try {
+        localStorage.removeItem('visitRoomInstances');
+        localStorage.removeItem('visitInstanceTicks');
+    } catch (e) { /* storage blocked */ }
 
     state = defaultState();
     state.compactMode = compact;

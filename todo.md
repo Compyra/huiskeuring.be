@@ -55,6 +55,100 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-25 - Pass 17: absence = red issue, rent estimators, triple check
+
+#### Confirmed absence is now a red ISSUE (report included)
+A confirmed "no heating / no electricity / no water here" is a **defect**,
+not a side note. Answering "correct - there is none" now:
+- marks the matching checklist item as an **issue** (red) - matched on the
+  stable English source text (`ABSENCE_ISSUE_MATCH`: heating → *"Test the
+  heating system in every room"*, electrical → *"enough circuits and sockets
+  per room"*, water → *"Test waterdruk"*);
+- writes the absence line into **that item's note** ("Slaapkamer 2: geen
+  verwarming aanwezig."), so the report's *Issues* section shows it in red
+  with context - also in the PDF and share links;
+- records an instance tick so the issue **persists while any room copy**
+  still has the absence (undo removes only that room's line; the issue
+  clears only when no absences remain). Fixed during testing: the stored
+  note line is now saved verbatim with the absence marker, so undo still
+  matches after adding rooms or switching language.
+
+#### Official lookups: rent estimators complete the picture (64 tools)
+All three official rent references verified and added to *Prices & market*:
+**Huurschatter** (VL), **loyers.brussels** grid (BXL), **loyerswallonie.be**
+grid (WAL) - the honest yield check for buy-to-let. Rejected: `elia.be`
+(bot-blocked), `huurschatter.vlaanderen.be` (redirect host refuses; the
+`www.huurschatter.be` entry works), Fluxys (KLIM-CICC covers pipelines).
+Verdict on completeness: maps (7 incl. history), parcel/ownership, prices &
+rents (7), water/sewage incl. all three operators, soil, planning & heritage
+per region, environment (air, radon, Seveso, solar, energy, antennas,
+earthquakes, climate), neighbourhood (fibre ×3, grid operators ×3, roadworks
+×3, stats ×2, schools ×2, childcare, cables & pipes ×2, energy regulators
+×3) - every linkable official/free source we could verify is in;
+the bot-blocked remainder is tracked in FEATURES.md.
+
+#### Triple check (bug / view / language)
+- **Bug**: absence round-trips incl. the two-bedroom + undo-after-add-room
+  regression (fixed, see above); reset clears everything; 0 console errors
+  throughout.
+- **View**: 5 pages × 5 widths (320/375/768/1024/1536) = **25/25 zero
+  horizontal overflow**.
+- **Language**: DOM-wide scan (EN/NL/FR × index+lookup+visit, help modal
+  open) for unreplaced `{placeholders}`, `undefined`/`null` leaks and raw
+  i18n keys → only brand names flagged (allowed). Found & fixed real
+  grammar bugs: FR *"pas de eau"* → strings reworked to elision-safe forms
+  (« électricité ». Cette pièce n'en a pas ? / Chambre 1 : sans chauffage.)
+  and EN to quote-style ("no "electrical"" → *You did not select
+  "electrical". Is there none in this room?*). NL was already correct.
+
+All 11 verifier checks pass, **145 external links HTTP 200**,
+i18n 350 keys/language, links.js 270 strings/language.
+
+---
+
+### 2026-08-25 - Pass 16: missing-feature prompts + multiple rooms of the same type
+
+Cache version bumped **v21 → v22** everywhere. No new external URLs.
+
+#### "You didn't select heating - is there no heating in this room?"
+Each room type now declares its *expected* installations
+(`EXPECTED_FEATURES`: bathroom → water+electricity+heating, bedroom/living →
+electricity+heating, kitchen → water+electricity, basement → electricity).
+For every expected feature the user did **not** select, a true/false prompt
+appears above the checks:
+- **"Correct - no heating here"** → the absence is recorded per room copy
+  and written as a line into the general notes
+  ("Slaapkamer 2: geen verwarming aanwezig.") so it lands in the **report,
+  PDF and share links**; the prompt collapses to a ✓-chip with an undo that
+  also removes the note line.
+- **"There is heating - show those checks"** → activates the feature chip
+  (and clears a previously noted absence, since that would contradict it).
+
+#### Second / third / fourth bedroom
+The selected room gets an **instance bar**: `Slaapkamer 1 · Slaapkamer 2 · +`.
+Every extra copy keeps its own walking record (OK/issue per point) in
+device-local storage (`visitInstanceTicks`), deliberately **not** in the
+shared state. The main checklist keeps one shared answer per item with an
+explicit, verified rule: **an issue found in any room copy wins** over an OK
+elsewhere (aggregation recomputed on every tick). Instance 1 shows the
+shared answers directly. Absence prompts are answered per room copy; the
+note line carries the copy number when there is more than one. Deep link
+extended with `&n=2`; a `?n=` beyond the known count creates the copies.
+*Reset All* on the main page now also wipes both visit-local maps. A second
+hint line explains the walking-aid semantics in all three languages.
+
+Verified in the browser: bedroom shows the two expected-feature prompts and
+`Bedroom 1 · +`; confirm-absence → chip + general-notes line + toast; undo
+removes the line; "there is electrical" activates the chip and the URL;
+`+` creates Bedroom 2 (header "… 2", `n=2` in the URL); issue in copy 2 →
+global issue; OK on the same item in copy 1 → **global stays issue**
+(issue-anywhere-wins confirmed); NL strings correct incl.
+"Slaapkamer 2: geen verwarming aanwezig."; the absence reaches the report;
+Reset clears both local maps; 0 px overflow at 320 px; 0 console errors.
+i18n **350 keys/language**; all 11 verifier checks pass.
+
+---
+
 ### 2026-08-25 - Pass 15: room-by-room visit mode, photo annotation, 7 more sources
 
 Cache version bumped **v20 → v21** in all HTML pages and `sw.js` (which now

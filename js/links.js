@@ -678,6 +678,48 @@ const LOOKUP_TOOLS = [
             fr: 'Ventes notariales publiques en ligne : suivez les enchères réelles sur des maisons comparables à proximité - des niveaux de transaction réels, pas des prix demandés.'
         }
     },
+    {
+        id: 'huurschatter',
+        group: 'prices',
+        icon: 'fa-key',
+        regions: ['flanders'],
+        auto: false,
+        url: 'https://www.huurschatter.be/',
+        label: { en: 'Rent estimator (Flanders)', nl: 'Huurschatter', fr: 'Estimateur de loyer (Flandre)' },
+        note: {
+            en: 'The official Flemish rent estimator: what this dwelling would rent for - the honest yield check if you buy to let.',
+            nl: 'De officiële Vlaamse huurschatter: wat deze woning zou opbrengen als huurwoning - dé eerlijke rendementscheck bij aankoop om te verhuren.',
+            fr: 'L\'estimateur de loyer officiel flamand : le loyer probable de ce logement - le contrôle de rendement honnête pour un achat locatif.'
+        }
+    },
+    {
+        id: 'loyersbxl',
+        group: 'prices',
+        icon: 'fa-key',
+        regions: ['brussels'],
+        auto: false,
+        url: 'https://loyers.brussels/',
+        label: { en: 'Brussels rent grid', nl: 'Brusselse huurprijsrooster', fr: 'Grille des loyers bruxelloise' },
+        note: {
+            en: 'The official Brussels indicative rent grid: the reference rent for this type, size and state of dwelling.',
+            nl: 'Het officiële Brusselse indicatieve huurrooster: de referentiehuur voor dit type, deze grootte en staat van woning.',
+            fr: 'La grille indicative officielle des loyers bruxellois : le loyer de référence pour ce type, cette taille et cet état de logement.'
+        }
+    },
+    {
+        id: 'loyerswal',
+        group: 'prices',
+        icon: 'fa-key',
+        regions: ['wallonia'],
+        auto: false,
+        url: 'https://loyerswallonie.be/',
+        label: { en: 'Walloon rent grid', nl: 'Waalse huurprijsrooster', fr: 'Grille des loyers wallonne' },
+        note: {
+            en: 'The official Walloon indicative rent grid: check the reference rent before you count on rental income.',
+            nl: 'Het officiële Waalse indicatieve huurrooster: controleer de referentiehuur vóór u op huurinkomsten rekent.',
+            fr: 'La grille indicative officielle des loyers en Wallonie : vérifiez le loyer de référence avant de compter sur des revenus locatifs.'
+        }
+    },
 
     /* ---- Parcel & ownership ---- */
     {

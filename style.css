@@ -3095,6 +3095,51 @@ html.readable em, html.readable i:not(.fas) { font-style: normal; }
 .visit-empty { color: var(--text-secondary); margin-top: 1.5rem; }
 .visit-empty[hidden] { display: none; }
 
+.visit-instances { margin-top: 10px; }
+.visit-instances[hidden] { display: none; }
+
+.visit-add-instance { min-width: 44px; justify-content: center; }
+
+.visit-missing {
+    background: var(--card-bg);
+    border: 1px dashed var(--info-color);
+    border-radius: var(--border-radius);
+    padding: 12px 14px;
+    margin: 0 0 12px;
+}
+
+.visit-missing p { margin: 0 0 10px; }
+.visit-missing p i { color: var(--info-color); margin-right: 6px; }
+
+.visit-missing-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.visit-missing.answered {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-style: solid;
+    border-color: var(--ok-color);
+    padding: 8px 12px;
+}
+
+.visit-missing.answered i:first-child { color: var(--ok-color); }
+.visit-missing.answered span { flex: 1 1 auto; }
+
+.visit-absence-undo {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.visit-absence-undo:hover { background: var(--border-color); }
+
 /* ==================================================================
    How it works (dismissible first-steps explainer)
    ================================================================== */

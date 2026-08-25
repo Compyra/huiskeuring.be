@@ -13,6 +13,29 @@
 const VISIT_ROOMS = ['kitchen', 'bathroom', 'bedroom', 'livingroom', 'basement', 'attic', 'exterior'];
 const VISIT_FEATURES = ['plumbing', 'electrical', 'hvac', 'structural', 'asbestos'];
 
+/* Features a room normally has - their absence is worth confirming. */
+const EXPECTED_FEATURES = {
+    kitchen: ['plumbing', 'electrical'],
+    bathroom: ['plumbing', 'electrical', 'hvac'],
+    bedroom: ['electrical', 'hvac'],
+    livingroom: ['electrical', 'hvac'],
+    basement: ['electrical'],
+    attic: [],
+    exterior: []
+};
+
+/* A confirmed absence is a DEFECT: it marks this item in the feature's
+   category as an issue (matched on the stable English source text). */
+const ABSENCE_ISSUE_MATCH = {
+    hvac: /heating system in every room/i,
+    electrical: /enough circuits and sockets per room/i,
+    plumbing: /waterdruk|water pressure/i
+};
+
+/* Walking aids stay on this device - deliberately NOT in the shared state. */
+const VISIT_INSTANCES_KEY = 'visitRoomInstances';
+const VISIT_TICKS_KEY = 'visitInstanceTicks';
+
 const ROOM_ICONS = {
     kitchen: 'fa-utensils', bathroom: 'fa-bath', bedroom: 'fa-bed',
     livingroom: 'fa-couch', basement: 'fa-dungeon', attic: 'fa-house-damage',
@@ -25,16 +48,78 @@ const FEATURE_ICONS = {
 
 let visitState = null;
 let currentRoom = null;
+let currentInstance = 1;
 let activeFeatures = [];
+let instanceCounts = {};
+let instanceTicks = {};
 
 function loadVisitState() {
     visitState = normaliseState(readJSON(STORAGE_KEYS.state, null));
+    instanceCounts = readJSON(VISIT_INSTANCES_KEY, {}) || {};
+    instanceTicks = readJSON(VISIT_TICKS_KEY, {}) || {};
 }
 
 function saveVisitState() {
     if (!writeStorage(STORAGE_KEYS.state, JSON.stringify(visitState))) {
         showToast(t('storage.failed'), 'error');
     }
+}
+
+function saveVisitLocal() {
+    writeStorage(VISIT_INSTANCES_KEY, JSON.stringify(instanceCounts));
+    writeStorage(VISIT_TICKS_KEY, JSON.stringify(instanceTicks));
+}
+
+/* ------------------------------------------------------------------ *
+ * Instance-aware ticks: each extra bedroom keeps its own walking
+ * record; the shared checklist gets one aggregate where an issue in
+ * any room instance wins over an OK elsewhere.
+ * ------------------------------------------------------------------ */
+function roomCount(room) {
+    return Math.max(1, Number(instanceCounts[room]) || 1);
+}
+
+function tickKey(id) {
+    return `${currentRoom}#${currentInstance}#${id}`;
+}
+
+function absenceKey(feature) {
+    return `${currentRoom}#${currentInstance}#absent:${feature}`;
+}
+
+function itemDisplayState(id) {
+    if (currentInstance === 1) {
+        return { ok: !!visitState.checklist[id], issue: !!visitState.renovationNeeded[id] };
+    }
+    const record = instanceTicks[tickKey(id)];
+    return { ok: record === 'ok', issue: record === 'issue' };
+}
+
+function recordTick(id, kind, on) {
+    if (on) instanceTicks[tickKey(id)] = kind;
+    else delete instanceTicks[tickKey(id)];
+    saveVisitLocal();
+
+    const suffix = '#' + id;
+    const records = Object.keys(instanceTicks)
+        .filter(key => key.endsWith(suffix) && !key.includes('#absent:'))
+        .map(key => instanceTicks[key]);
+    if (records.includes('issue')) {
+        visitState.renovationNeeded[id] = true;
+        visitState.checklist[id] = false;
+    } else if (records.includes('ok')) {
+        visitState.checklist[id] = true;
+        visitState.renovationNeeded[id] = false;
+    } else {
+        visitState.checklist[id] = false;
+        visitState.renovationNeeded[id] = false;
+    }
+    saveVisitState();
+}
+
+function roomInstanceLabel() {
+    const base = tagLabel(currentRoom);
+    return (roomCount(currentRoom) > 1) ? `${base} ${currentInstance}` : base;
 }
 
 /* ------------------------------------------------------------------ *
@@ -52,13 +137,37 @@ function renderChips() {
         .map(room => chipMarkup(room, ROOM_ICONS[room], room === currentRoom)).join('');
     byId('visitFeatures').innerHTML = VISIT_FEATURES
         .map(f => chipMarkup(f, FEATURE_ICONS[f], activeFeatures.includes(f))).join('');
+    renderInstances();
+}
+
+/** One chip per copy of the selected room (Bedroom 1, Bedroom 2, ...) + [+]. */
+function renderInstances() {
+    const bar = byId('visitInstances');
+    if (!currentRoom) { bar.hidden = true; bar.innerHTML = ''; return; }
+    const count = roomCount(currentRoom);
+    const addLabel = t('visit.another').replace('{room}', tagLabel(currentRoom));
+    bar.hidden = false;
+    bar.innerHTML = Array.from({ length: count }, (unused, i) => {
+        const n = i + 1;
+        return `
+            <button class="filter-btn ${n === currentInstance ? 'active' : ''}" data-instance="${n}" aria-pressed="${n === currentInstance}">
+                <i class="fas ${escapeHTML(ROOM_ICONS[currentRoom])}" aria-hidden="true"></i> <span>${escapeHTML(tagLabel(currentRoom))} ${n}</span>
+            </button>`;
+    }).join('') + `
+            <button class="filter-btn visit-add-instance" data-add-instance title="${escapeHTML(addLabel)}" aria-label="${escapeHTML(addLabel)}">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+            </button>`;
 }
 
 function syncUrl() {
     const url = new URL(window.location.href);
     url.searchParams.delete('room');
     url.searchParams.delete('features');
-    if (currentRoom) url.searchParams.set('room', currentRoom);
+    url.searchParams.delete('n');
+    if (currentRoom) {
+        url.searchParams.set('room', currentRoom);
+        if (currentInstance > 1) url.searchParams.set('n', String(currentInstance));
+    }
     if (activeFeatures.length) url.searchParams.set('features', activeFeatures.join(','));
     window.history.replaceState({}, document.title, url.toString());
 }
@@ -76,8 +185,9 @@ function visitCategories() {
 function buildVisitItem(category, item, index) {
     const id = itemId(category, index);
     const safeId = escapeHTML(id);
-    const isOK = !!visitState.checklist[id];
-    const hasIssue = !!visitState.renovationNeeded[id];
+    const shown = itemDisplayState(id);
+    const isOK = shown.ok;
+    const hasIssue = shown.issue;
     const note = visitState.notes[id] || '';
 
     const why = itemWhy(category, index, item);
@@ -120,16 +230,48 @@ function buildVisitItem(category, item, index) {
         </div>`;
 }
 
+/** Prompts for expected-but-unselected features ("no heating here?"). */
+function missingFeatureMarkup() {
+    if (!currentRoom) return '';
+    return (EXPECTED_FEATURES[currentRoom] || [])
+        .filter(feature => !activeFeatures.includes(feature))
+        .map(feature => {
+            const label = tagLabel(feature).toLocaleLowerCase();
+            if (instanceTicks[absenceKey(feature)]) {
+                const noted = t('visit.absenceNoted')
+                    .replace('{feature}', label)
+                    .replace('{room}', roomInstanceLabel());
+                return `
+                    <div class="visit-missing answered">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        <span>${escapeHTML(noted)}</span>
+                        <button type="button" class="visit-absence-undo" data-absence-undo="${escapeHTML(feature)}"
+                                title="${escapeHTML(t('visit.absenceUndo'))}" aria-label="${escapeHTML(t('visit.absenceUndo'))}">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
+                    </div>`;
+            }
+            return `
+                <div class="visit-missing">
+                    <p><i class="fas fa-circle-question" aria-hidden="true"></i> ${escapeHTML(t('visit.missing').replace(/\{feature\}/g, label))}</p>
+                    <div class="visit-missing-actions">
+                        <button type="button" class="btn btn-secondary" data-missing-confirm="${escapeHTML(feature)}">${escapeHTML(t('visit.missingConfirm').replace('{feature}', label))}</button>
+                        <button type="button" class="btn btn-primary" data-missing-add="${escapeHTML(feature)}">${escapeHTML(t('visit.missingAdd').replace('{feature}', label))}</button>
+                    </div>
+                </div>`;
+        }).join('');
+}
+
 function renderVisitItems() {
     const container = byId('visitItems');
     const categories = visitCategories();
 
     byId('visitEmpty').hidden = !!categories.length;
 
-    container.innerHTML = categories.map(category => `
+    container.innerHTML = missingFeatureMarkup() + categories.map(category => `
         <div class="category-group" data-category="${escapeHTML(category.category)}">
             <div class="category-header">
-                <h3><i class="fas ${escapeHTML(category.icon)}" aria-hidden="true"></i> ${escapeHTML(categoryTitle(category))}</h3>
+                <h3><i class="fas ${escapeHTML(category.icon)}" aria-hidden="true"></i> ${escapeHTML(categoryTitle(category))}${roomCount(currentRoom) > 1 && category.category === currentRoom ? ' ' + currentInstance : ''}</h3>
             </div>
             <div class="category-content">
                 ${category.items.map((item, index) => buildVisitItem(category, item, index)).join('')}
@@ -149,8 +291,9 @@ function updateVisitProgress() {
     categories.forEach(category => {
         category.items.forEach((item, index) => {
             const id = itemId(category, index);
+            const shown = itemDisplayState(id);
             total += 1;
-            if (visitState.checklist[id] || visitState.renovationNeeded[id]) done += 1;
+            if (shown.ok || shown.issue) done += 1;
         });
     });
     box.textContent = t('visit.answered').replace('{done}', String(done)).replace('{total}', String(total));
@@ -161,34 +304,110 @@ function updateVisitProgress() {
  * Events
  * ------------------------------------------------------------------ */
 function onChipClick(e) {
+    const add = e.target.closest('[data-add-instance]');
+    if (add && currentRoom) {
+        instanceCounts[currentRoom] = roomCount(currentRoom) + 1;
+        currentInstance = instanceCounts[currentRoom];
+        saveVisitLocal();
+        renderChips();
+        syncUrl();
+        renderVisitItems();
+        return;
+    }
+    const instance = e.target.closest('[data-instance]');
+    if (instance) {
+        currentInstance = Number(instance.dataset.instance) || 1;
+        renderChips();
+        syncUrl();
+        renderVisitItems();
+        return;
+    }
     const chip = e.target.closest('[data-chip]');
     if (!chip) return;
     const slug = chip.dataset.chip;
     if (VISIT_ROOMS.includes(slug)) {
         currentRoom = currentRoom === slug ? null : slug;
+        currentInstance = 1;
     } else {
         const at = activeFeatures.indexOf(slug);
         if (at >= 0) activeFeatures.splice(at, 1);
-        else activeFeatures.push(slug);
+        else {
+            activeFeatures.push(slug);
+            clearAbsence(slug); // selecting the feature contradicts a noted absence
+        }
     }
     renderChips();
     syncUrl();
     renderVisitItems();
 }
 
+function absenceNoteLine(feature) {
+    return t('visit.absenceLine')
+        .replace('{room}', roomInstanceLabel())
+        .replace('{feature}', tagLabel(feature).toLocaleLowerCase());
+}
+
+/** The checklist item that a confirmed absence flags as an issue. */
+function absenceIssueItem(feature) {
+    const pattern = ABSENCE_ISSUE_MATCH[feature];
+    const category = checklistData.find(c => c.category === feature);
+    if (!pattern || !category) return null;
+    const index = category.items.findIndex(item => pattern.test(item.text));
+    return index >= 0 ? itemId(category, index) : null;
+}
+
+function confirmAbsence(feature) {
+    const line = absenceNoteLine(feature);
+    // store the exact line so undo still matches after adding rooms or switching language
+    instanceTicks[absenceKey(feature)] = line;
+    saveVisitLocal();
+    const target = absenceIssueItem(feature);
+    if (target) {
+        // red flag: missing heating/electricity/water IS a defect
+        recordTick(target, 'issue', true);
+        const existing = visitState.notes[target] || '';
+        if (!existing.includes(line)) {
+            visitState.notes[target] = existing ? existing + '\n' + line : line;
+        }
+    } else if (!visitState.globalNotes.includes(line)) {
+        visitState.globalNotes = visitState.globalNotes ? visitState.globalNotes + '\n' + line : line;
+    }
+    saveVisitState();
+    showToast(t('visit.absenceNoted')
+        .replace('{feature}', tagLabel(feature).toLocaleLowerCase())
+        .replace('{room}', roomInstanceLabel()));
+    renderVisitItems();
+}
+
+function clearAbsence(feature) {
+    if (!currentRoom || !instanceTicks[absenceKey(feature)]) return;
+    const stored = instanceTicks[absenceKey(feature)];
+    const line = typeof stored === 'string' ? stored : absenceNoteLine(feature);
+    delete instanceTicks[absenceKey(feature)];
+    saveVisitLocal();
+    const target = absenceIssueItem(feature);
+    if (target) {
+        visitState.notes[target] = (visitState.notes[target] || '')
+            .split('\n').filter(entry => entry.trim() !== line).join('\n').trim();
+        // drops only this room's record; another room's absence keeps the issue
+        recordTick(target, 'issue', false);
+    } else {
+        visitState.globalNotes = visitState.globalNotes
+            .split('\n').filter(entry => entry.trim() !== line).join('\n');
+    }
+    saveVisitState();
+}
+
 function onItemsChange(e) {
     const key = e.target.dataset.key;
     if (!key) return;
     if (e.target.classList.contains('renovation-checkbox')) {
-        visitState.renovationNeeded[key] = e.target.checked;
-        if (e.target.checked) visitState.checklist[key] = false;
+        recordTick(key, 'issue', e.target.checked);
     } else if (e.target.type === 'checkbox') {
-        visitState.checklist[key] = e.target.checked;
-        if (e.target.checked) visitState.renovationNeeded[key] = false;
+        recordTick(key, 'ok', e.target.checked);
     } else {
         return;
     }
-    saveVisitState();
     renderVisitItems();
 }
 
@@ -199,6 +418,21 @@ function onItemsInput(e) {
 }
 
 function onItemsClick(e) {
+    const confirmBtn = e.target.closest('[data-missing-confirm]');
+    if (confirmBtn) { confirmAbsence(confirmBtn.dataset.missingConfirm); return; }
+    const addBtn = e.target.closest('[data-missing-add]');
+    if (addBtn) {
+        const feature = addBtn.dataset.missingAdd;
+        clearAbsence(feature);
+        if (!activeFeatures.includes(feature)) activeFeatures.push(feature);
+        renderChips();
+        syncUrl();
+        renderVisitItems();
+        return;
+    }
+    const undoBtn = e.target.closest('[data-absence-undo]');
+    if (undoBtn) { clearAbsence(undoBtn.dataset.absenceUndo); renderVisitItems(); return; }
+
     const whyBtn = e.target.closest('.why-toggle');
     if (whyBtn) {
         const panel = byId(whyBtn.dataset.whyTarget);
@@ -226,7 +460,12 @@ function applyVisitDeepLink() {
     try {
         const params = new URLSearchParams(window.location.search);
         const room = params.get('room');
-        if (VISIT_ROOMS.includes(room)) currentRoom = room;
+        if (VISIT_ROOMS.includes(room)) {
+            currentRoom = room;
+            const n = Number(params.get('n')) || 1;
+            if (n > roomCount(room)) { instanceCounts[room] = n; saveVisitLocal(); }
+            currentInstance = Math.max(1, n);
+        }
         (params.get('features') || '').split(',')
             .filter(f => VISIT_FEATURES.includes(f))
             .forEach(f => activeFeatures.push(f));
@@ -246,6 +485,7 @@ function init() {
 
     byId('visitRooms').addEventListener('click', onChipClick);
     byId('visitFeatures').addEventListener('click', onChipClick);
+    byId('visitInstances').addEventListener('click', onChipClick);
     const items = byId('visitItems');
     items.addEventListener('change', onItemsChange);
     items.addEventListener('input', onItemsInput);
