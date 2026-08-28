@@ -272,6 +272,44 @@ body.menu-open {
 
 .header-menu .btn { width: 100%; justify-content: flex-start; }
 
+.header-menu .property-type-btn.active {
+    border-color: var(--current-accent);
+    color: var(--current-accent);
+    font-weight: 700;
+}
+
+/* Header segmented control: full checklist / quick check */
+.header-viewmode {
+    display: inline-flex;
+    gap: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    flex-wrap: nowrap;
+}
+
+.header-viewmode .view-mode-btn {
+    background: var(--card-bg);
+    border: none;
+    padding: 9px 14px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+.header-viewmode .view-mode-btn + .view-mode-btn { border-left: 1px solid var(--border-color); }
+
+.header-viewmode .view-mode-btn.active {
+    background: var(--current-accent);
+    color: #fff;
+}
+
 /* Inside the mobile drawer the menu expands in place instead of floating */
 @media (max-width: 1024px) {
     .header-menu-wrap { position: static; width: 100%; }
@@ -286,6 +324,9 @@ body.menu-open {
         box-shadow: none;
         border-style: dashed;
     }
+
+    .header-viewmode { width: 100%; }
+    .header-viewmode .view-mode-btn { flex: 1; justify-content: center; }
 }
 
 /* Collapsed property card: address + jump to the official lookups */
@@ -2936,14 +2977,48 @@ html.readable em, html.readable i:not(.fas) { font-style: normal; }
     padding: 4px;
 }
 
-/* ------------------------------------------------------------------ *
- * Quick check / full toggle
- * ------------------------------------------------------------------ */
+/* Quick-mode hint (shown above the filters while quick check is active) */
 .view-mode-hint {
-    margin: 0.5rem 0 0;
+    margin: 0 0 1rem;
     font-size: 0.875rem;
     color: var(--text-secondary);
 }
+
+.view-mode-hint[hidden] { display: none; }
+
+/* First-visit property type chooser */
+.type-modal-content { max-width: 460px; }
+
+.type-choices {
+    display: flex;
+    gap: 14px;
+}
+
+.type-choice {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    font-family: inherit;
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.type-choice i {
+    font-size: 2rem;
+    color: var(--current-accent);
+}
+
+.type-choice:hover,
+.type-choice.active { border-color: var(--current-accent); }
 
 /* ------------------------------------------------------------------ *
  * Negotiation summary
@@ -3254,13 +3329,14 @@ body.modal-open .side-rail { opacity: 0; pointer-events: none; visibility: hidde
 
 @media (min-width: 1200px) {
     .side-rail { display: flex; }
-    /* compact mode is always full-width, so always reserve room for the rail */
-    body.compact-mode .main-content .container { padding-right: 84px; }
+    /* compact mode is always full-width: reserve rail room on the right and
+       mirror it on the left so the content stays centred */
+    body.compact-mode .main-content .container { padding-right: 84px; padding-left: 84px; }
 }
 
 /* In normal mode the container only reaches the rail on mid-size screens */
 @media (min-width: 1200px) and (max-width: 1560px) {
-    .main-content .container { padding-right: 84px; }
+    .main-content .container { padding-right: 84px; padding-left: 84px; }
 }
 
 .side-rail-btn {

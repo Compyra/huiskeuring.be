@@ -55,6 +55,51 @@ and [FEATURES.md](FEATURES.md) (suggested and often-requested features).
 
 ## 3. Changelog
 
+### 2026-08-28 - Pass 19: checklist size in the top bar, property type in the menu + first-visit chooser
+
+Cache **v23 → v24**.
+
+- **"Checklist size" moved to the top bar** as a segmented control
+  (Full checklist | Quick check) between the primary actions and the
+  language/theme selects; full-width row inside the mobile drawer. The
+  quick-mode hint remains on the page, now just above the filters. The
+  page section (title + buttons + two dividers) is gone.
+- **"Property type" moved into the header menu** as its own first section
+  (House / Apartment, accent-highlighted active state). Existing document-
+  wide listeners and syncs kept working unchanged - every surface
+  (menu, first-visit chooser) stays in sync.
+- **First-visit chooser**: new visitors now get a small "What are you
+  viewing?" modal (two large icon buttons + "you can change this later via
+  the menu") *before* the help introduction; choosing - or dismissing -
+  chains into the help modal. Skipped for share links and deep-link hashes,
+  never shown again afterwards (verified). +2 i18n keys ×3 (352/language).
+- **Real SW bug found while testing and fixed**: `cache.addAll(SHELL)`
+  fetched through the HTTP cache, so a *new* service-worker version could
+  re-precache a stale `index.html` from disk cache. Install now uses
+  `Request(url, { cache: 'reload' })`, guaranteeing every new version
+  precaches fresh bytes.
+
+Verified on a fresh origin: chooser→help chain with apartment applied
+(204 items) and all surfaces synced; header toggle switches 234↔33 items
+with hint; menu switch back to house; no modals for returning visitors;
+NL labels (Volledige checklist/Snelle check, Type woning, Wat gaat u
+bezichtigen?); old page sections gone; mobile drawer segment full-width,
+0 overflow; 0 console errors; all verifier checks pass.
+
+---
+
+### 2026-08-28 - Pass 18: symmetric container padding next to the quick-action rail
+
+The 84 px right padding that keeps content clear of the floating rail
+(compact mode ≥ 1200 px, normal mode 1200-1560 px) is now **mirrored on the
+left**, so the content stays centred instead of hugging the left edge.
+Verified at 1152 / 1536 / 1760 CSS px in both modes: padding symmetric
+everywhere (84/84 where the rail reserves room, 10/10 resp. 15/15 outside
+those ranges), rail still clear of the content, zero overflow, zero console
+errors. Cache bump **v22 → v23**; all verifier checks pass.
+
+---
+
 ### 2026-08-25 - Pass 17: absence = red issue, rent estimators, triple check
 
 #### Confirmed absence is now a red ISSUE (report included)

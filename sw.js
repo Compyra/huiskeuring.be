@@ -9,7 +9,7 @@
 
 'use strict';
 
-const VERSION = 'v22';
+const VERSION = 'v24';
 const CACHE = 'huiskeuring-' + VERSION;
 
 const SHELL = [
@@ -54,7 +54,9 @@ const SHELL = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE)
-            .then(cache => cache.addAll(SHELL))
+            // cache:'reload' bypasses the HTTP cache, so a new version can
+            // never re-precache a stale copy served from disk cache
+            .then(cache => cache.addAll(SHELL.map(url => new Request(url, { cache: 'reload' }))))
             .then(() => self.skipWaiting())
     );
 });

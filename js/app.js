@@ -1756,8 +1756,21 @@ function checkFirstVisit() {
     if (readStorage(STORAGE_KEYS.seenHelp)) return;
     if (new URLSearchParams(window.location.search).get('data')) return;
     if (window.location.hash) return; // a deep link should land on its target, not under a modal
-    openModal(helpModal);
     writeStorage(STORAGE_KEYS.seenHelp, 'true');
+
+    // First ask what they are viewing, then show the help introduction.
+    const typeModal = byId('typeModal');
+    let done = false;
+    const proceed = () => {
+        if (done) return;
+        done = true;
+        closeModal(typeModal);
+        openModal(helpModal);
+    };
+    typeModal.addEventListener('click', (e) => {
+        if (e.target === typeModal || e.target.closest('.type-choice') || e.target.closest('#closeTypeModal')) proceed();
+    });
+    openModal(typeModal);
 }
 
 async function shareInspectionUrl() {

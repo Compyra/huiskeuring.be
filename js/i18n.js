@@ -57,6 +57,8 @@ const TRANSLATIONS = {
         'section.propertyType': 'Property Type',
         'type.house': 'House',
         'type.apartment': 'Apartment',
+        'type.chooserTitle': 'What are you viewing?',
+        'type.chooserHint': 'You can change this at any time via the menu.',
 
         'section.filterCategory': 'Filter by Category',
         'section.filterIssues': 'Filter by Toggled Issues',
@@ -445,6 +447,8 @@ const TRANSLATIONS = {
         'section.propertyType': 'Type woning',
         'type.house': 'Huis',
         'type.apartment': 'Appartement',
+        'type.chooserTitle': 'Wat gaat u bezichtigen?',
+        'type.chooserHint': 'U kunt dit later altijd wijzigen via het menu.',
 
         'section.filterCategory': 'Filter op categorie',
         'section.filterIssues': 'Filter op aangeduide problemen',
@@ -833,6 +837,8 @@ const TRANSLATIONS = {
         'section.propertyType': 'Type de bien',
         'type.house': 'Maison',
         'type.apartment': 'Appartement',
+        'type.chooserTitle': 'Que visitez-vous ?',
+        'type.chooserHint': 'Vous pourrez le modifier à tout moment via le menu.',
 
         'section.filterCategory': 'Filtrer par catégorie',
         'section.filterIssues': 'Filtrer par problèmes cochés',

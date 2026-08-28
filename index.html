@@ -41,15 +41,15 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
-    <link rel="stylesheet" href="style.css?v22">
+    <link rel="stylesheet" href="style.css?v24">
     <!-- Self-hosted fonts and icons: no third-party requests, nothing leaks to a CDN.
          Montserrat (SIL OFL 1.1), Roboto (Apache 2.0), Font Awesome Free (OFL 1.1 / CC BY 4.0 / MIT).
          See assets/LICENSES.md. -->
     <link rel="preload" href="assets/fonts/roboto-400-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/montserrat-700-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/vendor/fonts.css?v22">
-    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v22">
-    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v22">
+    <link rel="stylesheet" href="assets/vendor/fonts.css?v24">
+    <link rel="stylesheet" href="assets/vendor/fontawesome.min.css?v24">
+    <link rel="stylesheet" href="assets/vendor/fa-solid.min.css?v24">
 
     <!-- Apply the stored / system theme before first paint to avoid a flash of the wrong theme -->
     <script>
@@ -236,6 +236,15 @@
                             </button>
                             <div class="header-menu" id="headerMenu" hidden>
                                 <div class="header-menu-section">
+                                    <h3 data-i18n="section.propertyType">Property Type</h3>
+                                    <button class="btn btn-secondary property-type-btn active" data-property-type="house" aria-pressed="true">
+                                        <i class="fas fa-home" aria-hidden="true"></i> <span class="btn-text" data-i18n="type.house">House</span>
+                                    </button>
+                                    <button class="btn btn-secondary property-type-btn" data-property-type="apartment" aria-pressed="false">
+                                        <i class="fas fa-building" aria-hidden="true"></i> <span class="btn-text" data-i18n="type.apartment">Apartment</span>
+                                    </button>
+                                </div>
+                                <div class="header-menu-section">
                                     <h3 data-i18n="menu.visit">During the visit</h3>
                                     <a class="btn btn-info" id="visitLink" href="visit/" data-i18n-title="btn.visit" title="Room by room">
                                         <i class="fas fa-person-walking" aria-hidden="true"></i> <span class="btn-text" data-i18n="btn.visit">Room by room</span>
@@ -282,6 +291,15 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="header-group-divider" aria-hidden="true"></div>
+                    <div class="header-group header-viewmode" role="group" aria-label="Checklist size" data-i18n-aria="mode.label">
+                        <button class="view-mode-btn active" data-view-mode="full" aria-pressed="true">
+                            <i class="fas fa-list-check" aria-hidden="true"></i> <span data-i18n="mode.full">Full checklist</span>
+                        </button>
+                        <button class="view-mode-btn" data-view-mode="quick" aria-pressed="false">
+                            <i class="fas fa-bolt" aria-hidden="true"></i> <span data-i18n="mode.quick">Quick check</span>
+                        </button>
                     </div>
                     <div class="header-group-divider" aria-hidden="true"></div>
                     <div class="header-group" role="group" aria-label="Display &amp; language" data-i18n-aria="group.view">
@@ -379,28 +397,8 @@
             </section>
 
             <!-- Filter Section -->
-            <section class="filter-section" aria-labelledby="propertyTypeTitle">
-                <h2 class="section-title" id="viewModeTitle" data-i18n="mode.label">Checklist size</h2>
-                <div class="filter-buttons view-mode-buttons" role="group" aria-labelledby="viewModeTitle">
-                    <button class="filter-btn view-mode-btn active" data-view-mode="full" aria-pressed="true">
-                        <i class="fas fa-list-check" aria-hidden="true"></i> <span data-i18n="mode.full">Full checklist</span>
-                    </button>
-                    <button class="filter-btn view-mode-btn" data-view-mode="quick" aria-pressed="false">
-                        <i class="fas fa-bolt" aria-hidden="true"></i> <span data-i18n="mode.quick">Quick check</span>
-                    </button>
-                </div>
-                <p class="view-mode-hint" id="viewModeHint" hidden></p>
-                <div class="filter-divider"></div>
-                <h2 class="section-title" id="propertyTypeTitle" data-i18n="section.propertyType">Property Type</h2>
-                <div class="filter-buttons property-type-buttons" id="propertyTypeButtons" role="group" aria-labelledby="propertyTypeTitle">
-                    <button class="filter-btn property-type-btn active" data-property-type="house" aria-pressed="true">
-                        <i class="fas fa-home" aria-hidden="true"></i> <span data-i18n="type.house">House</span>
-                    </button>
-                    <button class="filter-btn property-type-btn" data-property-type="apartment" aria-pressed="false">
-                        <i class="fas fa-building" aria-hidden="true"></i> <span data-i18n="type.apartment">Apartment</span>
-                    </button>
-                </div>
-                <div class="filter-divider"></div>
+            <p class="view-mode-hint" id="viewModeHint" hidden></p>
+            <section class="filter-section" aria-labelledby="categoryFilterTitle">
                 <h2 class="section-title" id="categoryFilterTitle" data-i18n="section.filterCategory">Filter by Category</h2>
                 <div class="filter-buttons" id="filterButtons" role="group" aria-labelledby="categoryFilterTitle">
                     <button class="filter-btn active" data-category="all" aria-pressed="true">
@@ -756,6 +754,31 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+    <!-- First-visit property type chooser -->
+    <div class="modal" id="typeModal" role="dialog" aria-modal="true" aria-labelledby="typeModalTitle">
+        <div class="modal-content type-modal-content">
+            <div class="modal-header">
+                <h2 id="typeModalTitle"><i class="fas fa-house-circle-check" aria-hidden="true"></i> <span data-i18n="type.chooserTitle">What are you viewing?</span></h2>
+                <button class="close-btn" id="closeTypeModal" data-i18n-aria="btn.close" aria-label="Close">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="type-choices">
+                    <button type="button" class="type-choice property-type-btn" data-property-type="house" aria-pressed="true">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                        <span data-i18n="type.house">House</span>
+                    </button>
+                    <button type="button" class="type-choice property-type-btn" data-property-type="apartment" aria-pressed="false">
+                        <i class="fas fa-building" aria-hidden="true"></i>
+                        <span data-i18n="type.apartment">Apartment</span>
+                    </button>
+                </div>
+                <p class="photo-hint" data-i18n="type.chooserHint">You can change this at any time via the menu.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Photo attachments: one shared picker; phones offer the camera natively -->
     <input type="file" id="photoInput" accept="image/*" multiple class="visually-hidden" tabindex="-1" aria-hidden="true">
 
@@ -793,15 +816,15 @@
         </div>
     </div>
 
-    <script src="js/i18n.js?v22"></script>
-    <script src="js/legal.js?v22"></script>
-    <script src="js/links.js?v22"></script>
-    <script src="js/checklist.js?v22"></script>
-    <script src="js/checklist.nl.js?v22"></script>
-    <script src="js/checklist.fr.js?v22"></script>
-    <script src="js/core.js?v22"></script>
-    <script src="js/photos.js?v22"></script>
-    <script src="js/app.js?v22"></script>
+    <script src="js/i18n.js?v24"></script>
+    <script src="js/legal.js?v24"></script>
+    <script src="js/links.js?v24"></script>
+    <script src="js/checklist.js?v24"></script>
+    <script src="js/checklist.nl.js?v24"></script>
+    <script src="js/checklist.fr.js?v24"></script>
+    <script src="js/core.js?v24"></script>
+    <script src="js/photos.js?v24"></script>
+    <script src="js/app.js?v24"></script>
 </body>
 </html>
 
